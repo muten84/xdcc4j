@@ -1,11 +1,12 @@
 allprojects{
+apply plugin: 'java'
 apply plugin: 'eclipse'
  repositories{
  	mavenCentral()
  }
 }
 subprojects{
-apply plugin: 'java'
+
 	dependencies{
 		compile fileTree(dir: '../libs', include: '*.jar')
 		
