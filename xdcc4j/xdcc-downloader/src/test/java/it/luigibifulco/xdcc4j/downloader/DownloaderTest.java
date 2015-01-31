@@ -29,6 +29,16 @@ public class DownloaderTest {
 	}
 
 	@Test
+	public final void testStartDirect() {
+		downloader.search("mutant chronicles");
+		String id = downloader.startDownload("7");
+		Assert.assertTrue(id != null);
+		Download d = downloader.getDownload(id);
+		TransferState state = d.getCurrentTransfer().getState();
+		Assert.assertTrue(state == TransferState.WORKING);
+	}
+
+	@Test
 	public final void testStartAnyDownload() {
 		downloader.search("mutant chronicles");
 		String id = downloader.startAnyAvailableFromList();

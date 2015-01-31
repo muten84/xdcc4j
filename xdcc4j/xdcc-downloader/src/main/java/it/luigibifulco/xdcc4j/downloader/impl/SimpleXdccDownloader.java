@@ -66,8 +66,56 @@ public class SimpleXdccDownloader implements XdccDownloader {
 
 	@Override
 	public String startDownload(String id) {
-		// TODO Auto-generated method stub
+		return tryToStart(id) != null ? id : null;
+	}
+
+	protected Download tryToStart(final String k) {
+		String value = currentResult.get(k);
+		try {
+
+			XdccRequest req = XdccRequestCreator.convertFromXdccItResult(value);
+			req.setDestination("/Users/Luigi/Downloads/irc/");
+			XdccFileTransfer ft = new XdccFileTransferImpl(req);
+			FileTransferStatusListener l = new FileTransferStatusListener() {
+
+				@Override
+				public void onStart() {
+					logger.info("Download " + k + " started: " + value);
+
+				}
+
+				@Override
+				public void onProgress(int perc, int rate) {
+					logger.info("onProgress for " + k + " : " + perc + " - "
+							+ rate);
+
+				}
+
+				@Override
+				public void onFinish() {
+					logger.info("Download " + k + " finished: " + value);
+
+				}
+
+				@Override
+				public void onError(Throwable e) {
+					logger.error("Download " + k + " aborted: " + value, e);
+
+				}
+			};
+			boolean result = ft.start(l);
+			if (!result) {
+				ft.cancel();
+			} else {
+				Download d = new Download(value, ft, l);
+				downloads.put(k, d);
+				return d;
+			}
+		} catch (BotException e) {
+			logger.error("ERROR", e);
+		}
 		return null;
+
 	}
 
 	@Override
@@ -76,63 +124,24 @@ public class SimpleXdccDownloader implements XdccDownloader {
 				currentResult);
 		Collection<String> keys = lastResult.keySet();
 		for (String k : keys) {
-			String value = lastResult.get(k);
-			try {
-
-				XdccRequest req = XdccRequestCreator
-						.convertFromXdccItResult(value);
-				req.setDestination("/Users/Luigi/Downloads/irc/");
-				XdccFileTransfer ft = new XdccFileTransferImpl(req);
-				FileTransferStatusListener l = new FileTransferStatusListener() {
-
-					@Override
-					public void onStart() {
-						logger.info("Download " + k + " started: " + value);
-
-					}
-
-					@Override
-					public void onProgress(int perc, int rate) {
-						logger.info("onProgress for " + k + " : " + perc
-								+ " - " + rate);
-
-					}
-
-					@Override
-					public void onFinish() {
-						logger.info("Download " + k + " finished: " + value);
-
-					}
-
-					@Override
-					public void onError(Throwable e) {
-						logger.error("Download " + k + " aborted: " + value, e);
-
-					}
-				};
-				boolean result = ft.start(l);
-				if (!result) {
-					ft.cancel();
-				} else {
-					downloads.put(k, new Download(value, ft, l));
-					return k;
-				}
-			} catch (BotException e) {
-				logger.error("ERROR", e);
-			}
+			if (tryToStart(k) != null)
+				return k;
 		}
 		return null;
 	}
 
 	@Override
 	public String cancelDownload(String id) {
-		// TODO Auto-generated method stub
-		return null;
+		Download d = downloads.get(id);
+		if (d != null) {
+			d.getCurrentTransfer().cancel();
+		}
+		downloads.remove(id);
+		return id;
 	}
 
 	@Override
 	public List<String> cancelAll() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -141,4 +150,19 @@ public class SimpleXdccDownloader implements XdccDownloader {
 		return downloads.get(id);
 	}
 
+	public static void main(String[] args) {
+		if (args.length < 1) {
+			System.out.println("Usage download xdcc.it mutant_chronicles 7");
+			return;
+		}
+		SimpleXdccDownloader d = new SimpleXdccDownloader("xdcc.it");
+		d.search(args[0].replace("_", " "));
+		if (args[1] == null || args[1].isEmpty()) {
+			String id = d.startAnyAvailableFromList();
+			System.out.println("Started >>>>> " + id);
+
+		} else {
+			d.startDownload(args[1]);
+		}
+	}
 }
