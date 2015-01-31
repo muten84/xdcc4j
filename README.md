@@ -33,7 +33,7 @@ Check the download status:
  Download d = downloader.getDownload(id);
  TransferState state = d.getCurrentTransfer().getState();
  Assert.assertTrue(state == TransferState.WORKING);
-  
+ 
 That's all!
   
 Check out test classes for more details and stay tuned, i'm working for docs and web-gui!!
