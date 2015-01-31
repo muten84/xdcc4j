@@ -30,11 +30,11 @@ SimpleXdccDownloader is statefull so let's start the party....if you want to lea
   
 Check the download status:
 
- Download d = downloader.getDownload(id);
+   	Download d = downloader.getDownload(id);
  
- TransferState state = d.getCurrentTransfer().getState();
+   	TransferState state = d.getCurrentTransfer().getState();
  
- Assert.assertTrue(state == TransferState.WORKING);
+   	Assert.assertTrue(state == TransferState.WORKING);
  
 That's all!
   
