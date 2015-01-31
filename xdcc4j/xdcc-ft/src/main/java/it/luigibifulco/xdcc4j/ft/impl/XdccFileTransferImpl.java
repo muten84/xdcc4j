@@ -30,7 +30,7 @@ public class XdccFileTransferImpl implements XdccFileTransfer {
 		state = TransferState.IDLE;
 		this.request = request;
 		LOGGER.info("Request: " + request);
-		bot = new FileTransferBot(true);
+		bot = new FileTransferBot(false);
 		String name = UUID.randomUUID().toString();
 
 		LOGGER.info("connecting to host: " + request.getHost());
