@@ -7,7 +7,7 @@ This is a modular project :
 
  - xdcc-common contains all common model and utils class.
  - xdcc-search offer the basic API for searching on most suitable irc database bot on various channels.
- - xdcc-ft (ft stay for File Transfer) offer basdic API to start new file transfer in very simple way.
+ - xdcc-ft (ft stay for File Transfer) offer basic API to start new file transfer in very simple way.
  - xdcc-downloader: it can use xdcc-search and xdcc-ft for starting more downloads in parallel mode.
  
  Actual State:
