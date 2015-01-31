@@ -1,0 +1,16 @@
+allprojects{
+apply plugin: 'eclipse'
+ repositories{
+ 	mavenCentral()
+ }
+}
+subprojects{
+apply plugin: 'java'
+	dependencies{
+		compile fileTree(dir: '../libs', include: '*.jar')
+		
+		compile('ch.qos.logback:logback-classic:1.1.2')
+		testCompile('junit:junit:4.12')
+		testCompile('org.easymock:easymock:3.3.1')
+		}
+}

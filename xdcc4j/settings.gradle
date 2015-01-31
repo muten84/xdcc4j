@@ -1,0 +1,1 @@
+include 'xdcc-common','xdcc-search', 'xdcc-ft', 'xdcc-downloader'
