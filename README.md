@@ -18,11 +18,11 @@ This is a modular project :
   
 Let's see simple demo code:
   
-  XdccDownloader downloader = new SimpleXdccDownloader("xdcc.it");
+	 	XdccDownloader downloader = new SimpleXdccDownloader("xdcc.it");
   
   search what you want:
 
-  downloader.search("my favourite series");
+		 downloader.search("my favourite series");
   
 SimpleXdccDownloader is statefull so let's start the party....if you want to leave all the work to the downloader you can invoke the startAnyAvailableFromList method:
    
