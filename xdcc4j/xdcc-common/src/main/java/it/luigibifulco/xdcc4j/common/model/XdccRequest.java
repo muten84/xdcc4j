@@ -4,6 +4,13 @@ import java.io.Serializable;
 
 public class XdccRequest implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -802658214843268582L;
+
+	protected String id;
+
 	protected String channel;
 
 	protected String peer;
@@ -14,8 +21,18 @@ public class XdccRequest implements Serializable {
 
 	protected String destination;
 
+	protected long ttl;
+
 	public XdccRequest() {
 
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	public String getChannel() {
@@ -47,6 +64,9 @@ public class XdccRequest implements Serializable {
 	}
 
 	public void setHost(String host) {
+		if (host == null) {
+			host = "";
+		}
 		this.host = host;
 	}
 
@@ -60,9 +80,17 @@ public class XdccRequest implements Serializable {
 
 	@Override
 	public String toString() {
-		return "XdccRequest [channel=" + channel + ", peer=" + peer
-				+ ", resource=" + resource + ", host=" + host
-				+ ", destination=" + destination + "]";
+		return "XdccRequest [id=" + id + ", channel=" + channel + ", peer="
+				+ peer + ", resource=" + resource + ", host=" + host
+				+ ", destination=" + destination + ", ttl=" + ttl + "]";
+	}
+
+	public long getTtl() {
+		return ttl;
+	}
+
+	public void setTtl(long ttl) {
+		this.ttl = ttl;
 	}
 
 }

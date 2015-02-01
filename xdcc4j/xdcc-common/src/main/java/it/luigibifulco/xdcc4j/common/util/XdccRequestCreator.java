@@ -9,10 +9,14 @@ public class XdccRequestCreator {
 	public static XdccRequest convertFromXdccItResult(String result) {
 		XdccRequest request = new XdccRequest();
 		String[] splitted = result.split(",");
-		request.setChannel(splitted[2].replace("#", "").trim());
-		request.setHost(splitted[5].trim());
-		request.setPeer(splitted[1].trim());
-		request.setResource(splitted[4].trim());
+		if (splitted.length == 6) {
+			request.setChannel(splitted[2].replace("#", "").trim());
+			request.setHost(splitted[5].trim());
+			request.setPeer(splitted[1].trim());
+			request.setResource(splitted[4].trim());
+		} else {
+			return null;
+		}
 		return request;
 	}
 }
