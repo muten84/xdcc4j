@@ -18,7 +18,7 @@ public class DownloaderTest {
 	@Before
 	public void init() {
 		if (downloader == null) {
-			downloader = new SimpleXdccDownloader("xdcc.it");
+			downloader = new SimpleXdccDownloader("xdcc.it", "");
 		}
 	}
 

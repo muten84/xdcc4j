@@ -1,13 +1,12 @@
-package it.luigibifulco.xdcc4j.search.impl;
+package it.luigibifulco.xdcc4j.search.http;
 
 import it.luigibifulco.xdcc4j.common.model.XdccRequest;
-import it.luigibifulco.xdcc4j.common.util.XdccRequestCreator;
-import it.luigibifulco.xdcc4j.search.XdccHtmlParser;
-import it.luigibifulco.xdcc4j.search.XdccQuery;
 import it.luigibifulco.xdcc4j.search.XdccSearchEngine;
+import it.luigibifulco.xdcc4j.search.parser.XdccHtmlParser;
+import it.luigibifulco.xdcc4j.search.query.XdccQuery;
 
 import java.io.IOException;
-import java.util.HashSet;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,9 +26,12 @@ public class HttpXdccSearchEngine implements XdccSearchEngine {
 
 	private final List<String> queryNameParameter;
 
+	private String separator;
+
 	public HttpXdccSearchEngine(List<String> queryNameParameter,
-			XdccHtmlParser parser) {
+			String paramSeparator, XdccHtmlParser parser) {
 		this.queryNameParameter = queryNameParameter;
+		this.separator = paramSeparator;
 		this.parser = parser;
 	}
 
@@ -37,15 +39,9 @@ public class HttpXdccSearchEngine implements XdccSearchEngine {
 	public Set<XdccRequest> search(XdccQuery query) throws RuntimeException {
 		LOGGER.info("search: " + query.getQueryAsMap());
 		try {
-			Set<String> s = parser.parseDocument(httpQuery(encodeQuery(query)));
-			Set<XdccRequest> result = new HashSet<XdccRequest>();
-			for (String string : s) {
-				XdccRequest r = XdccRequestCreator
-						.convertFromXdccItResult(string);
-				if (r != null) {
-					result.add(r);
-				}
-			}
+			Set<XdccRequest> result = parser
+					.parseDocument(httpQuery(encodeQuery(query)));
+
 			return result;
 		} catch (IOException e) {
 			throw new RuntimeException(e);
@@ -67,7 +63,7 @@ public class HttpXdccSearchEngine implements XdccSearchEngine {
 			String[] _params = params.split(",");
 			int cnt = 0;
 			for (String p : _params) {
-				p = p.replace(" ", "+");
+				p = p.replace(" ", separator);
 				if (cnt == 0) {
 					buff.append(queryNameParameter.get(cnt) + "=" + p);
 				} else {
@@ -82,8 +78,10 @@ public class HttpXdccSearchEngine implements XdccSearchEngine {
 	}
 
 	protected Document httpQuery(String url) throws IOException {
+		// url = URLEncoder.encode(url);
 		LOGGER.info("httpQuery: " + url);
 		Connection conn = Jsoup.connect(url);
+		conn.timeout(30000);
 		Document doc = conn.get();
 		return doc;
 	}

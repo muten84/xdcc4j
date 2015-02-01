@@ -1,4 +1,4 @@
-package it.luigibifulco.xdcc4j.search;
+package it.luigibifulco.xdcc4j.search.query;
 
 import java.util.HashMap;
 import java.util.Map;

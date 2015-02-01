@@ -1,10 +1,11 @@
-package it.luigibifulco.xdcc4j.search.impl;
+package it.luigibifulco.xdcc4j.search.http;
 
 import it.luigibifulco.xdcc4j.common.model.XdccRequest;
-import it.luigibifulco.xdcc4j.search.XdccQuery;
-import it.luigibifulco.xdcc4j.search.XdccQuery.QueryCondition;
-import it.luigibifulco.xdcc4j.search.XdccQuery.QueryFilter;
-import it.luigibifulco.xdcc4j.search.XdccQueryBuilder;
+import it.luigibifulco.xdcc4j.search.http.HttpXdccSearch;
+import it.luigibifulco.xdcc4j.search.query.XdccQuery;
+import it.luigibifulco.xdcc4j.search.query.XdccQueryBuilder;
+import it.luigibifulco.xdcc4j.search.query.XdccQuery.QueryCondition;
+import it.luigibifulco.xdcc4j.search.query.XdccQuery.QueryFilter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,18 +17,31 @@ import org.junit.Test;
 
 public class HttpXdccSearchTest {
 
-	private HttpXdccSearch xdccSearch;
+	private HttpXdccSearch xdccItSearch;
+	private HttpXdccSearch xdccFinderSearch;
 
 	@Before
 	public final void before() {
-		xdccSearch = new HttpXdccSearch("xdcc.it");
+		xdccItSearch = new HttpXdccSearch("xdcc.it");
+		xdccFinderSearch = new HttpXdccSearch("xdccfinder.it");
+
+	}
+
+	@Test
+	public final void testHttpSearchWithXdccFinder() {
+		Set<XdccRequest> result = xdccFinderSearch.search(XdccQueryBuilder
+				.create().params("mutant chronicles"));
+		Assert.assertTrue(result.size() > 0);
+		for (XdccRequest r : result) {
+			System.out.println(r);
+		}
 
 	}
 
 	@Test
 	public final void testHttpSearch() {
-		Set<XdccRequest> result = xdccSearch.search(XdccQueryBuilder.create()
-				.to("xdcc.it").params("mutant chronicles"));
+		Set<XdccRequest> result = xdccItSearch.search(XdccQueryBuilder.create()
+				.to("whfdsfsdf").params("mutant chronicles"));
 		Assert.assertTrue(result.size() > 0);
 		for (XdccRequest r : result) {
 			System.out.println(r);
@@ -45,7 +59,7 @@ public class HttpXdccSearchTest {
 		Map<QueryCondition, String> tmp2 = new HashMap<QueryCondition, String>();
 		tmp2.put(QueryCondition.HOST, "irc.crocmax.net");
 		query.replacefilter(tmp2);
-		Set<XdccRequest> result = xdccSearch.search(query);
+		Set<XdccRequest> result = xdccItSearch.search(query);
 
 		Assert.assertTrue(result.size() > 0);
 

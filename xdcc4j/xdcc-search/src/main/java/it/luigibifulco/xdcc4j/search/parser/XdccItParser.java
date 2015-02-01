@@ -1,4 +1,7 @@
-package it.luigibifulco.xdcc4j.search.impl;
+package it.luigibifulco.xdcc4j.search.parser;
+
+import it.luigibifulco.xdcc4j.common.model.XdccRequest;
+import it.luigibifulco.xdcc4j.common.util.XdccRequestCreator;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -7,20 +10,18 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import it.luigibifulco.xdcc4j.search.XdccHtmlParser;
-
 public class XdccItParser implements XdccHtmlParser {
 
 	@Override
-	public Set<String> parseDocument(Document doc) {
-		Set<String> result = new HashSet<String>();
+	public Set<XdccRequest> parseDocument(Document doc) {
+		Set<XdccRequest> result = new HashSet<XdccRequest>();
 		Elements elems = doc.select("tr[onmouseover]");
 		for (Element element : elems) {
 			String s = element.attr("onmouseover").toString();
 			s = s.replace("xdt(", "");
 			s = s.replace(");", "");
 			s = s.replace("'", "");
-			result.add(s);
+			result.add(XdccRequestCreator.convertFromXdccItResult(s));
 		}
 
 		return result;

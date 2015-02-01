@@ -18,6 +18,8 @@ public interface XdccFileTransfer {
 
 	public boolean start(FileTransferStatusListener listener);
 
+	public boolean restart();
+
 	public boolean cancel();
 
 	public boolean pause();

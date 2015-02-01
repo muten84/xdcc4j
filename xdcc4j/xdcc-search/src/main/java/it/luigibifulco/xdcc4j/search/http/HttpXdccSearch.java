@@ -1,12 +1,12 @@
-package it.luigibifulco.xdcc4j.search.impl;
+package it.luigibifulco.xdcc4j.search.http;
 
 import it.luigibifulco.xdcc4j.common.model.XdccRequest;
-import it.luigibifulco.xdcc4j.search.XdccQuery;
 import it.luigibifulco.xdcc4j.search.XdccSearch;
 import it.luigibifulco.xdcc4j.search.XdccSearchEngine;
 import it.luigibifulco.xdcc4j.search.XdccSearchEngineFactory;
-import it.luigibifulco.xdcc4j.search.XdccQuery.QueryCondition;
-import it.luigibifulco.xdcc4j.search.XdccQuery.QueryFilter;
+import it.luigibifulco.xdcc4j.search.query.XdccQuery;
+import it.luigibifulco.xdcc4j.search.query.XdccQuery.QueryCondition;
+import it.luigibifulco.xdcc4j.search.query.XdccQuery.QueryFilter;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -16,12 +16,18 @@ public class HttpXdccSearch implements XdccSearch {
 
 	protected XdccSearchEngine engine;
 
+	private final String searchDomain;
+
 	public HttpXdccSearch(String searchDomain) {
 		engine = XdccSearchEngineFactory.create(searchDomain);
+		this.searchDomain = searchDomain;
 	}
 
 	@Override
 	public Set<XdccRequest> search(XdccQuery query) throws RuntimeException {
+		if (searchDomain != null) {
+			query = query.to(searchDomain);
+		}
 		Set<XdccRequest> requests = engine.search(query);
 		if (requests == null || requests.isEmpty()) {
 			return new HashSet<XdccRequest>();

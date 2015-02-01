@@ -19,4 +19,15 @@ public class XdccRequestCreator {
 		}
 		return request;
 	}
+
+	public static XdccRequest convertFromXdccFinderResult(String result) {
+		XdccRequest request = new XdccRequest();
+		String[] splitted = result.split(",");
+		if (splitted.length == 5) {
+			request.setChannel(splitted[3].trim());
+			request.setPeer(splitted[4].trim());
+			request.setResource(splitted[0].replace("#", "").trim());
+		}
+		return request;
+	}
 }

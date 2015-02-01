@@ -7,11 +7,11 @@ import it.luigibifulco.xdcc4j.downloader.XdccDownloader;
 import it.luigibifulco.xdcc4j.ft.XdccFileTransfer;
 import it.luigibifulco.xdcc4j.ft.XdccFileTransfer.FileTransferStatusListener;
 import it.luigibifulco.xdcc4j.ft.impl.XdccFileTransferImpl;
-import it.luigibifulco.xdcc4j.search.XdccQueryBuilder;
 import it.luigibifulco.xdcc4j.search.XdccSearch;
-import it.luigibifulco.xdcc4j.search.impl.HttpXdccSearch;
-import it.luigibifulco.xdcc4j.search.impl.HttpXdccSearchEngine;
-import it.luigibifulco.xdcc4j.search.impl.XdccItParser;
+import it.luigibifulco.xdcc4j.search.http.HttpXdccSearch;
+import it.luigibifulco.xdcc4j.search.http.HttpXdccSearchEngine;
+import it.luigibifulco.xdcc4j.search.parser.XdccItParser;
+import it.luigibifulco.xdcc4j.search.query.XdccQueryBuilder;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 
 public class SimpleXdccDownloader implements XdccDownloader {
 
-	Logger logger = LoggerFactory.getLogger(SimpleXdccDownloader.class);
+	static Logger logger = LoggerFactory.getLogger(SimpleXdccDownloader.class);
 
 	protected XdccSearch searcher;
 
@@ -38,8 +38,50 @@ public class SimpleXdccDownloader implements XdccDownloader {
 
 	private Map<String, Download> downloads = new HashMap<String, Download>();
 
-	public SimpleXdccDownloader(String searchDomain) {
+	private final String defaultIrcNetwork;
+
+	private static class Handler implements FileTransferStatusListener {
+		final String id;
+		final XdccRequest req;
+		final XdccFileTransfer ft;
+
+		public Handler(String id, XdccRequest req, XdccFileTransfer ft) {
+			this.id = id;
+			this.req = req;
+			this.ft = ft;
+		}
+
+		@Override
+		public void onStart() {
+			logger.info("Download " + id + " started: " + req);
+
+		}
+
+		@Override
+		public void onProgress(int perc, int rate) {
+			logger.info("onProgress for " + id + " : " + perc + " - " + rate);
+
+		}
+
+		@Override
+		public void onFinish() {
+			logger.info("Download " + id + " finished: " + req);
+			ft.cancel();
+
+		}
+
+		@Override
+		public void onError(Throwable e) {
+			logger.error("Download " + id + " aborted: " + req, e);
+			ft.restart();
+			ft.start(this);
+
+		}
+	};
+
+	public SimpleXdccDownloader(String searchDomain, String defaultIrcNetwork) {
 		this.searchDomain = searchDomain;
+		this.defaultIrcNetwork = defaultIrcNetwork;
 		currentResult = new HashMap<String, XdccRequest>();
 		searcher = new HttpXdccSearch(searchDomain);
 
@@ -68,38 +110,13 @@ public class SimpleXdccDownloader implements XdccDownloader {
 	protected Download tryToStart(final String k) {
 		XdccRequest req = currentResult.get(k);
 		try {
-
+			if (req.getHost() == null || req.getHost().isEmpty()) {
+				req.setHost(defaultIrcNetwork);
+			}
 			req.setDestination("/Users/Luigi/Downloads/irc/");
-			XdccFileTransfer ft = new XdccFileTransferImpl(req, 5000, 10000);
-			FileTransferStatusListener l = new FileTransferStatusListener() {
+			XdccFileTransfer ft = new XdccFileTransferImpl(req, 10000, 60000);
 
-				@Override
-				public void onStart() {
-					logger.info("Download " + k + " started: " + req);
-
-				}
-
-				@Override
-				public void onProgress(int perc, int rate) {
-					logger.info("onProgress for " + k + " : " + perc + " - "
-							+ rate);
-
-				}
-
-				@Override
-				public void onFinish() {
-					logger.info("Download " + k + " finished: " + req);
-					ft.cancel();
-
-				}
-
-				@Override
-				public void onError(Throwable e) {
-					logger.error("Download " + k + " aborted: " + req, e);
-					ft.cancel();
-
-				}
-			};
+			FileTransferStatusListener l = new Handler(k, req, ft);
 			boolean result = ft.start(l);
 			if (!result) {
 				ft.cancel();
@@ -152,10 +169,10 @@ public class SimpleXdccDownloader implements XdccDownloader {
 			System.out.println("Usage download xdcc.it mutant_chronicles 7");
 			return;
 		}
-		SimpleXdccDownloader d = new SimpleXdccDownloader("xdcc.it");
-		d.search(args[0].replace("_", " "));
-		if (args.length > 1) {
-			d.startDownload(args[1]);
+		SimpleXdccDownloader d = new SimpleXdccDownloader(args[0], args[1]);
+		d.search(args[2].replace("_", " "));
+		if (args.length > 3) {
+			d.startDownload(args[3]);
 		} else {
 			String id = d.startAnyAvailableFromList();
 			System.out.println("Started >>>>> " + id);

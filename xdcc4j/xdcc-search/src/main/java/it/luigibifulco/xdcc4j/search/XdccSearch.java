@@ -1,6 +1,7 @@
 package it.luigibifulco.xdcc4j.search;
 
 import it.luigibifulco.xdcc4j.common.model.XdccRequest;
+import it.luigibifulco.xdcc4j.search.query.XdccQuery;
 
 import java.util.Set;
 

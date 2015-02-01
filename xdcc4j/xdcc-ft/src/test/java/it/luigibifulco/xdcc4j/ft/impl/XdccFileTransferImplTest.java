@@ -3,11 +3,11 @@ package it.luigibifulco.xdcc4j.ft.impl;
 import it.biffi.jirc.bot.BotException;
 import it.luigibifulco.xdcc4j.common.model.XdccRequest;
 import it.luigibifulco.xdcc4j.ft.XdccFileTransfer.FileTransferStatusListener;
-import it.luigibifulco.xdcc4j.search.XdccQuery.QueryCondition;
-import it.luigibifulco.xdcc4j.search.XdccQuery.QueryFilter;
-import it.luigibifulco.xdcc4j.search.XdccQueryBuilder;
 import it.luigibifulco.xdcc4j.search.XdccSearch;
-import it.luigibifulco.xdcc4j.search.impl.HttpXdccSearch;
+import it.luigibifulco.xdcc4j.search.http.HttpXdccSearch;
+import it.luigibifulco.xdcc4j.search.query.XdccQueryBuilder;
+import it.luigibifulco.xdcc4j.search.query.XdccQuery.QueryCondition;
+import it.luigibifulco.xdcc4j.search.query.XdccQuery.QueryFilter;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -22,23 +22,27 @@ public class XdccFileTransferImplTest {
 
 	private XdccSearch search;
 
+	private String domain = "xdccfinder.it";
+
 	@Before
 	public void init() {
-		search = new HttpXdccSearch("xdcc.it");
+		search = new HttpXdccSearch(domain);
 
 	}
 
 	@Test
 	public final void testFtStart() throws BotException, InterruptedException {
 		Iterator<XdccRequest> result = search.search(
-				XdccQueryBuilder.create().to("http://xdcc.it")
-						.params("tomb raider")).iterator();
+				XdccQueryBuilder.create().to(domain)
+						.params("mutant chronicles")).iterator();
 		while (result.hasNext()) {
 			XdccRequest req = result.next();
-
+			if (req.getHost() == null || req.getHost().isEmpty()) {
+				req.setHost("irc.chlame.net");
+			}
 			req.setDestination("/Users/Luigi/Downloads/irc/");
 
-			xdccFt = new XdccFileTransferImpl(req, 1000, 1000);
+			xdccFt = new XdccFileTransferImpl(req, 30000, 60000);
 			System.out.println(xdccFt.getState());
 			boolean started = xdccFt.start(new FileTransferStatusListener() {
 

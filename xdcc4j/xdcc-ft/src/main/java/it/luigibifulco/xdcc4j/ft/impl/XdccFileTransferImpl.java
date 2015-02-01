@@ -24,15 +24,22 @@ public class XdccFileTransferImpl implements XdccFileTransfer {
 
 	protected FileTransferBot bot;
 
-	protected XdccRequest request;
+	private final XdccRequest request;
 
 	private Timer t;
+
+	private long connectTimeout;
 
 	public XdccFileTransferImpl(XdccRequest request, long connectTimeout,
 			long requestTTL) throws BotException {
 		state = TransferState.IDLE;
 		this.request = request;
 		this.request.setTtl(requestTTL);
+		this.connectTimeout = connectTimeout;
+
+	}
+
+	protected void init() throws BotException {
 		LOGGER.info("Request: " + request);
 		bot = new FileTransferBot(false);
 		String name = UUID.randomUUID().toString();
@@ -50,11 +57,17 @@ public class XdccFileTransferImpl implements XdccFileTransfer {
 			config.setInputCommand("xdcc send #" + request.getResource());
 			bot.start(config);
 		}
-
 	}
 
 	@Override
 	public boolean start(final FileTransferStatusListener l) {
+		if (state == TransferState.IDLE) {
+			try {
+				init();
+			} catch (BotException e) {
+				return false;
+			}
+		}
 		if (state == TransferState.RUNNABLE) {
 			DccFileTransfer transfer = bot.requestPacket(request.getTtl(),
 					new FileTransferFinishListener() {
@@ -97,7 +110,7 @@ public class XdccFileTransferImpl implements XdccFileTransfer {
 				return true;
 			} else {
 				LOGGER.info("packet requested but transfer not started");
-				state = TransferState.IDLE;
+				state = TransferState.FINISHED;
 				return false;
 			}
 		} else {
@@ -116,7 +129,7 @@ public class XdccFileTransferImpl implements XdccFileTransfer {
 		}
 		t = null;
 		bot.stop();
-		request = null;
+		// request = null;
 		return true;
 	}
 
@@ -135,6 +148,17 @@ public class XdccFileTransferImpl implements XdccFileTransfer {
 	@Override
 	public TransferState getState() {
 		return state;
+	}
+
+	@Override
+	public boolean restart() {
+		this.cancel();
+		try {
+			this.init();
+		} catch (BotException e) {
+			return false;
+		}
+		return true;
 	}
 
 }
