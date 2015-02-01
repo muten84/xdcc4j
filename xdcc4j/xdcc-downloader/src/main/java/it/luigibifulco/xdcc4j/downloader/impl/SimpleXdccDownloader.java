@@ -34,28 +34,24 @@ public class SimpleXdccDownloader implements XdccDownloader {
 
 	protected String searchDomain;
 
-	private Map<String, String> currentResult;
+	private Map<String, XdccRequest> currentResult;
 
 	private Map<String, Download> downloads = new HashMap<String, Download>();
 
 	public SimpleXdccDownloader(String searchDomain) {
 		this.searchDomain = searchDomain;
-		currentResult = new HashMap<String, String>();
-		searcher = new HttpXdccSearch();
-		HttpXdccSearchEngine engine = new HttpXdccSearchEngine(
-				Arrays.asList(new String[] { "q" }));
-		engine.setParser(new XdccItParser());
-		((HttpXdccSearch) searcher).setEngine(engine);
+		currentResult = new HashMap<String, XdccRequest>();
+		searcher = new HttpXdccSearch(searchDomain);
 
 	}
 
 	@Override
-	public Map<String, String> search(String text) {
-		Map<String, String> map = new HashMap<String, String>();
-		Set<String> result = searcher.search(XdccQueryBuilder.create()
+	public Map<String, XdccRequest> search(String text) {
+		Map<String, XdccRequest> map = new HashMap<String, XdccRequest>();
+		Set<XdccRequest> result = searcher.search(XdccQueryBuilder.create()
 				.to(searchDomain).params(text));
 		int cnt = 0;
-		Iterator<String> iter = result.iterator();
+		Iterator<XdccRequest> iter = result.iterator();
 		while (iter.hasNext()) {
 			map.put("" + cnt, iter.next());
 			cnt++;
@@ -70,17 +66,16 @@ public class SimpleXdccDownloader implements XdccDownloader {
 	}
 
 	protected Download tryToStart(final String k) {
-		String value = currentResult.get(k);
+		XdccRequest req = currentResult.get(k);
 		try {
 
-			XdccRequest req = XdccRequestCreator.convertFromXdccItResult(value);
 			req.setDestination("/Users/Luigi/Downloads/irc/");
-			XdccFileTransfer ft = new XdccFileTransferImpl(req);
+			XdccFileTransfer ft = new XdccFileTransferImpl(req, 5000, 10000);
 			FileTransferStatusListener l = new FileTransferStatusListener() {
 
 				@Override
 				public void onStart() {
-					logger.info("Download " + k + " started: " + value);
+					logger.info("Download " + k + " started: " + req);
 
 				}
 
@@ -93,13 +88,15 @@ public class SimpleXdccDownloader implements XdccDownloader {
 
 				@Override
 				public void onFinish() {
-					logger.info("Download " + k + " finished: " + value);
+					logger.info("Download " + k + " finished: " + req);
+					ft.cancel();
 
 				}
 
 				@Override
 				public void onError(Throwable e) {
-					logger.error("Download " + k + " aborted: " + value, e);
+					logger.error("Download " + k + " aborted: " + req, e);
+					ft.cancel();
 
 				}
 			};
@@ -107,7 +104,7 @@ public class SimpleXdccDownloader implements XdccDownloader {
 			if (!result) {
 				ft.cancel();
 			} else {
-				Download d = new Download(value, ft, l);
+				Download d = new Download(req.toString(), ft, l);
 				downloads.put(k, d);
 				return d;
 			}
@@ -120,7 +117,7 @@ public class SimpleXdccDownloader implements XdccDownloader {
 
 	@Override
 	public String startAnyAvailableFromList() {
-		Map<String, String> lastResult = new HashMap<String, String>(
+		Map<String, XdccRequest> lastResult = new HashMap<String, XdccRequest>(
 				currentResult);
 		Collection<String> keys = lastResult.keySet();
 		for (String k : keys) {
@@ -157,12 +154,11 @@ public class SimpleXdccDownloader implements XdccDownloader {
 		}
 		SimpleXdccDownloader d = new SimpleXdccDownloader("xdcc.it");
 		d.search(args[0].replace("_", " "));
-		if (args[1] == null || args[1].isEmpty()) {
+		if (args.length > 1) {
+			d.startDownload(args[1]);
+		} else {
 			String id = d.startAnyAvailableFromList();
 			System.out.println("Started >>>>> " + id);
-
-		} else {
-			d.startDownload(args[1]);
 		}
 	}
 }

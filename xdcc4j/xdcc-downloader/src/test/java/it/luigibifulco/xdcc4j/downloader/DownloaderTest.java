@@ -1,5 +1,6 @@
 package it.luigibifulco.xdcc4j.downloader;
 
+import it.luigibifulco.xdcc4j.common.model.XdccRequest;
 import it.luigibifulco.xdcc4j.downloader.impl.Download;
 import it.luigibifulco.xdcc4j.downloader.impl.SimpleXdccDownloader;
 import it.luigibifulco.xdcc4j.ft.XdccFileTransfer.TransferState;
@@ -23,7 +24,8 @@ public class DownloaderTest {
 
 	@Test
 	public final void testSearch() {
-		Map<String, String> result = downloader.search("mutant chronicles");
+		Map<String, XdccRequest> result = downloader
+				.search("mutant chronicles");
 		Assert.assertTrue(result.size() > 0);
 
 	}
