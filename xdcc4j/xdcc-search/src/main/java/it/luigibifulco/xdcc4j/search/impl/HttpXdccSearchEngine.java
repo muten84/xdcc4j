@@ -1,10 +1,13 @@
 package it.luigibifulco.xdcc4j.search.impl;
 
+import it.luigibifulco.xdcc4j.common.model.XdccRequest;
+import it.luigibifulco.xdcc4j.common.util.XdccRequestCreator;
 import it.luigibifulco.xdcc4j.search.XdccHtmlParser;
 import it.luigibifulco.xdcc4j.search.XdccQuery;
 import it.luigibifulco.xdcc4j.search.XdccSearchEngine;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -24,15 +27,26 @@ public class HttpXdccSearchEngine implements XdccSearchEngine {
 
 	private final List<String> queryNameParameter;
 
-	public HttpXdccSearchEngine(List<String> queryNameParameter) {
+	public HttpXdccSearchEngine(List<String> queryNameParameter,
+			XdccHtmlParser parser) {
 		this.queryNameParameter = queryNameParameter;
+		this.parser = parser;
 	}
 
 	@Override
-	public Set<String> search(XdccQuery query) throws RuntimeException {
+	public Set<XdccRequest> search(XdccQuery query) throws RuntimeException {
 		LOGGER.info("search: " + query.getQueryAsMap());
 		try {
-			return parser.parseDocument(httpQuery(encodeQuery(query)));
+			Set<String> s = parser.parseDocument(httpQuery(encodeQuery(query)));
+			Set<XdccRequest> result = new HashSet<XdccRequest>();
+			for (String string : s) {
+				XdccRequest r = XdccRequestCreator
+						.convertFromXdccItResult(string);
+				if (r != null) {
+					result.add(r);
+				}
+			}
+			return result;
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

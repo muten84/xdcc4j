@@ -1,8 +1,10 @@
 package it.luigibifulco.xdcc4j.search.impl;
 
+import it.luigibifulco.xdcc4j.common.model.XdccRequest;
 import it.luigibifulco.xdcc4j.search.XdccHtmlParser;
 import it.luigibifulco.xdcc4j.search.XdccQuery;
 import it.luigibifulco.xdcc4j.search.XdccQueryBuilder;
+import it.luigibifulco.xdcc4j.search.XdccSearchEngineFactory;
 import it.luigibifulco.xdcc4j.search.impl.HttpXdccSearchEngine;
 
 import java.util.ArrayList;
@@ -26,8 +28,7 @@ public class HttpXdccSearchEngineTest {
 	@Before
 	public void before() {
 		if (searchEngine == null) {
-			searchEngine = new HttpXdccSearchEngine(new ArrayList<String>(
-					Arrays.asList(new String[] { "q" })));
+			searchEngine = (HttpXdccSearchEngine) XdccSearchEngineFactory.create("xdcc.it");
 		}
 		if (parser == null) {
 			parser = EasyMock.createNiceMock(XdccHtmlParser.class);
@@ -49,7 +50,7 @@ public class HttpXdccSearchEngineTest {
 				.params("The imitatation Game");
 		Map<String, String> map = query.getQueryAsMap();
 		Assert.assertTrue(map.size() > 0);
-		Set<String> result = searchEngine.search(query);
+		Set<XdccRequest> result = searchEngine.search(query);
 		Assert.assertTrue(result.size() > 0);
 	}
 }
