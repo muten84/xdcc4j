@@ -26,16 +26,20 @@ public class XdccFileTransferImpl implements XdccFileTransfer {
 
 	protected XdccRequest request;
 
-	public XdccFileTransferImpl(XdccRequest request) throws BotException {
+	private Timer t;
+
+	public XdccFileTransferImpl(XdccRequest request, long connectTimeout,
+			long requestTTL) throws BotException {
 		state = TransferState.IDLE;
 		this.request = request;
+		this.request.setTtl(requestTTL);
 		LOGGER.info("Request: " + request);
 		bot = new FileTransferBot(false);
 		String name = UUID.randomUUID().toString();
 
 		LOGGER.info("connecting to host: " + request.getHost());
 		boolean connected = bot.connect("[Bot" + name.substring(0, 5) + "]",
-				request.getHost(), 30000);
+				request.getHost(), connectTimeout);
 		if (connected) {
 			state = TransferState.RUNNABLE;
 			LOGGER.info("connected");
@@ -52,7 +56,7 @@ public class XdccFileTransferImpl implements XdccFileTransfer {
 	@Override
 	public boolean start(final FileTransferStatusListener l) {
 		if (state == TransferState.RUNNABLE) {
-			DccFileTransfer transfer = bot.requestPacket(60000,
+			DccFileTransfer transfer = bot.requestPacket(request.getTtl(),
 					new FileTransferFinishListener() {
 
 						@Override
@@ -78,7 +82,7 @@ public class XdccFileTransferImpl implements XdccFileTransfer {
 
 				transfer.receive(file, true);
 				l.onStart();
-				Timer t = new Timer("PollTrasnferState", true);
+				t = new Timer("PollTrasnferState", true);
 				t.scheduleAtFixedRate(new TimerTask() {
 
 					@Override
@@ -106,6 +110,11 @@ public class XdccFileTransferImpl implements XdccFileTransfer {
 	@Override
 	public boolean cancel() {
 		state = TransferState.ABORTED;
+		if (t != null) {
+			t.cancel();
+			t.purge();
+		}
+		t = null;
 		bot.stop();
 		request = null;
 		return true;
