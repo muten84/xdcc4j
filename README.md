@@ -26,7 +26,7 @@ Let's see simple demo code:
   
 SimpleXdccDownloader is statefull so let's start the party....if you want to leave all the work to the downloader you can invoke the startAnyAvailableFromList method:
    
-  String id = downloader.startAnyAvailableFromList();
+  		String id = downloader.startAnyAvailableFromList();
   
 Check the download status:
 
