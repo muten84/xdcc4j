@@ -10,4 +10,6 @@ public interface XdccHtmlParser {
 
 	public Set<XdccRequest> parseDocument(Document doc);
 
+	public String getType();
+
 }

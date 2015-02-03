@@ -33,4 +33,10 @@ public class XdccFinderParser implements XdccHtmlParser {
 		}
 		return result;
 	}
+
+	@Override
+	public String getType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
