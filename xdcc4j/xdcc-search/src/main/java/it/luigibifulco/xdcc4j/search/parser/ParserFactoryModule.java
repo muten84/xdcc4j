@@ -9,6 +9,11 @@ import com.google.inject.AbstractModule;
 import com.google.inject.BindingAnnotation;
 import com.google.inject.name.Names;
 
+/**
+ * 
+ * @author Luigi
+ *
+ */
 public class ParserFactoryModule extends AbstractModule {
 
 	@Retention(RetentionPolicy.RUNTIME)
@@ -47,9 +52,7 @@ public class ParserFactoryModule extends AbstractModule {
 	@Override
 	protected void configure() {
 
-		bind(XdccHtmlParser.class).annotatedWith(Names.named("xdccit")).to(
-				XdccItParser.class);
-		bind(XdccHtmlParser.class).annotatedWith(Names.named("xdccfinder")).to(
-				XdccFinderParser.class);
+		bind(XdccHtmlParser.class).annotatedWith(Names.named("xdccit")).to(XdccItParser.class);
+		bind(XdccHtmlParser.class).annotatedWith(Names.named("xdccfinder")).to(XdccFinderParser.class);
 	}
 }

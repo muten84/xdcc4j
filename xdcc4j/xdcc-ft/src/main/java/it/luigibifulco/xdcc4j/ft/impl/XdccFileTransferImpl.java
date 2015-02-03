@@ -69,7 +69,7 @@ public class XdccFileTransferImpl implements XdccFileTransfer {
 			}
 		}
 		if (state == TransferState.RUNNABLE) {
-			DccFileTransfer transfer = bot.requestPacket(request.getTtl(),
+			final DccFileTransfer transfer = bot.requestPacket(request.getTtl(),
 					new FileTransferFinishListener() {
 
 						@Override

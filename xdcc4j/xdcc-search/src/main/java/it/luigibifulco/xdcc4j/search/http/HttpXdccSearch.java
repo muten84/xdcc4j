@@ -12,6 +12,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * 
+ * @author Luigi
+ *
+ */
 public class HttpXdccSearch implements XdccSearch {
 
 	protected XdccSearchEngine engine;
