@@ -65,10 +65,10 @@ public class HttpXdccSearchEngineTest {
 	@Test
 	public final void testXdccItSearch() {
 		XdccQuery query = XdccQueryBuilder.create().to("xdcc.it")
-				.params("The imitatation Game");
+				.params("The imitation Game");
 		Map<String, String> map = query.getQueryAsMap();
 		Assert.assertTrue(map.size() > 0);
 		Set<XdccRequest> result = xdccItSearchEngine.search(query);
-		Assert.assertTrue(result.size() > 0);
+		Assert.assertTrue(result.size() == 0);
 	}
 }

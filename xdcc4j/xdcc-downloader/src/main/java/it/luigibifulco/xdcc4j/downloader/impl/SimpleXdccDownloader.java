@@ -178,4 +178,10 @@ public class SimpleXdccDownloader implements XdccDownloader {
 			System.out.println("Started >>>>> " + id);
 		}
 	}
+
+	@Override
+	public boolean setServer(String server) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

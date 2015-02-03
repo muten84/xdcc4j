@@ -8,6 +8,8 @@ import java.util.Map;
 
 public interface XdccDownloader {
 
+	public boolean setServer(String server);
+
 	public Download getDownload(String id);
 
 	public Map<String, XdccRequest> search(String text);
