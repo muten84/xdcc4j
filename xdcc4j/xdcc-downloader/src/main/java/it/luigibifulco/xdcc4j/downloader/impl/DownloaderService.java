@@ -2,6 +2,9 @@ package it.luigibifulco.xdcc4j.downloader.impl;
 
 import it.luigibifulco.xdcc4j.common.model.XdccRequest;
 import it.luigibifulco.xdcc4j.downloader.XdccDownloader;
+import it.luigibifulco.xdcc4j.ft.XdccFileTransfer;
+import it.luigibifulco.xdcc4j.ft.XdccFileTransfer.FileTransferStatusListener;
+import it.luigibifulco.xdcc4j.ft.impl.FileTrasnferFactory;
 import it.luigibifulco.xdcc4j.search.XdccSearch;
 import it.luigibifulco.xdcc4j.search.query.XdccQuery;
 import it.luigibifulco.xdcc4j.search.query.XdccQueryBuilder;
@@ -10,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.inject.Inject;
 
@@ -22,8 +26,14 @@ public class DownloaderService implements XdccDownloader {
 
 	private Map<String, XdccRequest> searchResult;
 
-	public DownloaderService() {
+	private ConcurrentHashMap<String, Download> downloadMap;
+
+	private String incomingDir;
+
+	public DownloaderService(String incominDir) {
 		searchResult = new HashMap<String, XdccRequest>();
+		downloadMap = new ConcurrentHashMap<String, Download>();
+		this.incomingDir = incominDir;
 	}
 
 	@Override
@@ -34,20 +44,24 @@ public class DownloaderService implements XdccDownloader {
 
 	@Override
 	public Download getDownload(String id) {
-		// TODO Auto-generated method stub
-		return null;
+		return downloadMap.get(id);
 	}
 
 	@Override
 	public Map<String, XdccRequest> search(String where, String text) {
 		Map<String, XdccRequest> searchResult = new HashMap<String, XdccRequest>();
 		XdccSearch seeker = searchTypesMap.get(where);
+		if (seeker == null) {
+			throw new RuntimeException(where + " search engine not supported");
+		}
+
 		XdccQuery query = XdccQueryBuilder.create().to(where).params(text);
 		Set<XdccRequest> result = seeker.search(query);
 		for (XdccRequest xdccRequest : result) {
 			if (xdccRequest == null) {
 				continue;
 			}
+			xdccRequest.setDestination(incomingDir);
 			String id = xdccRequest.getChannel() + ";" + xdccRequest.getPeer()
 					+ ";" + xdccRequest.getResource();
 			searchResult.put(id, xdccRequest);
@@ -57,9 +71,58 @@ public class DownloaderService implements XdccDownloader {
 	}
 
 	@Override
-	public String startDownload(String id) {
-		// TODO Auto-generated method stub
-		return null;
+	public String startDownload(final String id) {
+		XdccRequest request = cache().get(id);
+		if (request == null) {
+			return null;
+		}
+		if (incomingDir == null || incomingDir.isEmpty()) {
+			throw new RuntimeException("incoming dir is empty");
+		}
+		if (currentServer != null && !currentServer.isEmpty()) {
+			request.setHost(currentServer);
+		}
+		XdccFileTransfer xft = FileTrasnferFactory.createFileTransfer(request);
+		final Download d = new Download(id, xft, null);
+		downloadMap.put(id, d);
+		xft.start(new FileTransferStatusListener() {
+
+			@Override
+			public void onStart() {
+				d.setStatusListener(this);
+
+			}
+
+			@Override
+			public void onProgress(int perc, int rate) {
+				if (getDownload(id) == null) {
+					return;
+				}
+				downloadMap.get(id).setPercentage(perc);
+				downloadMap.get(id).setRate(rate);
+
+			}
+
+			@Override
+			public void onFinish() {
+				if (getDownload(id) == null) {
+					return;
+				}
+				downloadMap.remove(id);
+
+			}
+
+			@Override
+			public void onError(Throwable e) {
+				if (getDownload(id) == null) {
+					return;
+				}
+				downloadMap.remove(id);
+			}
+		});
+
+		return id;
+
 	}
 
 	@Override
@@ -70,8 +133,11 @@ public class DownloaderService implements XdccDownloader {
 
 	@Override
 	public String cancelDownload(String id) {
-		// TODO Auto-generated method stub
-		return null;
+		if (getDownload(id) == null) {
+			return null;
+		}
+		downloadMap.get(id).getCurrentTransfer().cancel();
+		return id;
 	}
 
 	@Override

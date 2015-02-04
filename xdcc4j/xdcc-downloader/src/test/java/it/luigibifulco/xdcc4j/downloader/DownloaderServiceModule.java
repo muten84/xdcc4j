@@ -10,7 +10,7 @@ public class DownloaderServiceModule extends AbstractModule {
 	@Override
 	protected void configure() {
 		install(new SearchModule());
-		bind(XdccDownloader.class).to(DownloaderService.class);
+		bind(XdccDownloader.class).toInstance(new DownloaderService("./build"));
 	}
 
 }

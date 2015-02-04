@@ -10,6 +10,12 @@ public class Download {
 
 	private FileTransferStatusListener statusListener;
 
+	private int percentage;
+
+	private int rate;
+
+	private String state;
+
 	public Download(String d, XdccFileTransfer ft, FileTransferStatusListener l) {
 		description = d;
 		currentTransfer = ft;
@@ -38,6 +44,30 @@ public class Download {
 
 	public void setStatusListener(FileTransferStatusListener statusListener) {
 		this.statusListener = statusListener;
+	}
+
+	public int getPercentage() {
+		return percentage;
+	}
+
+	public void setPercentage(int percentage) {
+		this.percentage = percentage;
+	}
+
+	public int getRate() {
+		return rate;
+	}
+
+	public void setRate(int rate) {
+		this.rate = rate;
+	}
+
+	public String getState() {
+		return this.getCurrentTransfer().getState().name();
+	}
+
+	public void setState(String state) {
+		this.state = state;
 	}
 
 }

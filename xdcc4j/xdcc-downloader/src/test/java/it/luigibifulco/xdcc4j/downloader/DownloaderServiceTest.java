@@ -3,8 +3,10 @@ package it.luigibifulco.xdcc4j.downloader;
 import it.luigibifulco.xdcc4j.GuiceJUnitRunner;
 import it.luigibifulco.xdcc4j.GuiceJUnitRunner.GuiceModules;
 import it.luigibifulco.xdcc4j.common.model.XdccRequest;
+import it.luigibifulco.xdcc4j.ft.XdccFileTransfer.TransferState;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -29,5 +31,33 @@ public class DownloaderServiceTest {
 		for (XdccRequest xdccRequest : reqs) {
 			System.out.println(xdccRequest);
 		}
+	}
+
+	@Test
+	public final void testDownload() {
+		downloader.setServer("irc.uragano.org");
+		downloader.search("xdccit", "divx ita");
+		Collection<XdccRequest> reqs = downloader.cache().values();
+		for (XdccRequest xdccRequest : reqs) {
+			System.out.println(xdccRequest);
+			xdccRequest.setTtl(5000);
+		}
+		String downloadId = null;
+		Iterator<String> iter = downloader.cache().keySet().iterator();
+		while (iter.hasNext()) {
+			downloadId = downloader.startDownload(iter.next());
+			Assert.assertNotNull(downloader.getDownload(downloadId));
+
+			if (downloader.getDownload(downloadId).getState()
+					.equals(TransferState.RUNNABLE.name())) {
+				break;
+			}
+			downloader.cancelDownload(downloadId);
+		}
+		if (downloader.getDownload(downloadId).getState()
+				.equals(TransferState.WORKING.name())) {
+			Assert.assertTrue(downloader.getDownload(downloadId).getRate() > 0);
+		}
+
 	}
 }
