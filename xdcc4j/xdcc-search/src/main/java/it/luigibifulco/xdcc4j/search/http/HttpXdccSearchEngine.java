@@ -17,6 +17,8 @@ import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.inject.Inject;
+
 public class HttpXdccSearchEngine implements XdccSearchEngine {
 
 	private final static Logger LOGGER = LoggerFactory

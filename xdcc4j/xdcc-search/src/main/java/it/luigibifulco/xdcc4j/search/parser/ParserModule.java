@@ -10,7 +10,7 @@ import com.google.inject.AbstractModule;
  * @author Luigi
  *
  */
-public class ParserFactoryModule extends AbstractModule {
+public class ParserModule extends AbstractModule {
 
 	@Override
 	protected void configure() {

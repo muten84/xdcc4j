@@ -1,6 +1,10 @@
 package it.luigibifulco.xdcc4j.search.http;
 
+import it.luigibifulco.xdcc4j.GuiceJUnitRunner;
+import it.luigibifulco.xdcc4j.GuiceJUnitRunner.GuiceModules;
 import it.luigibifulco.xdcc4j.common.model.XdccRequest;
+import it.luigibifulco.xdcc4j.search.SearchModule;
+import it.luigibifulco.xdcc4j.search.XdccSearch;
 import it.luigibifulco.xdcc4j.search.http.HttpXdccSearch;
 import it.luigibifulco.xdcc4j.search.query.XdccQuery;
 import it.luigibifulco.xdcc4j.search.query.XdccQueryBuilder;
@@ -14,21 +18,25 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+import com.google.inject.Inject;
+
+@RunWith(GuiceJUnitRunner.class)
+@GuiceModules(SearchModule.class)
 public class HttpXdccSearchTest {
 
-	private HttpXdccSearch xdccItSearch;
-	private HttpXdccSearch xdccFinderSearch;
+	@Inject
+	private Map<String, XdccSearch> map;
 
 	@Before
 	public final void before() {
-		xdccItSearch = new HttpXdccSearch("xdcc.it");
-		xdccFinderSearch = new HttpXdccSearch("xdccfinder.it");
 
 	}
 
 	@Test
 	public final void testHttpSearchWithXdccFinder() {
+		XdccSearch xdccFinderSearch = map.get("xdccfinder");
 		Set<XdccRequest> result = xdccFinderSearch.search(XdccQueryBuilder
 				.create().params("mutant chronicles"));
 		Assert.assertTrue(result.size() > 0);
@@ -40,6 +48,7 @@ public class HttpXdccSearchTest {
 
 	@Test
 	public final void testHttpSearch() {
+		XdccSearch xdccItSearch = map.get("xdccit");
 		Set<XdccRequest> result = xdccItSearch.search(XdccQueryBuilder.create()
 				.to("whfdsfsdf").params("mutant chronicles"));
 		Assert.assertTrue(result.size() > 0);
@@ -51,6 +60,7 @@ public class HttpXdccSearchTest {
 
 	@Test
 	public final void testHttpSearchWithReplace() {
+		XdccSearch xdccItSearch = map.get("xdccit");
 		XdccQuery query = XdccQueryBuilder.create().to("xdcc.it")
 				.params("mutant chronicles");
 		Map<QueryFilter, String> tmp1 = new HashMap<QueryFilter, String>();

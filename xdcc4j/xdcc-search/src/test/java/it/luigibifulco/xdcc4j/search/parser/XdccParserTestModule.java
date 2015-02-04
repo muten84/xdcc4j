@@ -7,7 +7,7 @@ public class XdccParserTestModule extends AbstractModule {
 	@Override
 	protected void configure() {
 		// bind(XdccHtmlParser.class).to
-		install(new ParserFactoryModule());
+		install(new ParserModule());
 	}
 
 	// @Provides

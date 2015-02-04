@@ -9,7 +9,8 @@ subprojects{
 
 	dependencies{
 		compile fileTree(dir: '../libs', include: '*.jar')
-		compile('com.google.inject:guice:3.0')
+		compile('com.google.inject:guice:4.0-beta5')
+		compile('com.google.inject.extensions:guice-multibindings:4.0-beta5')
 		compile('ch.qos.logback:logback-classic:1.1.2')
 		testCompile('junit:junit:4.12')
 		testCompile('org.easymock:easymock:3.3.1')
