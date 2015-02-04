@@ -40,7 +40,7 @@ public class GuiceJUnitRunner extends BlockJUnit4ClassRunner {
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Inherited
-	public @interface GuiceModules {
+	public static @interface GuiceModules {
 		Class<?>[] value();
 	}
 

@@ -1,4 +1,6 @@
 dependencies{
 	compile project(':xdcc-ft');
+	testCompile project(':xdcc-test-util')
+	
 	
 }

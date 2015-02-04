@@ -12,7 +12,9 @@ public interface XdccDownloader {
 
 	public Download getDownload(String id);
 
-	public Map<String, XdccRequest> search(String text);
+	public int cleanSearch();
+
+	public Map<String, XdccRequest> search(String where, String what);
 
 	public String startDownload(String id);
 
@@ -21,5 +23,7 @@ public interface XdccDownloader {
 	public String cancelDownload(String id);
 
 	public List<String> cancelAll();
+
+	public Map<String, XdccRequest> cache();
 
 }

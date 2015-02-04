@@ -88,7 +88,7 @@ public class SimpleXdccDownloader implements XdccDownloader {
 	}
 
 	@Override
-	public Map<String, XdccRequest> search(String text) {
+	public Map<String, XdccRequest> search(String where, String text) {
 		Map<String, XdccRequest> map = new HashMap<String, XdccRequest>();
 		Set<XdccRequest> result = searcher.search(XdccQueryBuilder.create()
 				.to(searchDomain).params(text));
@@ -170,7 +170,7 @@ public class SimpleXdccDownloader implements XdccDownloader {
 			return;
 		}
 		SimpleXdccDownloader d = new SimpleXdccDownloader(args[0], args[1]);
-		d.search(args[2].replace("_", " "));
+		d.search("", args[2].replace("_", " "));
 		if (args.length > 3) {
 			d.startDownload(args[3]);
 		} else {
@@ -183,5 +183,17 @@ public class SimpleXdccDownloader implements XdccDownloader {
 	public boolean setServer(String server) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public int cleanSearch() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public Map<String, XdccRequest> cache() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
