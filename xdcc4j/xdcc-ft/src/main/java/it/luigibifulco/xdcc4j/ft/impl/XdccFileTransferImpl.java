@@ -42,6 +42,7 @@ public class XdccFileTransferImpl implements XdccFileTransfer {
 	protected void init() throws BotException {
 		LOGGER.info("Request: " + request);
 		bot = new FileTransferBot(false);
+
 		String name = UUID.randomUUID().toString();
 
 		LOGGER.info("connecting to host: " + request.getHost());
@@ -55,6 +56,7 @@ public class XdccFileTransferImpl implements XdccFileTransfer {
 			config.setSourcePeer(request.getPeer());
 
 			config.setInputCommand("xdcc send #" + request.getResource());
+			// TODO pass timeout to start method
 			bot.start(config);
 		}
 	}
