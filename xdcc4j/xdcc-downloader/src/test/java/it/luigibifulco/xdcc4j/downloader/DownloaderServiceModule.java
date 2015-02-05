@@ -1,6 +1,6 @@
 package it.luigibifulco.xdcc4j.downloader;
 
-import it.luigibifulco.xdcc4j.downloader.impl.DownloaderService;
+import it.luigibifulco.xdcc4j.downloader.service.DownloaderService;
 import it.luigibifulco.xdcc4j.search.SearchModule;
 
 import com.google.inject.AbstractModule;

@@ -1,4 +1,4 @@
-package it.luigibifulco.xdcc4j.downloader.impl;
+package it.luigibifulco.xdcc4j.downloader.model;
 
 import it.luigibifulco.xdcc4j.ft.XdccFileTransfer;
 import it.luigibifulco.xdcc4j.ft.XdccFileTransfer.FileTransferStatusListener;

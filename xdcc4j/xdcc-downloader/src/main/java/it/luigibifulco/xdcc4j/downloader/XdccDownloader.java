@@ -1,7 +1,7 @@
 package it.luigibifulco.xdcc4j.downloader;
 
 import it.luigibifulco.xdcc4j.common.model.XdccRequest;
-import it.luigibifulco.xdcc4j.downloader.impl.Download;
+import it.luigibifulco.xdcc4j.downloader.model.Download;
 
 import java.util.List;
 import java.util.Map;

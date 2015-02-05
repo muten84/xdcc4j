@@ -4,6 +4,7 @@ import it.biffi.jirc.bot.BotException;
 import it.luigibifulco.xdcc4j.common.model.XdccRequest;
 import it.luigibifulco.xdcc4j.common.util.XdccRequestCreator;
 import it.luigibifulco.xdcc4j.downloader.XdccDownloader;
+import it.luigibifulco.xdcc4j.downloader.model.Download;
 import it.luigibifulco.xdcc4j.ft.XdccFileTransfer;
 import it.luigibifulco.xdcc4j.ft.XdccFileTransfer.FileTransferStatusListener;
 import it.luigibifulco.xdcc4j.ft.impl.XdccFileTransferImpl;

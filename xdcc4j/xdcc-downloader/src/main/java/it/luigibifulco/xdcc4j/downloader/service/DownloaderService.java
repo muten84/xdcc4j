@@ -1,7 +1,8 @@
-package it.luigibifulco.xdcc4j.downloader.impl;
+package it.luigibifulco.xdcc4j.downloader.service;
 
 import it.luigibifulco.xdcc4j.common.model.XdccRequest;
 import it.luigibifulco.xdcc4j.downloader.XdccDownloader;
+import it.luigibifulco.xdcc4j.downloader.model.Download;
 import it.luigibifulco.xdcc4j.ft.XdccFileTransfer;
 import it.luigibifulco.xdcc4j.ft.XdccFileTransfer.FileTransferStatusListener;
 import it.luigibifulco.xdcc4j.ft.impl.FileTrasnferFactory;
@@ -9,11 +10,13 @@ import it.luigibifulco.xdcc4j.search.XdccSearch;
 import it.luigibifulco.xdcc4j.search.query.XdccQuery;
 import it.luigibifulco.xdcc4j.search.query.XdccQueryBuilder;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentHashMap.KeySetView;
 
 import com.google.inject.Inject;
 
@@ -142,19 +145,28 @@ public class DownloaderService implements XdccDownloader {
 
 	@Override
 	public List<String> cancelAll() {
-		// TODO Auto-generated method stub
+		if (downloadMap != null && downloadMap.size() > 0) {
+			KeySetView<String, Download> set = downloadMap.keySet();
+			for (String string : set) {
+				Download d = downloadMap.get(string);
+				if (d != null)
+					d.getCurrentTransfer().cancel();
+			}
+			return new ArrayList<String>(set);
+		}
 		return null;
 	}
 
 	@Override
 	public int cleanSearch() {
-		// TODO Auto-generated method stub
-		return 0;
+		int result = searchResult.size();
+		searchResult.clear();
+		return result;
 	}
 
 	@Override
 	public Map<String, XdccRequest> cache() {
-		return this.searchResult;
+		return new HashMap<String, XdccRequest>(this.searchResult);
 	}
 
 }
