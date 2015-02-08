@@ -2,14 +2,14 @@ package it.luigibifulco.xdcc4j.common.model;
 
 import java.io.Serializable;
 
+import org.apache.commons.codec.digest.DigestUtils;
+
 public class XdccRequest implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -802658214843268582L;
-
-	protected String id;
 
 	protected String channel;
 
@@ -21,6 +21,8 @@ public class XdccRequest implements Serializable {
 
 	protected String destination;
 
+	protected String description;
+
 	protected long ttl;
 
 	public XdccRequest() {
@@ -28,11 +30,8 @@ public class XdccRequest implements Serializable {
 	}
 
 	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
+		String s = new String(channel + peer + resource);
+		return DigestUtils.md5Hex(s);
 	}
 
 	public String getChannel() {
@@ -80,9 +79,10 @@ public class XdccRequest implements Serializable {
 
 	@Override
 	public String toString() {
-		return "XdccRequest [id=" + id + ", channel=" + channel + ", peer="
-				+ peer + ", resource=" + resource + ", host=" + host
-				+ ", destination=" + destination + ", ttl=" + ttl + "]";
+		return "XdccRequest [id=" + getId() + ", channel=" + channel
+				+ ", peer=" + peer + ", resource=" + resource + ", host="
+				+ host + ", destination=" + destination + ", description="
+				+ description + ", ttl=" + ttl + "]";
 	}
 
 	public long getTtl() {
@@ -91,6 +91,14 @@ public class XdccRequest implements Serializable {
 
 	public void setTtl(long ttl) {
 		this.ttl = ttl;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 }
