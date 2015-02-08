@@ -17,7 +17,7 @@ public class FileTransferFactory {
 
 	public static XdccFileTransfer createFileTransfer(XdccRequest request) {
 		try {
-			return new XdccFileTransferImpl(request, 10000, Long.MAX_VALUE);
+			return new XdccFileTransferImpl(request, 30000, Long.MAX_VALUE);
 		} catch (BotException e) {
 			return null;
 		}

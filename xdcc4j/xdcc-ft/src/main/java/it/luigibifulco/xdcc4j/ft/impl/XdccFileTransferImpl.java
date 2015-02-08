@@ -81,16 +81,18 @@ public class XdccFileTransferImpl implements XdccFileTransfer {
 								System.out.println("FINISH TRANSFER SUCCESS");
 								l.onFinish();
 							} else {
-								System.out.println("FINISH TRANSFER ERROR");
+								System.out.println("FINISH TRANSFER ERROR: "
+										+ e.getMessage());
 								l.onError(e);
-								e.printStackTrace();
+								// e.printStackTrace();
 							}
 
 						}
 
 						@Override
 						public void onPreStartUpdate(String data) {
-							// TODO Auto-generated method stub
+							l.onStatusUpdate(data);
+							System.out.println("onPreStartUpdate:" + data);
 
 						}
 					});
@@ -139,7 +141,9 @@ public class XdccFileTransferImpl implements XdccFileTransfer {
 			t.purge();
 		}
 		t = null;
-		bot.stop();
+		if (bot != null) {
+			bot.stop();
+		}
 		// request = null;
 		return true;
 	}
