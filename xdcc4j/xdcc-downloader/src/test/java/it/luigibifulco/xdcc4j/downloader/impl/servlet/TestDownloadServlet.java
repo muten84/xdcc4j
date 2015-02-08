@@ -2,7 +2,7 @@ package it.luigibifulco.xdcc4j.downloader.impl.servlet;
 
 import it.luigibifulco.xdcc4j.GuiceJUnitRunner;
 import it.luigibifulco.xdcc4j.GuiceJUnitRunner.GuiceModules;
-import it.luigibifulco.xdcc4j.downloader.DownloaderServiceModule;
+import it.luigibifulco.xdcc4j.downloader.core.DownloaderServiceModule;
 import it.luigibifulco.xdcc4j.downloader.servlet.DownloadServletModule;
 
 import java.util.EnumSet;
@@ -32,7 +32,8 @@ public class TestDownloadServlet {
 	@Before
 	public void startServer() throws Exception {
 		logger.info("START SERVER");
-		DownloaderServiceModule serviceMod = new DownloaderServiceModule();
+		DownloaderServiceModule serviceMod = new DownloaderServiceModule(
+				"./build");
 		DownloadServletModule servlets = new DownloadServletModule();
 		Injector injector = Guice.createInjector(serviceMod, servlets);
 		int port = 8080;
@@ -56,7 +57,8 @@ public class TestDownloadServlet {
 
 	public static void main(String[] args) throws Exception {
 		logger.info("START SERVER");
-		DownloaderServiceModule serviceMod = new DownloaderServiceModule();
+		DownloaderServiceModule serviceMod = new DownloaderServiceModule(
+				"./build");
 		DownloadServletModule servlets = new DownloadServletModule();
 		Injector injector = Guice.createInjector(serviceMod, servlets);
 

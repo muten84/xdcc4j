@@ -1,22 +1,25 @@
-package it.luigibifulco.xdcc4j.downloader.service;
+package it.luigibifulco.xdcc4j.downloader.core;
 
 import it.luigibifulco.xdcc4j.common.model.XdccRequest;
-import it.luigibifulco.xdcc4j.downloader.XdccDownloader;
-import it.luigibifulco.xdcc4j.downloader.model.Download;
+import it.luigibifulco.xdcc4j.downloader.core.model.Download;
 import it.luigibifulco.xdcc4j.ft.XdccFileTransfer;
 import it.luigibifulco.xdcc4j.ft.XdccFileTransfer.FileTransferStatusListener;
-import it.luigibifulco.xdcc4j.ft.impl.FileTrasnferFactory;
+import it.luigibifulco.xdcc4j.ft.impl.FileTransferFactory;
 import it.luigibifulco.xdcc4j.search.XdccSearch;
 import it.luigibifulco.xdcc4j.search.query.XdccQuery;
 import it.luigibifulco.xdcc4j.search.query.XdccQueryBuilder;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ConcurrentHashMap.KeySetView;
+import java.util.concurrent.Executors;
 
 import com.google.inject.Inject;
 
@@ -33,10 +36,13 @@ public class DownloaderService implements XdccDownloader {
 
 	private String incomingDir;
 
+	private ExecutorService workers;
+
 	public DownloaderService(String incominDir) {
 		searchResult = new HashMap<String, XdccRequest>();
 		downloadMap = new ConcurrentHashMap<String, Download>();
 		this.incomingDir = incominDir;
+		workers = Executors.newCachedThreadPool();
 	}
 
 	@Override
@@ -65,9 +71,8 @@ public class DownloaderService implements XdccDownloader {
 				continue;
 			}
 			xdccRequest.setDestination(incomingDir);
-			String id = xdccRequest.getChannel() + ";" + xdccRequest.getPeer()
-					+ ";" + xdccRequest.getResource();
-			searchResult.put(id, xdccRequest);
+
+			searchResult.put(xdccRequest.getId(), xdccRequest);
 		}
 		this.searchResult.putAll(searchResult);
 		return searchResult;
@@ -85,42 +90,57 @@ public class DownloaderService implements XdccDownloader {
 		if (currentServer != null && !currentServer.isEmpty()) {
 			request.setHost(currentServer);
 		}
-		XdccFileTransfer xft = FileTrasnferFactory.createFileTransfer(request);
-		final Download d = new Download(id, xft, null);
+		if (downloadMap.get(id) != null) {
+			return id;
+		}
+		XdccFileTransfer xft = FileTransferFactory.createFileTransfer(request);
+		final Download d = new Download(request.getId(),
+				request.getDescription(), xft, null);
 		downloadMap.put(id, d);
-		xft.start(new FileTransferStatusListener() {
-
+		workers.submit(new Callable<Boolean>() {
 			@Override
-			public void onStart() {
-				d.setStatusListener(this);
+			public Boolean call() throws Exception {
+				return xft.start(new FileTransferStatusListener() {
 
-			}
+					@Override
+					public void onStart() {
+						d.setStatusListener(this);
 
-			@Override
-			public void onProgress(int perc, int rate) {
-				if (getDownload(id) == null) {
-					return;
-				}
-				downloadMap.get(id).setPercentage(perc);
-				downloadMap.get(id).setRate(rate);
+					}
 
-			}
+					@Override
+					public void onProgress(int perc, int rate) {
+						if (getDownload(id) == null) {
+							return;
+						}
+						downloadMap.get(id).setPercentage(perc);
+						downloadMap.get(id).setRate(rate);
 
-			@Override
-			public void onFinish() {
-				if (getDownload(id) == null) {
-					return;
-				}
-				downloadMap.remove(id);
+					}
 
-			}
+					@Override
+					public void onFinish() {
+						if (getDownload(id) == null) {
+							return;
+						}
+						downloadMap.remove(id);
 
-			@Override
-			public void onError(Throwable e) {
-				if (getDownload(id) == null) {
-					return;
-				}
-				downloadMap.remove(id);
+					}
+
+					@Override
+					public void onError(Throwable e) {
+						if (getDownload(id) == null) {
+							return;
+						}
+						downloadMap.remove(id);
+					}
+
+					@Override
+					public void onStatusUpdate(String status) {
+						// TODO Auto-generated method stub
+						
+					}
+				});
 			}
 		});
 
@@ -169,4 +189,8 @@ public class DownloaderService implements XdccDownloader {
 		return new HashMap<String, XdccRequest>(this.searchResult);
 	}
 
+	@Override
+	public Collection<Download> getAllDownloads() {
+		return downloadMap.values();
+	}
 }

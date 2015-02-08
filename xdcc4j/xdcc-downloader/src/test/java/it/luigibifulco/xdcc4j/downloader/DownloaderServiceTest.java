@@ -3,6 +3,8 @@ package it.luigibifulco.xdcc4j.downloader;
 import it.luigibifulco.xdcc4j.GuiceJUnitRunner;
 import it.luigibifulco.xdcc4j.GuiceJUnitRunner.GuiceModules;
 import it.luigibifulco.xdcc4j.common.model.XdccRequest;
+import it.luigibifulco.xdcc4j.downloader.core.DownloaderServiceModule;
+import it.luigibifulco.xdcc4j.downloader.core.XdccDownloader;
 import it.luigibifulco.xdcc4j.ft.XdccFileTransfer.TransferState;
 
 import java.util.Collection;

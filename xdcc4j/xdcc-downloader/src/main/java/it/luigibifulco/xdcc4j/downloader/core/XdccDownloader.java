@@ -1,12 +1,15 @@
-package it.luigibifulco.xdcc4j.downloader;
+package it.luigibifulco.xdcc4j.downloader.core;
 
 import it.luigibifulco.xdcc4j.common.model.XdccRequest;
-import it.luigibifulco.xdcc4j.downloader.model.Download;
+import it.luigibifulco.xdcc4j.downloader.core.model.Download;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 public interface XdccDownloader {
+
+	public Collection<Download> getAllDownloads();
 
 	public boolean setServer(String server);
 

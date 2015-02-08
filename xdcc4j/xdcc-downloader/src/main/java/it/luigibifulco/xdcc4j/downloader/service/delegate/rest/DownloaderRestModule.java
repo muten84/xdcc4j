@@ -1,4 +1,4 @@
-package it.luigibifulco.xdcc4j.downloader.delegate.rest;
+package it.luigibifulco.xdcc4j.downloader.service.delegate.rest;
 
 import java.util.HashMap;
 

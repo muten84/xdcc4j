@@ -1,10 +1,10 @@
-package it.luigibifulco.xdcc4j.downloader.impl;
+package it.luigibifulco.xdcc4j.downloader.core.impl;
 
 import it.biffi.jirc.bot.BotException;
 import it.luigibifulco.xdcc4j.common.model.XdccRequest;
 import it.luigibifulco.xdcc4j.common.util.XdccRequestCreator;
-import it.luigibifulco.xdcc4j.downloader.XdccDownloader;
-import it.luigibifulco.xdcc4j.downloader.model.Download;
+import it.luigibifulco.xdcc4j.downloader.core.XdccDownloader;
+import it.luigibifulco.xdcc4j.downloader.core.model.Download;
 import it.luigibifulco.xdcc4j.ft.XdccFileTransfer;
 import it.luigibifulco.xdcc4j.ft.XdccFileTransfer.FileTransferStatusListener;
 import it.luigibifulco.xdcc4j.ft.impl.XdccFileTransferImpl;
@@ -78,6 +78,12 @@ public class SimpleXdccDownloader implements XdccDownloader {
 			ft.start(this);
 
 		}
+
+		@Override
+		public void onStatusUpdate(String status) {
+			// TODO Auto-generated method stub
+			
+		}
 	};
 
 	public SimpleXdccDownloader(String searchDomain, String defaultIrcNetwork) {
@@ -122,7 +128,7 @@ public class SimpleXdccDownloader implements XdccDownloader {
 			if (!result) {
 				ft.cancel();
 			} else {
-				Download d = new Download(req.toString(), ft, l);
+				Download d = new Download(req.getId(), req.toString(), ft, l);
 				downloads.put(k, d);
 				return d;
 			}
@@ -194,6 +200,12 @@ public class SimpleXdccDownloader implements XdccDownloader {
 
 	@Override
 	public Map<String, XdccRequest> cache() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Collection<Download> getAllDownloads() {
 		// TODO Auto-generated method stub
 		return null;
 	}

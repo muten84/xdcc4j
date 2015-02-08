@@ -1,9 +1,18 @@
-package it.luigibifulco.xdcc4j.downloader.model;
+package it.luigibifulco.xdcc4j.downloader.core.model;
 
 import it.luigibifulco.xdcc4j.ft.XdccFileTransfer;
 import it.luigibifulco.xdcc4j.ft.XdccFileTransfer.FileTransferStatusListener;
 
-public class Download {
+import java.io.Serializable;
+
+public class Download implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5214765781983881516L;
+
+	private String id;
+
 	private String description;
 
 	private XdccFileTransfer currentTransfer;
@@ -16,10 +25,20 @@ public class Download {
 
 	private String state;
 
-	public Download(String d, XdccFileTransfer ft, FileTransferStatusListener l) {
+	public Download(String id, String d, XdccFileTransfer ft,
+			FileTransferStatusListener l) {
+		this.id = id;
 		description = d;
 		currentTransfer = ft;
 		statusListener = l;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	public String getDescription() {
