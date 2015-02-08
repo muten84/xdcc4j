@@ -10,6 +10,7 @@ public class XdccRequestCreator {
 		XdccRequest request = new XdccRequest();
 		String[] splitted = result.split(",");
 		if (splitted.length == 6) {
+			request.setDescription(splitted[0]);
 			request.setChannel(splitted[2].replace("#", "").trim());
 			request.setHost(splitted[5].trim());
 			request.setPeer(splitted[1].trim());
@@ -26,6 +27,7 @@ public class XdccRequestCreator {
 		if (splitted.length == 5) {
 			request.setChannel(splitted[3].trim());
 			request.setPeer(splitted[4].trim());
+			request.setDescription(splitted[2]);
 			request.setResource(splitted[0].replace("#", "").trim());
 		}
 		return request;
