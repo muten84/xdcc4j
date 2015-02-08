@@ -21,7 +21,7 @@ public class EventListenerManager {
 
 	public void removeAll() {
 		listeners.clear();
-		listeners = null;
+		// listeners = null;
 	}
 
 	public void addEventListener(GenericEvent event,

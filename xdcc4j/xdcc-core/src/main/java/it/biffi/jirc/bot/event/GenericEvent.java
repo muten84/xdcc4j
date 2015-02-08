@@ -10,16 +10,18 @@ public class GenericEvent extends Observable {
 	public static final int MESSAGE_EVENT = 2;
 	public static final int FILE_TRASNFER_START_EVENT = 3;
 	public static final int FILE_TRASNFER_END_EVENT = 4;
+	public static final int CHANNEL_INFO_EVENT = 5;
+	public static final int XDCC_EVENT = 5;
 
 	protected int type;
 
-	private Map<String, String> data;
+	private Map<String, Object> data;
 
 	public GenericEvent() {
-		data = new HashMap<String, String>();
+		data = new HashMap<String, Object>();
 	}
 
-	public void putData(String dataName, String dataValue) {
+	public void putData(String dataName, Object dataValue) {
 		data.put(dataName, dataValue);
 	}
 
@@ -31,15 +33,15 @@ public class GenericEvent extends Observable {
 		this.type = type;
 	}
 
-	public Map<String, String> getData() {
+	public Map<String, Object> getData() {
 		return data;
 	}
 
-	public void setData(Map<String, String> data) {
+	public void setData(Map<String, Object> data) {
 		this.data = data;
 	}
 
-	public String getDataByName(String name) {
+	public Object getDataByName(String name) {
 		return this.data.get(name);
 	}
 

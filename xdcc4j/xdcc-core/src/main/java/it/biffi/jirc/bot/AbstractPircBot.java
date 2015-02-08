@@ -1,15 +1,19 @@
 package it.biffi.jirc.bot;
 
+import it.biffi.jirc.bot.event.ChannelInfoEvent;
 import it.biffi.jirc.bot.event.ConnectionEvent;
 import it.biffi.jirc.bot.event.FileTransferStartEvent;
 import it.biffi.jirc.bot.event.FileTrasnferFinishEvent;
 import it.biffi.jirc.bot.event.GenericEvent;
 import it.biffi.jirc.bot.event.JoinEvent;
 import it.biffi.jirc.bot.event.MessageEvent;
+import it.biffi.jirc.bot.event.XdccEvent;
 import it.biffi.jirc.bot.listener.AbstractListener;
 import it.biffi.jirc.bot.listener.EventListenerManager;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.jibble.pircbot.DccFileTransfer;
 import org.jibble.pircbot.IrcException;
@@ -69,12 +73,14 @@ public class AbstractPircBot implements Bot {
 
 		@Override
 		protected void onConnect() {
+			System.out.println("onConnect");
 			ebus.addEvent(new ConnectionEvent());
 		}
 
 		@Override
 		protected void onJoin(String channel, String sender, String login,
 				String hostname) {
+			System.out.println("onJoin: " + sender + " - " + login);
 			JoinEvent event = new JoinEvent();
 			event.putData(JoinEvent.CHANNEL, channel);
 			event.putData(JoinEvent.SENDER, sender);
@@ -109,13 +115,24 @@ public class AbstractPircBot implements Bot {
 		@Override
 		protected void onNotice(String sourceNick, String sourceLogin,
 				String sourceHostname, String target, String notice) {
-			// MessageEvent event = new MessageEvent();
-			// event.putData(MessageEvent.CHANNEL, "");
-			// event.putData(MessageEvent.SENDER, sourceNick);
-			// event.putData(MessageEvent.LOGIN, sourceLogin);
-			// event.putData(MessageEvent.HOSTNAME, sourceHostname);
-			// event.putData(MessageEvent.MESSAGE, notice);
-			// ebus.addEvent(event);
+			// LIST stopped (221 lines deleted)
+			System.out.println("onNotice: " + sourceNick + " - " + notice);
+			if (notice.contains("LIST") && notice.contains("stopped")) {
+				int start = notice.indexOf('(');
+				int end = notice.indexOf("lines");
+				String lines = notice.substring(start + 1, end).trim();
+				XdccEvent event = new XdccEvent();
+				event.putData(XdccEvent.XDCC_NOTICE_LINES_TO_READ, lines);
+				ebus.addEvent(event);
+			} else {
+				MessageEvent event = new MessageEvent();
+				event.putData(MessageEvent.CHANNEL, "");
+				event.putData(MessageEvent.SENDER, sourceNick);
+				event.putData(MessageEvent.LOGIN, sourceLogin);
+				event.putData(MessageEvent.HOSTNAME, sourceHostname);
+				event.putData(MessageEvent.MESSAGE, notice);
+				ebus.addEvent(event);
+			}
 			super.onNotice(sourceNick, sourceLogin, sourceHostname, target,
 					notice);
 		}
@@ -123,6 +140,7 @@ public class AbstractPircBot implements Bot {
 		@Override
 		protected void onMode(String channel, String sourceNick,
 				String sourceLogin, String sourceHostname, String mode) {
+			System.out.println("onMode: " + sourceNick);
 			// MessageEvent event = new MessageEvent();
 			// event.putData(MessageEvent.CHANNEL, channel);
 			// event.putData(MessageEvent.SENDER, sourceNick);
@@ -135,6 +153,7 @@ public class AbstractPircBot implements Bot {
 
 		@Override
 		protected void onUnknown(String line) {
+			System.out.println("onUnknown: " + line);
 			// MessageEvent event = new MessageEvent();
 			// event.putData(MessageEvent.CHANNEL, "");
 			// event.putData(MessageEvent.SENDER, "");
@@ -148,6 +167,7 @@ public class AbstractPircBot implements Bot {
 		@Override
 		protected void onVoice(String channel, String sourceNick,
 				String sourceLogin, String sourceHostname, String recipient) {
+			System.out.println("onVoice: " + sourceNick);
 			// MessageEvent event = new MessageEvent();
 			// event.putData(MessageEvent.CHANNEL, channel);
 			// event.putData(MessageEvent.SENDER, sourceNick);
@@ -162,27 +182,42 @@ public class AbstractPircBot implements Bot {
 		@Override
 		protected void onPart(String channel, String sender, String login,
 				String hostname) {
-			// TODO Auto-generated method stub
+			System.out.println("onPart");
 			super.onPart(channel, sender, login, hostname);
 		}
 
 		@Override
 		protected void onInvite(String targetNick, String sourceNick,
 				String sourceLogin, String sourceHostname, String channel) {
-			// TODO Auto-generated method stub
+			System.out.println("onInvite: " + sourceNick);
 			super.onInvite(targetNick, sourceNick, sourceLogin, sourceHostname,
 					channel);
 		}
 
 		@Override
 		protected void onUserList(String channel, User[] users) {
-			// TODO Auto-generated method stub
+			System.out.println("onUserList: " + channel + " - " + users.length);
+			ChannelInfoEvent event = new ChannelInfoEvent();
+			List<String> userList = new ArrayList<String>();
+			for (User user : users) {
+				if (user.getPrefix() != null && user.getPrefix().length() > 0) {
+					userList.add(user.getNick());
+				}
+			}
+			event.putData(ChannelInfoEvent.USERS, userList);
+			ebus.addEvent(event);
 			super.onUserList(channel, users);
 		}
 
 		@Override
 		protected void onServerResponse(int code, String response) {
+			System.out.println("onServerResponse: " + code + " - " + response);
 			switch (code) {
+			case 323:
+				ChannelInfoEvent ch_event = new ChannelInfoEvent();
+				ch_event.putData(ChannelInfoEvent.STATUS, "FINISHED");
+				ebus.addEvent(ch_event);
+				break;
 			case 401:
 				MessageEvent event = new MessageEvent();
 				event.putData(MessageEvent.CHANNEL, "Global");
@@ -202,13 +237,15 @@ public class AbstractPircBot implements Bot {
 		@Override
 		protected void onTopic(String channel, String topic, String setBy,
 				long date, boolean changed) {
-			// TODO Auto-generated method stub
+			System.out.println("onTopic: " + topic);
 			super.onTopic(channel, topic, setBy, date, changed);
 		}
 
 		@Override
 		protected void onAction(String sender, String login, String hostname,
 				String target, String action) {
+			System.out.println("onAction: " + sender + " - " + target + " - "
+					+ action);
 			// MessageEvent event = new MessageEvent();
 			// event.putData(MessageEvent.CHANNEL, "");
 			// event.putData(MessageEvent.SENDER, sender);
@@ -222,12 +259,12 @@ public class AbstractPircBot implements Bot {
 
 		@Override
 		protected void onChannelInfo(String channel, int userCount, String topic) {
-			MessageEvent event = new MessageEvent();
-			event.putData(MessageEvent.CHANNEL, channel);
-			event.putData(MessageEvent.SENDER, channel);
-			event.putData(MessageEvent.LOGIN, channel);
-			event.putData(MessageEvent.HOSTNAME, "");
-			event.putData(MessageEvent.MESSAGE, topic);
+			System.out.println("onChannelInfo");
+			ChannelInfoEvent event = new ChannelInfoEvent();
+			event.putData(ChannelInfoEvent.CHANNEL, channel);
+			event.putData(ChannelInfoEvent.HOSTNAME, bot.getServer());
+			event.putData(ChannelInfoEvent.CHANNEL_TOPIC, topic);
+			event.putData(ChannelInfoEvent.CHANNEL_USER_COUNT, "" + userCount);
 			ebus.addEvent(event);
 			super.onChannelInfo(channel, userCount, topic);
 		}
@@ -235,6 +272,7 @@ public class AbstractPircBot implements Bot {
 		@Override
 		protected void onPrivateMessage(String sender, String login,
 				String hostname, String message) {
+			System.out.println("onPrivateMessage: " + sender + " - " + message);
 			MessageEvent event = new MessageEvent();
 			event.putData(MessageEvent.SENDER, sender);
 			event.putData(MessageEvent.LOGIN, login);

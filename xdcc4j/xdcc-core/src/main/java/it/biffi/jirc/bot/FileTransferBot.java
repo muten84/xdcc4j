@@ -136,6 +136,7 @@ public class FileTransferBot implements IFileTransferBot {
 		} catch (Exception e) {
 
 		}
+		connector.getEbus().removeAll();
 		connector = null;
 		joinKey = null;
 		config = null;
