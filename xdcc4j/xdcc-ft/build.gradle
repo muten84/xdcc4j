@@ -1,4 +1,5 @@
-dependencies{
-	compile project(':xdcc-search')
+dependencies{	
 	compile project(':xdcc-common')
+	compile project(':xdcc-core')
+	compile project(':xdcc-search')
 }
