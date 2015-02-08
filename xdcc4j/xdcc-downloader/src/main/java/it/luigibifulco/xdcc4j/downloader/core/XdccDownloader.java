@@ -26,7 +26,7 @@ public interface XdccDownloader {
 	public String cancelDownload(String id);
 
 	public List<String> cancelAll();
-
+	
 	public Map<String, XdccRequest> cache();
 
 }

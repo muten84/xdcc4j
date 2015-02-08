@@ -7,6 +7,10 @@ import com.google.inject.AbstractModule;
 public class DownloaderServiceModule extends AbstractModule {
 	private String destinationDir;
 
+	public DownloaderServiceModule() {
+		this.destinationDir = "./";
+	}
+
 	public DownloaderServiceModule(String destinationDir) {
 		this.destinationDir = destinationDir;
 	}

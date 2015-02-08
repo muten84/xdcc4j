@@ -36,13 +36,13 @@ public class DownloaderServiceTest {
 	}
 
 	@Test
-	public final void testDownload() {
+	public final void testDownload() throws InterruptedException {
 		downloader.setServer("irc.uragano.org");
 		downloader.search("xdccit", "divx ita");
 		Collection<XdccRequest> reqs = downloader.cache().values();
 		for (XdccRequest xdccRequest : reqs) {
 			System.out.println(xdccRequest);
-			xdccRequest.setTtl(5000);
+			xdccRequest.setTtl(60000);
 		}
 		String downloadId = null;
 		Iterator<String> iter = downloader.cache().keySet().iterator();
@@ -60,6 +60,7 @@ public class DownloaderServiceTest {
 				.equals(TransferState.WORKING.name())) {
 			Assert.assertTrue(downloader.getDownload(downloadId).getRate() > 0);
 		}
+		Thread.sleep(15000);
 
 	}
 }
