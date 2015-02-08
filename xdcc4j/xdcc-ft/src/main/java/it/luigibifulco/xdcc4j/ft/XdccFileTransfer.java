@@ -7,6 +7,8 @@ public interface XdccFileTransfer {
 	}
 
 	public interface FileTransferStatusListener {
+		public void onStatusUpdate(String status);
+
 		public void onProgress(int perc, int rate);
 
 		public void onStart();

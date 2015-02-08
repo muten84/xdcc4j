@@ -3,7 +3,7 @@ package it.luigibifulco.xdcc4j.ft.impl;
 import it.biffi.jirc.bot.BotException;
 import it.biffi.jirc.bot.FileTransferBot;
 import it.biffi.jirc.bot.FileTransferConfig;
-import it.biffi.jirc.bot.listener.FileTransferFinishListener;
+import it.biffi.jirc.bot.listener.FileTransferListener;
 import it.luigibifulco.xdcc4j.common.model.XdccRequest;
 import it.luigibifulco.xdcc4j.ft.XdccFileTransfer;
 
@@ -72,7 +72,7 @@ public class XdccFileTransferImpl implements XdccFileTransfer {
 		}
 		if (state == TransferState.RUNNABLE) {
 			final DccFileTransfer transfer = bot.requestPacket(
-					request.getTtl(), new FileTransferFinishListener() {
+					request.getTtl(), new FileTransferListener() {
 
 						@Override
 						public void onFinish(Exception e) {
@@ -85,6 +85,12 @@ public class XdccFileTransferImpl implements XdccFileTransfer {
 								l.onError(e);
 								e.printStackTrace();
 							}
+
+						}
+
+						@Override
+						public void onPreStartUpdate(String data) {
+							// TODO Auto-generated method stub
 
 						}
 					});
@@ -113,10 +119,13 @@ public class XdccFileTransferImpl implements XdccFileTransfer {
 			} else {
 				LOGGER.info("packet requested but transfer not started");
 				state = TransferState.FINISHED;
+				l.onFinish();
 				return false;
 			}
 		} else {
 			LOGGER.info("state of transfer is not in runnable");
+			state = TransferState.FINISHED;
+			l.onFinish();
 			return false;
 		}
 
