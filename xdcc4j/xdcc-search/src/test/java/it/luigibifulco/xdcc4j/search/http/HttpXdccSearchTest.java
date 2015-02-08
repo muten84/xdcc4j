@@ -47,7 +47,7 @@ public class HttpXdccSearchTest {
 	}
 
 	@Test
-	public final void testHttpSearch() {
+	public final void testHttpSearchWithXdccDotIt() {
 		XdccSearch xdccItSearch = map.get("xdccit");
 		Set<XdccRequest> result = xdccItSearch.search(XdccQueryBuilder.create()
 				.to("whfdsfsdf").params("mutant chronicles"));
