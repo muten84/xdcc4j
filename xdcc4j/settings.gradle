@@ -1,1 +1,1 @@
-include 'xdcc-test-util', 'xdcc-common', 'xdcc-core','xdcc-search', 'xdcc-ft', 'xdcc-downloader'
+include 'xdcc-test-util', 'xdcc-common', 'xdcc-db', 'xdcc-core','xdcc-search', 'xdcc-ft', 'xdcc-downloader'
