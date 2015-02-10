@@ -11,7 +11,7 @@ public class GenericEvent extends Observable {
 	public static final int FILE_TRASNFER_START_EVENT = 3;
 	public static final int FILE_TRASNFER_END_EVENT = 4;
 	public static final int CHANNEL_INFO_EVENT = 5;
-	public static final int XDCC_EVENT = 5;
+	public static final int XDCC_EVENT = 6;
 
 	protected int type;
 

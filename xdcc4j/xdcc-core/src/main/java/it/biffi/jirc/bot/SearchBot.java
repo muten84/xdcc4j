@@ -32,13 +32,20 @@ public class SearchBot implements Bot {
 
 					@Override
 					public void onLineCount(int lines) {
-						connector.getEbus().removeAll();
+						// connector.getEbus().removeAll();
+						System.out.println("user sent lines :" + lines);
 						result.setResult(lines);
 
 					}
 				});
 		connector.getBot().joinChannel(channel);
 		connector.getBot().sendMessage(user, "XDCC LIST");
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		connector.getBot().sendMessage(user, "XDCC STOP");
 
 		return result.get(5000);
@@ -47,6 +54,9 @@ public class SearchBot implements Bot {
 	public List<String> scanUser(String user, String channel, int lines)
 			throws InterruptedException, ExecutionException {
 		List<String> entries = new ArrayList<String>();
+		if (lines <= 1) {
+			return entries;
+		}
 
 		FutureResult<List<String>> result = new FutureResult<List<String>>(
 				entries);
@@ -56,7 +66,7 @@ public class SearchBot implements Bot {
 					@Override
 					public void onMessage(Map<String, String> data) {
 						if (entries.size() >= lines) {
-							connector.getEbus().removeAll();
+							// connector.getEbus().removeAll();
 							result.setResult(entries);
 						}
 						if (data.get(MessageEvent.SENDER).equals(user)) {
@@ -68,11 +78,11 @@ public class SearchBot implements Bot {
 		connector.getBot().joinChannel(channel);
 		Thread.sleep(1000);
 		connector.getBot().sendMessage(user, "ciao a tutti!!");
-		Thread.sleep(5000);
+		Thread.sleep(1000);
 		// connector.getBot().sendMessage(user, "!list");
 		connector.getBot().sendMessage(user, "XDCC LIST");
-
-		return result.get();
+		long wait = 1000 * 60 * 10;
+		return result.get(wait);
 
 	}
 
@@ -85,7 +95,7 @@ public class SearchBot implements Bot {
 
 					@Override
 					public void onUserList(List<String> users) {
-						connector.getEbus().removeAll();
+						// connector.getEbus().removeAll();
 						channelsFuture.setResult(users);
 
 					}
@@ -112,7 +122,7 @@ public class SearchBot implements Bot {
 
 					@Override
 					public void onEndOf() {
-						connector.getEbus().removeAll();
+						// connector.getEbus().removeAll();
 						channelsFuture.setResult(s);
 
 					}

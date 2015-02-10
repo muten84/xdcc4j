@@ -20,6 +20,7 @@ public abstract class AbstractListener<EventType> implements Observer,
 		if (o instanceof GenericEvent) {
 			GenericEvent e = (GenericEvent) o;
 			int type = ((GenericEvent) o).getType();
+			// System.out.println(type);
 			if (match(type)) {
 				Map<String, String> data = null;
 				if (arg == null) {
