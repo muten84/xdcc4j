@@ -1,0 +1,10 @@
+repositories{
+	maven{
+		url 'http://hypergraphdb.org/maven'
+	}
+}
+
+dependencies{
+	compile project(':xdcc-common')
+	compile('org.hypergraphdb:hgdb:1.2')
+}
