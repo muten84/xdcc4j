@@ -1,7 +1,7 @@
 package it.luigibifulco.xdcc4j.search.cache;
 
 import it.luigibifulco.xdcc4j.common.model.XdccRequest;
-import it.luigibifulco.xdcc4j.search.XdccScanner;
+import it.luigibifulco.xdcc4j.search.scan.XdccScanner;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +18,7 @@ public class XdccCache {
 	}
 
 	public boolean cacheFrom(String server, String channel) {
-		List<XdccRequest> requests = scanner.scan(server, channel);
+		List<XdccRequest> requests = scanner.scan(server, channel, false);
 		for (XdccRequest xdccRequest : requests) {
 			cache.put(xdccRequest.getId(), xdccRequest);
 		}
