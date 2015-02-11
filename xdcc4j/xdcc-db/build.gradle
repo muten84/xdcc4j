@@ -6,5 +6,5 @@ repositories{
 
 dependencies{
 	compile project(':xdcc-common')
-	compile('org.hypergraphdb:hgdb:1.2')
+	compile('org.neodatis.odb:neodatis-odb:1.9+')
 }

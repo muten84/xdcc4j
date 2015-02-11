@@ -2,14 +2,14 @@ package it.luigibifulco.xdcc4j.common.model;
 
 import java.io.Serializable;
 
-import org.apache.commons.codec.digest.DigestUtils;
-
 public class XdccRequest implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -802658214843268582L;
+
+	protected String id;
 
 	protected String channel;
 
@@ -30,8 +30,15 @@ public class XdccRequest implements Serializable {
 	}
 
 	public String getId() {
-		String s = new String(channel + peer + resource);
-		return DigestUtils.md5Hex(s);
+		// String s = new String(channel + peer + resource);
+		// this.id = DigestUtils.md5Hex(s);
+		return this.id;
+	}
+
+	public void setId(String id) {
+		// String s = new String(channel + peer + resource);
+		// this.id = DigestUtils.md5Hex(s);
+		this.id = id;
 	}
 
 	public String getChannel() {
@@ -99,6 +106,43 @@ public class XdccRequest implements Serializable {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((channel == null) ? 0 : channel.hashCode());
+		result = prime * result + ((host == null) ? 0 : host.hashCode());
+		result = prime * result + ((peer == null) ? 0 : peer.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		XdccRequest other = (XdccRequest) obj;
+		if (channel == null) {
+			if (other.channel != null)
+				return false;
+		} else if (!channel.equals(other.channel))
+			return false;
+		if (host == null) {
+			if (other.host != null)
+				return false;
+		} else if (!host.equals(other.host))
+			return false;
+		if (peer == null) {
+			if (other.peer != null)
+				return false;
+		} else if (!peer.equals(other.peer))
+			return false;
+		return true;
 	}
 
 }
