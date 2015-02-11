@@ -1,6 +1,7 @@
 package it.luigibifulco.xdcc4j.search.http;
 
 import it.luigibifulco.xdcc4j.common.model.XdccRequest;
+import it.luigibifulco.xdcc4j.common.util.XdccRequestCreator;
 import it.luigibifulco.xdcc4j.search.XdccSearchEngineFactory;
 import it.luigibifulco.xdcc4j.search.http.HttpXdccSearchEngine;
 import it.luigibifulco.xdcc4j.search.parser.XdccHtmlParser;
@@ -42,6 +43,7 @@ public class HttpXdccSearchEngineTest {
 		}
 		EasyMock.reset(parser);
 		XdccRequest r = new XdccRequest();
+		r=XdccRequestCreator.identify(r);
 		r.setChannel("");
 
 		EasyMock.expect(

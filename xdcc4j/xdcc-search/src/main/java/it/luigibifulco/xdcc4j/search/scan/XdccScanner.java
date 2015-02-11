@@ -4,6 +4,7 @@ import it.biffi.jirc.bot.BotClientConfig;
 import it.biffi.jirc.bot.BotException;
 import it.biffi.jirc.bot.SearchBot;
 import it.luigibifulco.xdcc4j.common.model.XdccRequest;
+import it.luigibifulco.xdcc4j.common.util.XdccRequestCreator;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,8 +15,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
-import jdk.nashorn.internal.codegen.CompilerConstants.Call;
 
 public class XdccScanner {
 
@@ -41,7 +40,7 @@ public class XdccScanner {
 				request.setChannel(channel);
 				request.setHost(server);
 				request.setPeer(user);
-
+				request = XdccRequestCreator.identify(request);
 				requests.add(request);
 			}
 		} catch (InterruptedException | ExecutionException e) {
@@ -81,6 +80,7 @@ public class XdccScanner {
 						request.setChannel(channel);
 						request.setHost(server);
 						request.setPeer(u);
+						request = XdccRequestCreator.identify(request);
 						// request.setResource("");
 						requests.add(request);
 					}
@@ -184,6 +184,7 @@ public class XdccScanner {
 						request.setHost(server);
 						request.setPeer(u);
 						// request.setResource("");
+						request = XdccRequestCreator.identify(request);
 						requests.add(request);
 					}
 				} catch (InterruptedException | ExecutionException e) {

@@ -3,6 +3,7 @@ package it.luigibifulco.xdcc4j.db;
 import java.util.UUID;
 
 import it.luigibifulco.xdcc4j.common.model.XdccRequest;
+import it.luigibifulco.xdcc4j.common.util.XdccRequestCreator;
 
 import org.junit.Test;
 import org.neodatis.odb.ODB;
@@ -32,6 +33,7 @@ public class TestDB {
 			req.setPeer("peer");
 			req.setResource("12");
 			req.setTtl(324234234);
+			req=XdccRequestCreator.identify(req);
 			odb.store(req);
 			// odb.commit();
 		}

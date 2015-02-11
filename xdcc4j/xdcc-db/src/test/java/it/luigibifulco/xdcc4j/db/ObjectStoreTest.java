@@ -1,6 +1,7 @@
 package it.luigibifulco.xdcc4j.db;
 
 import it.luigibifulco.xdcc4j.common.model.XdccRequest;
+import it.luigibifulco.xdcc4j.common.util.XdccRequestCreator;
 
 import java.util.UUID;
 
@@ -29,7 +30,7 @@ public class ObjectStoreTest {
 			req.setPeer("peer");
 			req.setResource("12");
 			req.setTtl(324234234);
-			setId(req);
+			req=XdccRequestCreator.identify(req);
 			Assert.assertNotNull(store.insert(req));
 			long value = store.count();
 			Assert.assertTrue("Value is " + value, value == 1);
@@ -57,7 +58,7 @@ public class ObjectStoreTest {
 			req.setPeer("peer");
 			req.setResource("12");
 			req.setTtl(324234234);
-			setId(req);
+			req=XdccRequestCreator.identify(req);
 			Assert.assertNotNull(store.insert(req));
 			long value = store.count();
 			Assert.assertTrue("Value is " + value, value == 1);
