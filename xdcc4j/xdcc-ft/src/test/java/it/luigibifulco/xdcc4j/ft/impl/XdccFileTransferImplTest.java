@@ -4,10 +4,10 @@ import it.biffi.jirc.bot.BotException;
 import it.luigibifulco.xdcc4j.common.model.XdccRequest;
 import it.luigibifulco.xdcc4j.ft.XdccFileTransfer.FileTransferStatusListener;
 import it.luigibifulco.xdcc4j.search.XdccSearch;
-import it.luigibifulco.xdcc4j.search.http.HttpXdccSearch;
-import it.luigibifulco.xdcc4j.search.query.XdccQueryBuilder;
+import it.luigibifulco.xdcc4j.search.impl.XdccSearchImpl;
 import it.luigibifulco.xdcc4j.search.query.XdccQuery.QueryCondition;
 import it.luigibifulco.xdcc4j.search.query.XdccQuery.QueryFilter;
+import it.luigibifulco.xdcc4j.search.query.XdccQueryBuilder;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -26,7 +26,7 @@ public class XdccFileTransferImplTest {
 
 	@Before
 	public void init() {
-		search = new HttpXdccSearch(domain);
+		search = new XdccSearchImpl(domain);
 
 	}
 

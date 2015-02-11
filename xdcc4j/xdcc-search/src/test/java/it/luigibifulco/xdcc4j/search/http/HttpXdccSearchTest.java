@@ -5,7 +5,7 @@ import it.luigibifulco.xdcc4j.GuiceJUnitRunner.GuiceModules;
 import it.luigibifulco.xdcc4j.common.model.XdccRequest;
 import it.luigibifulco.xdcc4j.search.SearchModule;
 import it.luigibifulco.xdcc4j.search.XdccSearch;
-import it.luigibifulco.xdcc4j.search.http.HttpXdccSearch;
+import it.luigibifulco.xdcc4j.search.impl.XdccSearchImpl;
 import it.luigibifulco.xdcc4j.search.query.XdccQuery;
 import it.luigibifulco.xdcc4j.search.query.XdccQueryBuilder;
 import it.luigibifulco.xdcc4j.search.query.XdccQuery.QueryCondition;

@@ -1,6 +1,6 @@
 package it.luigibifulco.xdcc4j.search;
 
-import it.luigibifulco.xdcc4j.search.http.HttpXdccSearch;
+import it.luigibifulco.xdcc4j.search.impl.XdccSearchImpl;
 import it.luigibifulco.xdcc4j.search.parser.ParserModule;
 
 import com.google.inject.AbstractModule;
@@ -14,9 +14,9 @@ public class SearchModule extends AbstractModule {
 		MapBinder<String, XdccSearch> mapbinder = MapBinder.newMapBinder(
 				binder(), String.class, XdccSearch.class);
 		mapbinder.addBinding("xdccit")
-				.toInstance(new HttpXdccSearch("xdcc.it"));
+				.toInstance(new XdccSearchImpl("xdcc.it"));
 		mapbinder.addBinding("xdccfinder").toInstance(
-				new HttpXdccSearch("xdccfinder.it"));
+				new XdccSearchImpl("xdccfinder.it"));
 
 	}
 

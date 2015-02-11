@@ -2,19 +2,15 @@ package it.luigibifulco.xdcc4j.downloader.core.impl;
 
 import it.biffi.jirc.bot.BotException;
 import it.luigibifulco.xdcc4j.common.model.XdccRequest;
-import it.luigibifulco.xdcc4j.common.util.XdccRequestCreator;
 import it.luigibifulco.xdcc4j.downloader.core.XdccDownloader;
 import it.luigibifulco.xdcc4j.downloader.core.model.Download;
 import it.luigibifulco.xdcc4j.ft.XdccFileTransfer;
 import it.luigibifulco.xdcc4j.ft.XdccFileTransfer.FileTransferStatusListener;
 import it.luigibifulco.xdcc4j.ft.impl.XdccFileTransferImpl;
 import it.luigibifulco.xdcc4j.search.XdccSearch;
-import it.luigibifulco.xdcc4j.search.http.HttpXdccSearch;
-import it.luigibifulco.xdcc4j.search.http.HttpXdccSearchEngine;
-import it.luigibifulco.xdcc4j.search.parser.XdccItParser;
+import it.luigibifulco.xdcc4j.search.impl.XdccSearchImpl;
 import it.luigibifulco.xdcc4j.search.query.XdccQueryBuilder;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -82,7 +78,7 @@ public class SimpleXdccDownloader implements XdccDownloader {
 		@Override
 		public void onStatusUpdate(String status) {
 			// TODO Auto-generated method stub
-			
+
 		}
 	};
 
@@ -90,7 +86,7 @@ public class SimpleXdccDownloader implements XdccDownloader {
 		this.searchDomain = searchDomain;
 		this.defaultIrcNetwork = defaultIrcNetwork;
 		currentResult = new HashMap<String, XdccRequest>();
-		searcher = new HttpXdccSearch(searchDomain);
+		searcher = new XdccSearchImpl(searchDomain);
 
 	}
 

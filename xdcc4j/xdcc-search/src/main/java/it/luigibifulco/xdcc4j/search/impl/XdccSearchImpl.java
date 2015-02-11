@@ -1,4 +1,4 @@
-package it.luigibifulco.xdcc4j.search.http;
+package it.luigibifulco.xdcc4j.search.impl;
 
 import it.luigibifulco.xdcc4j.common.model.XdccRequest;
 import it.luigibifulco.xdcc4j.search.XdccSearch;
@@ -17,13 +17,13 @@ import java.util.Set;
  * @author Luigi
  *
  */
-public class HttpXdccSearch implements XdccSearch {
+public class XdccSearchImpl implements XdccSearch {
 
 	protected XdccSearchEngine engine;
 
 	private final String searchDomain;
 
-	public HttpXdccSearch(String searchDomain) {
+	public XdccSearchImpl(String searchDomain) {
 		engine = XdccSearchEngineFactory.create(searchDomain);
 		this.searchDomain = searchDomain;
 	}

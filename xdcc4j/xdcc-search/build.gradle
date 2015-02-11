@@ -3,6 +3,7 @@ dependencies{
 compile('org.jsoup:jsoup:1.8.1')
 compile project(':xdcc-common')
 compile project(':xdcc-core')
+compile project(':xdcc-db')
 testCompile project(':xdcc-test-util')
 
 }

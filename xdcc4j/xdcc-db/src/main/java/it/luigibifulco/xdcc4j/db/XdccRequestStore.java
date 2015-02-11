@@ -3,9 +3,9 @@ package it.luigibifulco.xdcc4j.db;
 import it.luigibifulco.xdcc4j.common.model.XdccRequest;
 import it.luigibifulco.xdcc4j.common.util.XdccRequestCreator;
 
-public class XccRequestStore extends ObjectStore<XdccRequest> {
+public class XdccRequestStore extends ObjectStore<XdccRequest> {
 
-	public XccRequestStore(String name) {
+	public XdccRequestStore(String name) {
 		super(name, XdccRequest.class);
 	}
 
