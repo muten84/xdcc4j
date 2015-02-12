@@ -2,6 +2,7 @@ package it.luigibifulco.xdcc4j.db;
 
 import java.math.BigInteger;
 import java.util.Collection;
+import java.util.List;
 
 import org.neodatis.odb.ODB;
 import org.neodatis.odb.ODBFactory;
@@ -10,12 +11,12 @@ import org.neodatis.odb.Objects;
 import org.neodatis.odb.core.query.criteria.Where;
 import org.neodatis.odb.impl.core.query.criteria.CriteriaQuery;
 
-public class ObjectStore<E> {
-	private ODB odb;
+public abstract class ObjectStore<E> {
+	protected ODB odb;
 	private final Class<E> clazz;
 
 	public ObjectStore(String name, Class<E> objectType) {
-		odb = ODBFactory.open(name);
+		odb = ODBFactory.open("./db/" + name);
 		this.clazz = objectType;
 	}
 
@@ -70,4 +71,8 @@ public class ObjectStore<E> {
 		odb.close();
 		return true;
 	}
+
+	protected abstract Class<E> getEntityType();
+
+	public abstract List<E> searchByExample(E e);
 }
