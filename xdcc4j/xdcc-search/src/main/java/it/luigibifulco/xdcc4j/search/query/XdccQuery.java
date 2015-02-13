@@ -6,6 +6,8 @@ public interface XdccQuery {
 
 	public XdccQuery to(String to);
 
+	public XdccQuery includeFilter(Map<QueryFilter, String> excludeMap);
+
 	public XdccQuery excludeFilter(Map<QueryFilter, String> excludeMap);
 
 	public XdccQuery replacefilter(Map<QueryCondition, String> replaceMap);
@@ -15,7 +17,9 @@ public interface XdccQuery {
 	public Map<String, String> getQueryAsMap();
 
 	public static enum QueryFilter {
-		HOST("hostFilter"), CHANNEL("channelFilter");
+		HOST("hostFilter"), CHANNEL("channelFilter"), DESCRIPTION(
+				"descriptionFilter");
+		;
 
 		private final String id;
 
@@ -32,6 +36,7 @@ public interface XdccQuery {
 
 	public static enum QueryCondition {
 		HOST("hostCondition");
+
 		private final String id;
 
 		private QueryCondition(String id) {

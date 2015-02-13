@@ -1,12 +1,12 @@
-package it.luigibifulco.xdcc4j.search.http;
+package it.luigibifulco.xdcc4j.search.engine.http;
 
 import it.luigibifulco.xdcc4j.common.model.XdccRequest;
 import it.luigibifulco.xdcc4j.search.XdccSearchEngine;
+import it.luigibifulco.xdcc4j.search.engine.SearchEngineType;
 import it.luigibifulco.xdcc4j.search.parser.XdccHtmlParser;
 import it.luigibifulco.xdcc4j.search.query.XdccQuery;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -18,6 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
 
 public class HttpXdccSearchEngine implements XdccSearchEngine {
 
@@ -30,11 +32,17 @@ public class HttpXdccSearchEngine implements XdccSearchEngine {
 
 	private String separator;
 
-	public HttpXdccSearchEngine(List<String> queryNameParameter,
-			String paramSeparator, XdccHtmlParser parser) {
+	private String searchDomain;
+
+	@Inject
+	@AssistedInject
+	public HttpXdccSearchEngine(@Assisted SearchEngineType searchDomain,
+			@Assisted List<String> queryNameParameter,
+			@Assisted String paramSeparator, @Assisted XdccHtmlParser parser) {
 		this.queryNameParameter = queryNameParameter;
 		this.separator = paramSeparator;
 		this.parser = parser;
+		this.searchDomain = searchDomain.toString();
 	}
 
 	@Override
@@ -90,7 +98,7 @@ public class HttpXdccSearchEngine implements XdccSearchEngine {
 
 	@Override
 	public String getType() {
-		return this.getClass().toString();
+		return searchDomain;
 	}
 
 	public XdccHtmlParser getParser() {

@@ -38,6 +38,33 @@ public class XdccRequestStoreTest {
 	}
 
 	@Test
+	public final void testSearchNullDescription() {
+		XdccRequestStore store = null;
+		try {
+			store = new XdccRequestStore("cache");
+			XdccRequest newR = XdccRequestCreator.identify(XdccRequestCreator
+					.create("channel", "peer", "12"));
+			store.insert(newR);
+			XdccRequest newR2 = XdccRequestCreator.identify(XdccRequestCreator
+					.create("asdasd", "asdasd", "454545"));
+			store.insert(newR2);
+			XdccRequest filter = XdccRequestCreator.identify(XdccRequestCreator
+					.create("", null, null));
+			List<XdccRequest> result = store.searchByExample(filter);
+			Assert.assertNotNull(result);
+			for (XdccRequest xdccRequest : result) {
+				System.out.println(xdccRequest);
+			}
+		} finally {
+			if (store != null) {
+				store.clear();
+				store.close();
+			}
+
+		}
+	}
+
+	@Test
 	public final void testSearchSpecific() {
 		XdccRequestStore store = null;
 		try {

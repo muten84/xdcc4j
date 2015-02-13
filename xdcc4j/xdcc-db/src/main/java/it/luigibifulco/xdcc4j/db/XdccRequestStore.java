@@ -8,12 +8,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.neodatis.odb.Objects;
 import org.neodatis.odb.core.query.criteria.And;
 import org.neodatis.odb.core.query.criteria.Where;
 import org.neodatis.odb.impl.core.query.criteria.CriteriaQuery;
 
-import com.sun.xml.internal.ws.util.StringUtils;
+
 
 public class XdccRequestStore extends ObjectStore<XdccRequest> {
 

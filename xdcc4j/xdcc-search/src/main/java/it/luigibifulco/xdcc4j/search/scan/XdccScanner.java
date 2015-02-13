@@ -98,9 +98,18 @@ public class XdccScanner {
 			System.out.println("scanning " + users.size() + " users...");
 			for (String user : users) {
 				Callable<List<XdccRequest>> task = () -> {
-					int lines = bot.getUserListLines(user, channel);
+					SearchBot abot = new SearchBot(false);
+					BotClientConfig aconfig = new BotClientConfig();
+					aconfig.setServer(server);
+					aconfig.setNick("xdccBot" + UUID.randomUUID().toString().substring(0, 6));
+					try {
+						abot.start(config);
+					} catch (BotException e) {
+						return requests;
+					}
+					int lines = abot.getUserListLines(user, channel);
 					System.out.println("scanning user: " + user);
-					List<String> packets = bot.scanUser(user, channel, lines);
+					List<String> packets = abot.scanUser(user, channel, lines);
 					if (packets == null) {
 						packets = new ArrayList<String>();
 					}

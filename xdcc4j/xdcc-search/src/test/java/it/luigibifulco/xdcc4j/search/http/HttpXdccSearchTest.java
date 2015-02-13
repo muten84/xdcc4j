@@ -3,14 +3,18 @@ package it.luigibifulco.xdcc4j.search.http;
 import it.luigibifulco.xdcc4j.GuiceJUnitRunner;
 import it.luigibifulco.xdcc4j.GuiceJUnitRunner.GuiceModules;
 import it.luigibifulco.xdcc4j.common.model.XdccRequest;
+import it.luigibifulco.xdcc4j.search.SearchEngineFactory;
 import it.luigibifulco.xdcc4j.search.SearchModule;
 import it.luigibifulco.xdcc4j.search.XdccSearch;
-import it.luigibifulco.xdcc4j.search.impl.XdccSearchImpl;
+import it.luigibifulco.xdcc4j.search.XdccSearchFactory;
+import it.luigibifulco.xdcc4j.search.engine.SearchEngineType;
+import it.luigibifulco.xdcc4j.search.parser.XdccItParser;
 import it.luigibifulco.xdcc4j.search.query.XdccQuery;
-import it.luigibifulco.xdcc4j.search.query.XdccQueryBuilder;
 import it.luigibifulco.xdcc4j.search.query.XdccQuery.QueryCondition;
 import it.luigibifulco.xdcc4j.search.query.XdccQuery.QueryFilter;
+import it.luigibifulco.xdcc4j.search.query.XdccQueryBuilder;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -27,7 +31,12 @@ import com.google.inject.Inject;
 public class HttpXdccSearchTest {
 
 	@Inject
-	private Map<String, XdccSearch> map;
+	private XdccSearchFactory factory;
+
+	@Inject
+	private SearchEngineFactory engineFacory;
+
+	private SearchEngineType domain = SearchEngineType.xdcc_it;
 
 	@Before
 	public final void before() {
@@ -36,7 +45,8 @@ public class HttpXdccSearchTest {
 
 	@Test
 	public final void testHttpSearchWithXdccFinder() {
-		XdccSearch xdccFinderSearch = map.get("xdccfinder");
+		XdccSearch xdccFinderSearch = factory.create(engineFacory.http(domain,
+				Arrays.asList(new String[] { "q" }), "+", new XdccItParser()));
 		Set<XdccRequest> result = xdccFinderSearch.search(XdccQueryBuilder
 				.create().params("mutant chronicles"));
 		Assert.assertTrue(result.size() > 0);
@@ -48,7 +58,8 @@ public class HttpXdccSearchTest {
 
 	@Test
 	public final void testHttpSearchWithXdccDotIt() {
-		XdccSearch xdccItSearch = map.get("xdccit");
+		XdccSearch xdccItSearch = factory.create(engineFacory.http(domain,
+				Arrays.asList(new String[] { "q" }), "+", new XdccItParser()));
 		Set<XdccRequest> result = xdccItSearch.search(XdccQueryBuilder.create()
 				.to("whfdsfsdf").params("mutant chronicles"));
 		Assert.assertTrue(result.size() > 0);
@@ -60,7 +71,8 @@ public class HttpXdccSearchTest {
 
 	@Test
 	public final void testHttpSearchWithReplace() {
-		XdccSearch xdccItSearch = map.get("xdccit");
+		XdccSearch xdccItSearch = factory.create(engineFacory.http(domain,
+				Arrays.asList(new String[] { "q" }), "+", new XdccItParser()));
 		XdccQuery query = XdccQueryBuilder.create().to("xdcc.it")
 				.params("mutant chronicles");
 		Map<QueryFilter, String> tmp1 = new HashMap<QueryFilter, String>();

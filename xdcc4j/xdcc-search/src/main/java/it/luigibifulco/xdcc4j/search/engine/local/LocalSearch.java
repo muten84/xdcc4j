@@ -1,10 +1,13 @@
-package it.luigibifulco.xdcc4j.search.local;
+package it.luigibifulco.xdcc4j.search.engine.local;
 
 import it.luigibifulco.xdcc4j.common.model.XdccRequest;
 import it.luigibifulco.xdcc4j.db.XdccRequestStore;
 import it.luigibifulco.xdcc4j.search.XdccSearchEngine;
+import it.luigibifulco.xdcc4j.search.cache.XdccCache;
 import it.luigibifulco.xdcc4j.search.query.XdccQuery;
+import it.luigibifulco.xdcc4j.search.query.XdccQuery.QueryFilter;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import com.google.inject.Inject;
@@ -12,17 +15,19 @@ import com.google.inject.Inject;
 public class LocalSearch implements XdccSearchEngine {
 
 	@Inject
-	private XdccRequestStore store;
+	private XdccCache cache;
 
 	@Override
 	public Set<XdccRequest> search(XdccQuery query) throws RuntimeException {
-		// TODO Auto-generated method stub
-		return null;
+		String desc = query.getQueryAsMap().get("params");
+		XdccRequest filter = new XdccRequest();
+		filter.setDescription(desc);
+		return new HashSet<XdccRequest>(cache.search(filter));
 	}
 
 	@Override
 	public String getType() {
-		return "local";
+		return "localhost";
 	}
 
 }

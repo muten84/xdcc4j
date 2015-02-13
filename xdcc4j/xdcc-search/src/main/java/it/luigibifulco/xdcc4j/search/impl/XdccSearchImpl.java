@@ -3,7 +3,6 @@ package it.luigibifulco.xdcc4j.search.impl;
 import it.luigibifulco.xdcc4j.common.model.XdccRequest;
 import it.luigibifulco.xdcc4j.search.XdccSearch;
 import it.luigibifulco.xdcc4j.search.XdccSearchEngine;
-import it.luigibifulco.xdcc4j.search.XdccSearchEngineFactory;
 import it.luigibifulco.xdcc4j.search.query.XdccQuery;
 import it.luigibifulco.xdcc4j.search.query.XdccQuery.QueryCondition;
 import it.luigibifulco.xdcc4j.search.query.XdccQuery.QueryFilter;
@@ -12,6 +11,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+
 /**
  * 
  * @author Luigi
@@ -19,13 +23,28 @@ import java.util.Set;
  */
 public class XdccSearchImpl implements XdccSearch {
 
-	protected XdccSearchEngine engine;
-
 	private final String searchDomain;
 
-	public XdccSearchImpl(String searchDomain) {
-		engine = XdccSearchEngineFactory.create(searchDomain);
-		this.searchDomain = searchDomain;
+	private XdccSearchEngine engine;
+
+	@Inject
+	public XdccSearchImpl(@Assisted XdccSearchEngine engine) {
+		this.engine = engine;
+		// switch (searchDomain) {
+		// case "xdcc.it":
+		// engine = factory.html(Arrays.asList(new String[] { "q" }), "+",
+		// new XdccItParser());
+		// break;
+		// case "xdccfinder.it":
+		// engine = factory.html(Arrays.asList(new String[] { "search" }),
+		// " ", new XdccFinderParser());
+		// break;
+		// default:
+		// engine = null;
+		// break;
+		// }
+
+		this.searchDomain = engine.getType();
 	}
 
 	@Override
@@ -44,7 +63,8 @@ public class XdccSearchImpl implements XdccSearch {
 				if (xdccRequest == null) {
 					continue;
 				}
-				if (xdccRequest.getHost().equals(what)) {
+				if (StringUtils.defaultIfEmpty(xdccRequest.getHost(), "")
+						.equals(what)) {
 					xdccRequest
 							.setHost(map.get(QueryCondition.HOST.toString()));
 				}

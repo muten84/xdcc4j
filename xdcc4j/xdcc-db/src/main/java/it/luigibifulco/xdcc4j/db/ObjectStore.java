@@ -16,7 +16,8 @@ public abstract class ObjectStore<E> {
 	private final Class<E> clazz;
 
 	public ObjectStore(String name, Class<E> objectType) {
-		odb = ODBFactory.open("./db/" + name);
+		odb = ODBFactory.open(name);
+		
 		this.clazz = objectType;
 	}
 

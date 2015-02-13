@@ -19,6 +19,8 @@ public class XdccQueryBuilder {
 
 			private String hostReplace;
 
+			private String descriptionInclude;
+
 			@Override
 			public XdccQuery to(String to) {
 				this.to = to;
@@ -38,6 +40,8 @@ public class XdccQueryBuilder {
 				map.put("params", this.params);
 				map.put(QueryFilter.HOST.toString(), this.hostExclude);
 				map.put(QueryCondition.HOST.toString(), this.hostReplace);
+				map.put(QueryFilter.DESCRIPTION.toString(),
+						this.descriptionInclude);
 				return map;
 			}
 
@@ -51,6 +55,13 @@ public class XdccQueryBuilder {
 			public XdccQuery replacefilter(
 					Map<QueryCondition, String> replaceMap) {
 				this.hostReplace = replaceMap.get(QueryCondition.HOST);
+				return this;
+			}
+
+			@Override
+			public XdccQuery includeFilter(Map<QueryFilter, String> includeMap) {
+				this.descriptionInclude = includeMap
+						.get(QueryFilter.DESCRIPTION);
 				return this;
 			}
 
