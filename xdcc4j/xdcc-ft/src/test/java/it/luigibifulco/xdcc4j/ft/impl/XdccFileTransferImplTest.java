@@ -22,11 +22,11 @@ public class XdccFileTransferImplTest {
 
 	private XdccSearch search;
 
-	private String domain = "xdccfinder.it";
+	private String domain = "xdcc.it";
 
 	@Before
 	public void init() {
-		search = new XdccSearchImpl(domain);
+		// TODO: GUICE!!?!?? search = new XdccSearchImpl(domain);
 
 	}
 
@@ -73,7 +73,7 @@ public class XdccFileTransferImplTest {
 				@Override
 				public void onStatusUpdate(String status) {
 					// TODO Auto-generated method stub
-					
+
 				}
 			});
 			System.out.println(xdccFt.getState());
@@ -99,12 +99,13 @@ public class XdccFileTransferImplTest {
 		Map<QueryCondition, String> map2 = new HashMap<QueryCondition, String>();
 		map2.put(QueryCondition.HOST, "irc.crocmax.net");
 		Iterator<XdccRequest> result = search.search(
-				XdccQueryBuilder.create().to("http://xdcc.it")
-						.params("divx ita").excludeFilter(map)
-						.replacefilter(map2)).iterator();
+				XdccQueryBuilder.create().to("xdcc.it").params("divx ita")
+						.excludeFilter(map).replacefilter(map2)).iterator();
 		while (result.hasNext()) {
 			XdccRequest req = result.next();
-
+			if (req == null) {
+				continue;
+			}
 			req.setDestination("/Users/Luigi/Downloads/irc/");
 
 			xdccFt = new XdccFileTransferImpl(req, 1000, 1000);
@@ -138,7 +139,7 @@ public class XdccFileTransferImplTest {
 				@Override
 				public void onStatusUpdate(String status) {
 					// TODO Auto-generated method stub
-					
+
 				}
 			});
 			System.out.println(xdccFt.getState());
