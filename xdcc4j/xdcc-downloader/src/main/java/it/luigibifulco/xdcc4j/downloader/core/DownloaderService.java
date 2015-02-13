@@ -8,6 +8,7 @@ import it.luigibifulco.xdcc4j.ft.impl.FileTransferFactory;
 import it.luigibifulco.xdcc4j.search.XdccSearch;
 import it.luigibifulco.xdcc4j.search.query.XdccQuery;
 import it.luigibifulco.xdcc4j.search.query.XdccQueryBuilder;
+import it.luigibifulco.xdcc4j.search.service.SearchService;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,8 +26,10 @@ import com.google.inject.Inject;
 
 public class DownloaderService implements XdccDownloader {
 
+	// @Inject
+	// private Map<String, XdccSearch> searchTypesMap;
 	@Inject
-	private Map<String, XdccSearch> searchTypesMap;
+	private SearchService searchService;
 
 	private String currentServer;
 
@@ -59,13 +62,13 @@ public class DownloaderService implements XdccDownloader {
 	@Override
 	public Map<String, XdccRequest> search(String where, String text) {
 		Map<String, XdccRequest> searchResult = new HashMap<String, XdccRequest>();
-		XdccSearch seeker = searchTypesMap.get(where);
-		if (seeker == null) {
-			throw new RuntimeException(where + " search engine not supported");
-		}
-
-		XdccQuery query = XdccQueryBuilder.create().to(where).params(text);
-		Set<XdccRequest> result = seeker.search(query);
+		// XdccSearch seeker = searchTypesMap.get(where);
+		// if (seeker == null) {
+		// throw new RuntimeException(where + " search engine not supported");
+		// }
+		List<XdccRequest> result = searchService.search(where, text);
+		// XdccQuery query = XdccQueryBuilder.create().to(where).params(text);
+		// Set<XdccRequest> result = seeker.search(query);
 		for (XdccRequest xdccRequest : result) {
 			if (xdccRequest == null) {
 				continue;
@@ -138,7 +141,7 @@ public class DownloaderService implements XdccDownloader {
 					@Override
 					public void onStatusUpdate(String status) {
 						// TODO Auto-generated method stub
-						
+
 					}
 				});
 			}
