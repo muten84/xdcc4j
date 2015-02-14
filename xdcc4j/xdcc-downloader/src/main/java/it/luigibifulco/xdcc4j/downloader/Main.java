@@ -1,14 +1,18 @@
 package it.luigibifulco.xdcc4j.downloader;
 
 import it.luigibifulco.xdcc4j.downloader.core.DownloaderServiceModule;
+import it.luigibifulco.xdcc4j.downloader.event.EventSocket;
 import it.luigibifulco.xdcc4j.downloader.service.XdccDownloaderService;
 import it.luigibifulco.xdcc4j.downloader.service.delegate.rest.DownloaderRestModule;
 
 import java.util.EnumSet;
 
+import javax.websocket.server.ServerContainer;
+
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
@@ -36,7 +40,9 @@ public class Main {
 						javax.servlet.DispatcherType.ASYNC));
 
 		context.addServlet(DefaultServlet.class, "/*");
-
+		ServerContainer wscontainer = WebSocketServerContainerInitializer
+				.configureContext(context);
+		wscontainer.addEndpoint(EventSocket.class);
 		server.start();
 
 		server.join();

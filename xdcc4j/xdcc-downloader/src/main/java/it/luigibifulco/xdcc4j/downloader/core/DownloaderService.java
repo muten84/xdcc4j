@@ -1,13 +1,11 @@
 package it.luigibifulco.xdcc4j.downloader.core;
 
+import it.biffi.jirc.bot.SearchBot;
 import it.luigibifulco.xdcc4j.common.model.XdccRequest;
 import it.luigibifulco.xdcc4j.downloader.core.model.Download;
 import it.luigibifulco.xdcc4j.ft.XdccFileTransfer;
 import it.luigibifulco.xdcc4j.ft.XdccFileTransfer.FileTransferStatusListener;
 import it.luigibifulco.xdcc4j.ft.impl.FileTransferFactory;
-import it.luigibifulco.xdcc4j.search.XdccSearch;
-import it.luigibifulco.xdcc4j.search.query.XdccQuery;
-import it.luigibifulco.xdcc4j.search.query.XdccQueryBuilder;
 import it.luigibifulco.xdcc4j.search.service.SearchService;
 
 import java.util.ArrayList;
@@ -15,11 +13,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ConcurrentHashMap.KeySetView;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.google.inject.Inject;
@@ -41,11 +38,18 @@ public class DownloaderService implements XdccDownloader {
 
 	private ExecutorService workers;
 
+	private ConcurrentHashMap<String, List<DownloadListener>> listenerRegistry;
+
+	private ExecutorService queueWorkers;
+
 	public DownloaderService(String incominDir) {
 		searchResult = new HashMap<String, XdccRequest>();
 		downloadMap = new ConcurrentHashMap<String, Download>();
 		this.incomingDir = incominDir;
+		listenerRegistry = new ConcurrentHashMap<String, List<XdccDownloader.DownloadListener>>();
 		workers = Executors.newCachedThreadPool();
+		queueWorkers = Executors.newFixedThreadPool(1);
+
 	}
 
 	@Override
@@ -77,6 +81,7 @@ public class DownloaderService implements XdccDownloader {
 
 			searchResult.put(xdccRequest.getId(), xdccRequest);
 		}
+		this.searchResult.clear();
 		this.searchResult.putAll(searchResult);
 		return searchResult;
 	}
@@ -108,6 +113,16 @@ public class DownloaderService implements XdccDownloader {
 					@Override
 					public void onStart() {
 						d.setStatusListener(this);
+						List<DownloadListener> listeners = listenerRegistry
+								.get(id);
+						for (DownloadListener downloadListener : listeners) {
+							Callable<Boolean> task = () -> {
+								downloadListener.onDownloadStausUpdate(id,
+										"start", 0, 0);
+								return true;
+							};
+							queueWorkers.submit(task);
+						}
 
 					}
 
@@ -118,6 +133,16 @@ public class DownloaderService implements XdccDownloader {
 						}
 						downloadMap.get(id).setPercentage(perc);
 						downloadMap.get(id).setRate(rate);
+						List<DownloadListener> listeners = listenerRegistry
+								.get(id);
+						for (DownloadListener downloadListener : listeners) {
+							Callable<Boolean> task = () -> {
+								downloadListener.onDownloadStausUpdate(id,
+										"progress", perc, rate);
+								return true;
+							};
+							queueWorkers.submit(task);
+						}
 
 					}
 
@@ -127,7 +152,16 @@ public class DownloaderService implements XdccDownloader {
 							return;
 						}
 						downloadMap.remove(id);
-
+						List<DownloadListener> listeners = listenerRegistry
+								.get(id);
+						for (DownloadListener downloadListener : listeners) {
+							Callable<Boolean> task = () -> {
+								downloadListener.onDownloadStausUpdate(id,
+										"finish", 100, 100);
+								return true;
+							};
+							queueWorkers.submit(task);
+						}
 					}
 
 					@Override
@@ -135,12 +169,31 @@ public class DownloaderService implements XdccDownloader {
 						if (getDownload(id) == null) {
 							return;
 						}
-						downloadMap.remove(id);
+						Download d = downloadMap.remove(id);
+						List<DownloadListener> listeners = listenerRegistry
+								.get(id);
+						for (DownloadListener downloadListener : listeners) {
+							Callable<Boolean> task = () -> {
+								downloadListener.onDownloadStausUpdate(id,
+										"error", d.getPercentage(), d.getRate());
+								return true;
+							};
+							queueWorkers.submit(task);
+						}
 					}
 
 					@Override
 					public void onStatusUpdate(String status) {
-						// TODO Auto-generated method stub
+						List<DownloadListener> listeners = listenerRegistry
+								.get(id);
+						for (DownloadListener downloadListener : listeners) {
+							Callable<Boolean> task = () -> {
+								downloadListener.onDownloadStausUpdate(id,
+										status, d.getPercentage(), d.getRate());
+								return true;
+							};
+							queueWorkers.submit(task);
+						}
 
 					}
 				});
@@ -200,5 +253,39 @@ public class DownloaderService implements XdccDownloader {
 	@Override
 	public boolean reindex(String channel, String user) {
 		return searchService.reindex(this.currentServer, channel, user, false);
+	}
+
+	@Override
+	public void addDownloadStatusListener(String downloadId,
+			DownloadListener listener) {
+		List<DownloadListener> list = listenerRegistry.get(downloadId);
+		if (list == null) {
+			list = new ArrayList<XdccDownloader.DownloadListener>();
+		}
+		list.add(listener);
+		listenerRegistry.put(downloadId, list);
+
+	}
+
+	@Override
+	public void removeDownloadStatusListener(String downloadId) {
+		listenerRegistry.remove(downloadId);
+
+	}
+
+	@Override
+	public List<String> listChannels() {
+		SearchBot bot = new SearchBot(false);
+		List<String> list = bot.listChannels();
+		bot.stop();
+		return list;
+	}
+
+	@Override
+	public List<String> listUsers(String channel) {
+		SearchBot bot = new SearchBot(false);
+		List<String> list = bot.listUsersInChannel(channel);
+		bot.stop();
+		return list;
 	}
 }

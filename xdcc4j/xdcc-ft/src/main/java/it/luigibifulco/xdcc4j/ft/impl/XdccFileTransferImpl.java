@@ -8,9 +8,11 @@ import it.luigibifulco.xdcc4j.common.model.XdccRequest;
 import it.luigibifulco.xdcc4j.ft.XdccFileTransfer;
 
 import java.io.File;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.jibble.pircbot.DccFileTransfer;
 import org.slf4j.Logger;
@@ -26,7 +28,11 @@ public class XdccFileTransferImpl implements XdccFileTransfer {
 
 	private final XdccRequest request;
 
-	private Timer t;
+	// private Timer t;
+
+	ScheduledFuture currentTask;
+
+	ScheduledExecutorService scheduler;
 
 	private long connectTimeout;
 
@@ -36,6 +42,7 @@ public class XdccFileTransferImpl implements XdccFileTransfer {
 		this.request = request;
 		this.request.setTtl(requestTTL);
 		this.connectTimeout = connectTimeout;
+		scheduler = Executors.newScheduledThreadPool(1);
 
 	}
 
@@ -107,18 +114,22 @@ public class XdccFileTransferImpl implements XdccFileTransfer {
 
 				transfer.receive(file, true);
 				l.onStart();
-				t = new Timer("PollTrasnferState", true);
-				t.scheduleAtFixedRate(new TimerTask() {
+				Runnable task = () -> {
 
-					@Override
-					public void run() {
-						int perc = (int) transfer.getProgressPercentage();
-						int rate = (int) transfer.getTransferRate();
-						System.out.println("Trasnfer state: " + perc + "%"
-								+ "rate: " + rate);
-						l.onProgress(perc, rate);
+					int perc = (int) transfer.getProgressPercentage();
+					int rate = (int) transfer.getTransferRate();
+					if (perc >= 100 || state == TransferState.FINISHED) {
+						cancel();
+						return;
 					}
-				}, 0, 5000);
+					System.out.println("Transfer state: " + perc + "%"
+							+ "rate: " + rate);
+					l.onProgress(perc, rate);
+
+				};
+				currentTask = scheduler.scheduleAtFixedRate(task, 3, 1,
+						TimeUnit.SECONDS);
+
 				return true;
 			} else {
 				LOGGER.info("packet requested but transfer not started");
@@ -138,11 +149,11 @@ public class XdccFileTransferImpl implements XdccFileTransfer {
 	@Override
 	public boolean cancel() {
 		state = TransferState.ABORTED;
-		if (t != null) {
-			t.cancel();
-			t.purge();
+		if (currentTask != null) {
+			currentTask.cancel(true);
 		}
-		t = null;
+		scheduler.shutdownNow();
+		scheduler = null;
 		if (bot != null) {
 			bot.stop();
 		}

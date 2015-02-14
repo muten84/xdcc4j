@@ -9,6 +9,11 @@ import java.util.Map;
 
 public interface XdccDownloader {
 
+	public static interface DownloadListener {
+		public void onDownloadStausUpdate(String id, String updateMessage,
+				int percentage, int rate);
+	}
+
 	public Collection<Download> getAllDownloads();
 
 	public boolean setServer(String server);
@@ -21,6 +26,11 @@ public interface XdccDownloader {
 
 	public String startDownload(String id);
 
+	public void addDownloadStatusListener(String downloadId,
+			DownloadListener listner);
+
+	public void removeDownloadStatusListener(String downloadId);
+
 	public String startAnyAvailableFromList();
 
 	public String cancelDownload(String id);
@@ -30,5 +40,9 @@ public interface XdccDownloader {
 	public Map<String, XdccRequest> cache();
 
 	public boolean reindex(String channel, String user);
+
+	public List<String> listChannels();
+
+	public List<String> listUsers(String channel);
 
 }
