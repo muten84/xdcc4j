@@ -52,7 +52,9 @@ public class XdccFileTransferImpl implements XdccFileTransfer {
 			state = TransferState.RUNNABLE;
 			LOGGER.info("connected");
 			FileTransferConfig config = new FileTransferConfig();
-			config.setSourceChannel(request.getChannel());
+
+			String chan = request.getChannel().replace("#", "");
+			config.setSourceChannel(chan);
 			config.setSourcePeer(request.getPeer());
 
 			config.setInputCommand("xdcc send #" + request.getResource());
