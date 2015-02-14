@@ -196,4 +196,9 @@ public class DownloaderService implements XdccDownloader {
 	public Collection<Download> getAllDownloads() {
 		return downloadMap.values();
 	}
+
+	@Override
+	public boolean reindex(String channel, String user) {
+		return searchService.reindex(this.currentServer, channel, user, false);
+	}
 }

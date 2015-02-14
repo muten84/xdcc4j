@@ -27,4 +27,6 @@ public interface XdccDownloaderService {
 	public List<String> cancelAll();
 
 	public Map<String, DownloadBean> cache();
+
+	public boolean reindex(String channel, String user);
 }
