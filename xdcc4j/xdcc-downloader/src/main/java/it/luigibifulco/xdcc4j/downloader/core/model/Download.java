@@ -2,6 +2,7 @@ package it.luigibifulco.xdcc4j.downloader.core.model;
 
 import it.luigibifulco.xdcc4j.ft.XdccFileTransfer;
 import it.luigibifulco.xdcc4j.ft.XdccFileTransfer.FileTransferStatusListener;
+import it.luigibifulco.xdcc4j.ft.XdccFileTransfer.TransferState;
 
 import java.io.Serializable;
 
@@ -82,7 +83,15 @@ public class Download implements Serializable {
 	}
 
 	public String getState() {
-		return this.getCurrentTransfer().getState().name();
+		if (this.getCurrentTransfer() == null) {
+			return TransferState.IDLE.name();
+		}
+		if (this.getCurrentTransfer().getState() == null) {
+			return TransferState.IDLE.name();
+		} else {
+			return this.getCurrentTransfer().getState().name();
+		}
+
 	}
 
 	public void setState(String state) {

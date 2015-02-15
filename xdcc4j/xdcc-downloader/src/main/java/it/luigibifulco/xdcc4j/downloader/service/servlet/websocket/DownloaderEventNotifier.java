@@ -1,9 +1,10 @@
 package it.luigibifulco.xdcc4j.downloader.service.servlet.websocket;
 
+import it.luigibifulco.xdcc4j.common.model.DownloadBean;
 import it.luigibifulco.xdcc4j.downloader.core.XdccDownloader;
 import it.luigibifulco.xdcc4j.downloader.core.XdccDownloader.DownloadListener;
 import it.luigibifulco.xdcc4j.downloader.core.model.Download;
-import it.luigibifulco.xdcc4j.downloader.service.model.DownloadBean;
+import it.luigibifulco.xdcc4j.downloader.core.util.ConvertUtil;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -53,7 +54,7 @@ public class DownloaderEventNotifier {
 		Collection<Download> downloads = core.getAllDownloads();
 		if (downloads != null) {
 			for (Download download : downloads) {
-				addDownloadListener(convert(download));
+				addDownloadListener(ConvertUtil.convert(download));
 			}
 		}
 	}
@@ -100,13 +101,5 @@ public class DownloaderEventNotifier {
 		});
 	}
 
-	private DownloadBean convert(Download down) {
-		DownloadBean bean = new DownloadBean(down.getId(),
-				down.getDescription());
-		bean.setPerc(down.getPercentage());
-		bean.setRate(down.getRate());
-		bean.setState(down.getState());
-		return bean;
-	}
-
+	
 }

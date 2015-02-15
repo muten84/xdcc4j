@@ -1,13 +1,18 @@
 package it.luigibifulco.xdcc4j.downloader.core.service;
 
+import it.biffi.jirc.bot.BotClientConfig;
+import it.biffi.jirc.bot.BotException;
 import it.biffi.jirc.bot.SearchBot;
+import it.luigibifulco.xdcc4j.common.model.DownloadBean;
 import it.luigibifulco.xdcc4j.common.model.XdccRequest;
 import it.luigibifulco.xdcc4j.downloader.core.XdccDownloader;
-import it.luigibifulco.xdcc4j.downloader.core.XdccDownloader.DownloadListener;
 import it.luigibifulco.xdcc4j.downloader.core.model.Download;
+import it.luigibifulco.xdcc4j.downloader.core.util.ConvertUtil;
 import it.luigibifulco.xdcc4j.ft.XdccFileTransfer;
 import it.luigibifulco.xdcc4j.ft.XdccFileTransfer.FileTransferStatusListener;
+import it.luigibifulco.xdcc4j.ft.XdccFileTransfer.TransferState;
 import it.luigibifulco.xdcc4j.ft.impl.FileTransferFactory;
+import it.luigibifulco.xdcc4j.search.cache.XdccCache;
 import it.luigibifulco.xdcc4j.search.service.SearchService;
 
 import java.util.ArrayList;
@@ -15,11 +20,14 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentHashMap.KeySetView;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.google.inject.Inject;
 
@@ -29,6 +37,9 @@ public class DownloaderCore implements XdccDownloader {
 	// private Map<String, XdccSearch> searchTypesMap;
 	@Inject
 	private SearchService searchService;
+
+	@Inject
+	private XdccCache cache;
 
 	private String currentServer;
 
@@ -52,6 +63,20 @@ public class DownloaderCore implements XdccDownloader {
 		workers = Executors.newCachedThreadPool();
 		queueWorkers = Executors.newFixedThreadPool(1);
 
+	}
+
+	@Override
+	public int refresh() {
+		Collection<DownloadBean> downloads = cache.getDownloadsFromCache();
+		for (DownloadBean downloadBean : downloads) {
+			Download d = new Download(downloadBean.getId(),
+					downloadBean.getDesc(), null, null);
+			d.setPercentage((int) downloadBean.getPerc());
+			d.setRate((int) downloadBean.getRate());
+			d.setState(downloadBean.getState());
+			downloadMap.put(d.getId(), d);
+		}
+		return downloadMap.size();
 	}
 
 	@Override
@@ -92,7 +117,15 @@ public class DownloaderCore implements XdccDownloader {
 	public String startDownload(final String id) {
 		XdccRequest request = cache().get(id);
 		if (request == null) {
-			return null;
+			// try fetch from local
+			request = cache.getRequest(id);
+			if (request == null) {
+				return null;
+			}
+			if (StringUtils.isEmpty(request.getDestination())) {
+				request.setDestination(incomingDir);
+			}
+
 		}
 		if (incomingDir == null || incomingDir.isEmpty()) {
 			throw new RuntimeException("incoming dir is empty");
@@ -100,13 +133,23 @@ public class DownloaderCore implements XdccDownloader {
 		if (currentServer != null && !currentServer.isEmpty()) {
 			request.setHost(currentServer);
 		}
-		if (downloadMap.get(id) != null) {
+		if (downloadMap.get(id) != null
+				&& downloadMap.get(id).getCurrentTransfer() != null) {
+
 			return id;
 		}
 		XdccFileTransfer xft = FileTransferFactory.createFileTransfer(request);
 		final Download d = new Download(request.getId(),
 				request.getDescription(), xft, null);
-		downloadMap.put(id, d);
+		if (downloadMap.containsKey(id)) {
+			downloadMap.replace(id, d);
+		} else {
+			downloadMap.put(id, d);
+		}
+
+		boolean downloadPersisted = cache.putDownloadInCache(ConvertUtil
+				.convert(d));
+		System.out.println(">>>download persisted: " + true);
 		workers.submit(new Callable<Boolean>() {
 			@Override
 			public Boolean call() throws Exception {
@@ -115,6 +158,8 @@ public class DownloaderCore implements XdccDownloader {
 					@Override
 					public void onStart() {
 						d.setStatusListener(this);
+						Download d = downloadMap.get(id);
+						// d.getCurrentTransfer().getState().name();
 						List<DownloadListener> listeners = listenerRegistry
 								.get(id);
 						for (DownloadListener downloadListener : listeners) {
@@ -133,6 +178,8 @@ public class DownloaderCore implements XdccDownloader {
 						if (getDownload(id) == null) {
 							return;
 						}
+						downloadMap.get(id).setState(
+								TransferState.WORKING.name());
 						downloadMap.get(id).setPercentage(perc);
 						downloadMap.get(id).setRate(rate);
 						List<DownloadListener> listeners = listenerRegistry
@@ -153,6 +200,9 @@ public class DownloaderCore implements XdccDownloader {
 						if (getDownload(id) == null) {
 							return;
 						}
+						downloadMap.get(id).setState(
+								TransferState.FINISHED.name());
+						cache.removeDownloadFromCache(ConvertUtil.convert(d));
 						downloadMap.remove(id);
 						List<DownloadListener> listeners = listenerRegistry
 								.get(id);
@@ -171,6 +221,9 @@ public class DownloaderCore implements XdccDownloader {
 						if (getDownload(id) == null) {
 							return;
 						}
+						downloadMap.get(id).setState(
+								TransferState.ABORTED.name());
+						cache.removeDownloadFromCache(ConvertUtil.convert(d));
 						Download d = downloadMap.remove(id);
 						List<DownloadListener> listeners = listenerRegistry
 								.get(id);
@@ -278,6 +331,14 @@ public class DownloaderCore implements XdccDownloader {
 	@Override
 	public List<String> listChannels() {
 		SearchBot bot = new SearchBot(false);
+		BotClientConfig config = new BotClientConfig();
+		config.setServer(this.currentServer);
+		config.setNick("xdccBot" + UUID.randomUUID().toString().substring(0, 6));
+		try {
+			bot.start(config);
+		} catch (BotException e) {
+			return new ArrayList<String>();
+		}
 		List<String> list = bot.listChannels();
 		bot.stop();
 		return list;
@@ -286,6 +347,14 @@ public class DownloaderCore implements XdccDownloader {
 	@Override
 	public List<String> listUsers(String channel) {
 		SearchBot bot = new SearchBot(false);
+		BotClientConfig config = new BotClientConfig();
+		config.setServer(this.currentServer);
+		config.setNick("xdccBot" + UUID.randomUUID().toString().substring(0, 6));
+		try {
+			bot.start(config);
+		} catch (BotException e) {
+			return new ArrayList<String>();
+		}
 		List<String> list = bot.listUsersInChannel(channel);
 		bot.stop();
 		return list;

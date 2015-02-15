@@ -45,4 +45,6 @@ public interface XdccDownloader {
 
 	public List<String> listUsers(String channel);
 
+	public int refresh();
+
 }

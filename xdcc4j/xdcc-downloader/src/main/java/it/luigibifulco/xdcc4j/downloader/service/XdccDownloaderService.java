@@ -1,6 +1,6 @@
 package it.luigibifulco.xdcc4j.downloader.service;
 
-import it.luigibifulco.xdcc4j.downloader.service.model.DownloadBean;
+import it.luigibifulco.xdcc4j.common.model.DownloadBean;
 
 import java.util.Collection;
 import java.util.List;
@@ -29,4 +29,8 @@ public interface XdccDownloaderService {
 	public Map<String, DownloadBean> cache();
 
 	public boolean reindex(String channel, String user);
+
+	public Collection<String> listChannels();
+
+	public Collection<String> listUsers(String channel);
 }

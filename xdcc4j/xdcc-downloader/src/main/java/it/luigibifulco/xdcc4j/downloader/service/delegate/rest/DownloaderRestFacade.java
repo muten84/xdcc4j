@@ -1,10 +1,11 @@
 package it.luigibifulco.xdcc4j.downloader.service.delegate.rest;
 
+import it.luigibifulco.xdcc4j.common.model.DownloadBean;
 import it.luigibifulco.xdcc4j.common.model.XdccRequest;
 import it.luigibifulco.xdcc4j.downloader.core.XdccDownloader;
+import it.luigibifulco.xdcc4j.downloader.core.XdccDownloader.DownloadListener;
 import it.luigibifulco.xdcc4j.downloader.core.model.Download;
 import it.luigibifulco.xdcc4j.downloader.service.XdccDownloaderService;
-import it.luigibifulco.xdcc4j.downloader.service.model.DownloadBean;
 import it.luigibifulco.xdcc4j.downloader.util.ConvertUtil;
 
 import java.util.ArrayList;
@@ -28,12 +29,12 @@ import com.sun.jersey.spi.resource.Singleton;
 
 @Path("/downloader")
 @Singleton
-public class DownloaderDelegate implements XdccDownloaderService {
+public class DownloaderRestFacade implements XdccDownloaderService {
 
 	@Inject
 	private XdccDownloader service;
 
-	Logger logger = LoggerFactory.getLogger(DownloaderDelegate.class);
+	Logger logger = LoggerFactory.getLogger(DownloaderRestFacade.class);
 
 	@Override
 	@GET
@@ -59,7 +60,9 @@ public class DownloaderDelegate implements XdccDownloaderService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public DownloadBean getDownload(@QueryParam("id") String id) {
 		Download d = service.getDownload(id);
-		return new DownloadBean(d.getId(), d.getDescription());
+		return it.luigibifulco.xdcc4j.downloader.core.util.ConvertUtil
+				.convert(d);
+		// return new DownloadBean(d.getId(), d.getDescription());
 	}
 
 	@Override
@@ -88,7 +91,18 @@ public class DownloaderDelegate implements XdccDownloaderService {
 	@Path("startDownload")
 	@Produces(MediaType.APPLICATION_JSON)
 	public String startDownload(@QueryParam("id") String id) {
-		return service.startDownload(id);
+		String ret = service.startDownload(id);
+		service.addDownloadStatusListener(id, new DownloadListener() {
+
+			@Override
+			public void onDownloadStausUpdate(String id, String updateMessage,
+					int percentage, int rate) {
+				System.out.println(id + " - " + updateMessage + " "
+						+ percentage);
+
+			}
+		});
+		return ret;
 	}
 
 	@Override
@@ -103,7 +117,7 @@ public class DownloaderDelegate implements XdccDownloaderService {
 	@GET
 	@Path("cancelDownload")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String cancelDownload(String id) {
+	public String cancelDownload(@QueryParam("id") String id) {
 		return service.cancelDownload(id);
 	}
 
@@ -132,13 +146,40 @@ public class DownloaderDelegate implements XdccDownloaderService {
 
 	@Override
 	@GET
+	@Path("listChannels")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<String> listChannels() {
+		Collection<String> list = service.listChannels();
+		return list;
+	}
+
+	@Override
+	@GET
+	@Path("listUsers")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<String> listUsers(@QueryParam("channel") String channel) {
+		Collection<String> list = service.listUsers(channel);
+		return list;
+	}
+
+	@Override
+	@GET
 	@Path("getAllDownloads")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Collection<DownloadBean> getAllDownloads() {
 		Collection<Download> list = service.getAllDownloads();
+		if (list.isEmpty()) {
+			// if empty try to refresh cache
+			System.out.println("in-memory list is empty refreshing cache!!!");
+			service.refresh();
+			list = service.getAllDownloads();
+		}
 		Collection<DownloadBean> dbs = new ArrayList<DownloadBean>();
 		for (Download d : list) {
-			dbs.add(ConvertUtil.convertFromXdccRequest(d));
+			if (d != null) {
+				dbs.add(it.luigibifulco.xdcc4j.downloader.core.util.ConvertUtil
+						.convert(d));
+			}
 		}
 		return dbs;
 	}

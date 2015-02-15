@@ -1,6 +1,6 @@
 package it.luigibifulco.xdcc4j.downloader.service;
 
-import it.luigibifulco.xdcc4j.downloader.service.delegate.rest.DownloaderDelegate;
+import it.luigibifulco.xdcc4j.downloader.service.delegate.rest.DownloaderRestFacade;
 import it.luigibifulco.xdcc4j.downloader.service.servlet.websocket.DownloadEventServlet;
 import it.luigibifulco.xdcc4j.downloader.service.servlet.websocket.WsFactory;
 
@@ -23,7 +23,7 @@ public class DownloaderServletModule extends ServletModule {
 	protected void configureServlets() {
 		bind(DefaultServlet.class).in(Singleton.class);
 		bind(DownloadEventServlet.class).in(Singleton.class);
-		bind(DownloaderDelegate.class).in(Singleton.class);
+		bind(DownloaderRestFacade.class).in(Singleton.class);
 		bind(WsFactory.class).in(Singleton.class);
 		ServletContext ctx = getServletContext();
 		// ServerContainer wscontainer = WebSocketServerContainerInitializer
