@@ -223,8 +223,8 @@ public class DownloaderCore implements XdccDownloader {
 						}
 						downloadMap.get(id).setState(
 								TransferState.ABORTED.name());
-						cache.removeDownloadFromCache(ConvertUtil.convert(d));
-						Download d = downloadMap.remove(id);
+						// cache.removeDownloadFromCache(ConvertUtil.convert(d));
+						// Download d = downloadMap.remove(id);
 						List<DownloadListener> listeners = listenerRegistry
 								.get(id);
 						for (DownloadListener downloadListener : listeners) {
