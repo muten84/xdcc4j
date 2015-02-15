@@ -1,4 +1,4 @@
-package it.luigibifulco.xdcc4j.downloader.servlet;
+package it.luigibifulco.xdcc4j.downloader.service.servlet;
 
 import com.google.inject.servlet.ServletModule;
 

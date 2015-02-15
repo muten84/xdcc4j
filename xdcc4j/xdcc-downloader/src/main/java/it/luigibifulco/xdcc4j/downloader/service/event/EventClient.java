@@ -1,4 +1,6 @@
-package it.luigibifulco.xdcc4j.downloader.event;
+package it.luigibifulco.xdcc4j.downloader.service.event;
+
+import it.luigibifulco.xdcc4j.downloader.service.servlet.websocket.DownloaderEventNotifier;
 
 import java.net.URI;
 
@@ -10,7 +12,7 @@ import org.eclipse.jetty.util.component.LifeCycle;
 
 public class EventClient {
 	public static void main(String[] args) {
-		URI uri = URI.create("ws://localhost:8080/events/");
+		URI uri = URI.create("ws://127.0.0.1:8080/xdcc4j/events/socket");
 
 		try {
 			WebSocketContainer container = ContainerProvider
@@ -18,7 +20,7 @@ public class EventClient {
 
 			try {
 				// Attempt Connect
-				Session session = container.connectToServer(EventSocket.class,
+				Session session = container.connectToServer(DownloaderEventNotifier.class,
 						uri);
 				// Send a message
 				session.getBasicRemote().sendText("Hello");

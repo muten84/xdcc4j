@@ -1,4 +1,4 @@
-package it.luigibifulco.xdcc4j.downloader.servlet;
+package it.luigibifulco.xdcc4j.downloader.service.servlet;
 
 import it.luigibifulco.xdcc4j.common.model.XdccRequest;
 import it.luigibifulco.xdcc4j.downloader.core.XdccDownloader;

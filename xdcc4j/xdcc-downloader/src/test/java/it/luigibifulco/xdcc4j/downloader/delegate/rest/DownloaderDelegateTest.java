@@ -2,9 +2,9 @@ package it.luigibifulco.xdcc4j.downloader.delegate.rest;
 
 import it.luigibifulco.xdcc4j.GuiceJUnitRunner;
 import it.luigibifulco.xdcc4j.GuiceJUnitRunner.GuiceModules;
-import it.luigibifulco.xdcc4j.downloader.core.DownloaderServiceModule;
 import it.luigibifulco.xdcc4j.downloader.core.XdccDownloader;
-import it.luigibifulco.xdcc4j.downloader.service.delegate.rest.DownloaderRestModule;
+import it.luigibifulco.xdcc4j.downloader.core.service.DownloaderServiceModule;
+import it.luigibifulco.xdcc4j.downloader.service.DownloaderServletModule;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,7 +31,7 @@ import com.google.inject.Inject;
 import com.google.inject.servlet.GuiceFilter;
 
 @RunWith(GuiceJUnitRunner.class)
-@GuiceModules({ DownloaderServiceModule.class, DownloaderRestModule.class })
+@GuiceModules({ DownloaderServiceModule.class, DownloaderServletModule.class })
 public class DownloaderDelegateTest {
 
 	private Server server;

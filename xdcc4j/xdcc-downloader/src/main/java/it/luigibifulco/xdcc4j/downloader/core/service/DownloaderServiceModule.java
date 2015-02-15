@@ -1,5 +1,6 @@
-package it.luigibifulco.xdcc4j.downloader.core;
+package it.luigibifulco.xdcc4j.downloader.core.service;
 
+import it.luigibifulco.xdcc4j.downloader.core.XdccDownloader;
 import it.luigibifulco.xdcc4j.search.SearchModule;
 
 import com.google.inject.AbstractModule;
@@ -19,7 +20,7 @@ public class DownloaderServiceModule extends AbstractModule {
 	protected void configure() {
 		install(new SearchModule());
 		bind(XdccDownloader.class).toInstance(
-				new DownloaderService(destinationDir));
+				new DownloaderCore(destinationDir));
 	}
 
 }

@@ -1,7 +1,9 @@
-package it.luigibifulco.xdcc4j.downloader.core;
+package it.luigibifulco.xdcc4j.downloader.core.service;
 
 import it.biffi.jirc.bot.SearchBot;
 import it.luigibifulco.xdcc4j.common.model.XdccRequest;
+import it.luigibifulco.xdcc4j.downloader.core.XdccDownloader;
+import it.luigibifulco.xdcc4j.downloader.core.XdccDownloader.DownloadListener;
 import it.luigibifulco.xdcc4j.downloader.core.model.Download;
 import it.luigibifulco.xdcc4j.ft.XdccFileTransfer;
 import it.luigibifulco.xdcc4j.ft.XdccFileTransfer.FileTransferStatusListener;
@@ -21,7 +23,7 @@ import java.util.concurrent.Executors;
 
 import com.google.inject.Inject;
 
-public class DownloaderService implements XdccDownloader {
+public class DownloaderCore implements XdccDownloader {
 
 	// @Inject
 	// private Map<String, XdccSearch> searchTypesMap;
@@ -42,7 +44,7 @@ public class DownloaderService implements XdccDownloader {
 
 	private ExecutorService queueWorkers;
 
-	public DownloaderService(String incominDir) {
+	public DownloaderCore(String incominDir) {
 		searchResult = new HashMap<String, XdccRequest>();
 		downloadMap = new ConcurrentHashMap<String, Download>();
 		this.incomingDir = incominDir;
