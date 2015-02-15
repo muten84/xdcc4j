@@ -1,6 +1,8 @@
 package it.luigibifulco.xdcc4j.search.cache;
 
+import it.luigibifulco.xdcc4j.common.model.DownloadBean;
 import it.luigibifulco.xdcc4j.common.model.XdccRequest;
+import it.luigibifulco.xdcc4j.db.DownloadBeanStore;
 import it.luigibifulco.xdcc4j.db.XdccRequestStore;
 import it.luigibifulco.xdcc4j.search.scan.XdccScanner;
 
@@ -26,7 +28,9 @@ public class XdccCache {
 	@Inject
 	private XdccScanner scanner;
 
-	private XdccRequestStore store;
+	private XdccRequestStore requestStore;
+
+	private DownloadBeanStore downloadsStore;
 
 	private Map<String, XdccRequest> cache;
 
@@ -42,7 +46,27 @@ public class XdccCache {
 			f.mkdirs();
 		}
 		cache = new ConcurrentHashMap<String, XdccRequest>();
-		store = new XdccRequestStore(cacheDir + "/cache.db");
+		requestStore = new XdccRequestStore(cacheDir + "/cache.db");
+		downloadsStore = new DownloadBeanStore(cacheDir + "/downloads.db");
+	}
+
+	public Collection<DownloadBean> getDownloadsFromCache() {
+		return downloadsStore.getAll();
+	}
+
+	public XdccRequest getRequest(String id) {
+		return requestStore.get(id);
+	}
+
+	public boolean putDownloadInCache(DownloadBean d) {
+		// return downloadsStore.saveOrUpdate(d.getId(), d) != null;
+		return downloadsStore.insert(d) != null;
+	}
+
+	public DownloadBean removeDownloadFromCache(DownloadBean d) {
+		DownloadBean e = downloadsStore.get(d.getId());
+		downloadsStore.remove(e);
+		return e;
 	}
 
 	public boolean cacheFrom(String server, String channel) {
@@ -64,7 +88,7 @@ public class XdccCache {
 	public boolean persistCache() {
 		Set<String> keys = cache.keySet();
 		for (String s : keys) {
-			store.insert(cache.get(s));
+			requestStore.saveOrUpdate(s, cache.get(s));
 		}
 		return true;
 	}
@@ -76,7 +100,7 @@ public class XdccCache {
 
 	public boolean cacheFromLocal() {
 		int currentSize = cache.size();
-		Collection<XdccRequest> reqs = store.getAll();
+		Collection<XdccRequest> reqs = requestStore.getAll();
 		for (XdccRequest xdccRequest : reqs) {
 			cache.put(xdccRequest.getId(), xdccRequest);
 		}
@@ -88,7 +112,7 @@ public class XdccCache {
 	}
 
 	public List<XdccRequest> search(XdccRequest like) {
-		return store.searchByExample(like);
+		return requestStore.searchByExample(like);
 	}
 
 	public String getCacheDir() {
