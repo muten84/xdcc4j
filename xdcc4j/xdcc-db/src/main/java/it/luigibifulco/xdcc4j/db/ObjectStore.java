@@ -17,7 +17,7 @@ public abstract class ObjectStore<E> {
 
 	public ObjectStore(String name, Class<E> objectType) {
 		odb = ODBFactory.open(name);
-		
+
 		this.clazz = objectType;
 	}
 
@@ -41,6 +41,10 @@ public abstract class ObjectStore<E> {
 		return i.longValueExact();
 	}
 
+	public E saveOrUpdate(String id, E e) {
+		return update(id, e, true);
+	}
+
 	@SuppressWarnings("unchecked")
 	public E insert(E e) {
 		OID id = odb.store(e);
@@ -48,13 +52,36 @@ public abstract class ObjectStore<E> {
 		E attached = (E) odb.getObjectFromId(id);
 		odb.disconnect(attached);
 		return attached;
+
+	}
+
+	protected E update(String id, E modifiedObj, boolean insertIfNotExists) {
+		E e = get(id);
+		if (e == null) {
+			if (!insertIfNotExists) {
+				return insert(modifiedObj);
+			} else {
+				return null;
+			}
+		}
+		odb.delete(e);
+		return insert(modifiedObj);
+	}
+
+	public E updateProperty(String id, String property, String newValue) {
+		return null;
 	}
 
 	public int clear() {
 		Collection<E> list = getAll();
 		int cnt = list.size();
+		odb.getObjects(getEntityType());
 		for (E e : list) {
-			odb.deleteCascade(e);
+			OID id = odb.getObjectId(e);
+			System.out.println(id);
+
+			odb.delete(odb.getObjectFromId(id));
+			// odb.deleteCascade(e);
 		}
 		odb.commit();
 		return cnt;

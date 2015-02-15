@@ -65,6 +65,23 @@ public class XdccRequestStoreTest {
 	}
 
 	@Test
+	public final void testClear() {
+		XdccRequestStore store = null;
+		try {
+			store = new XdccRequestStore("cache");
+			if (store.count() > 0) {
+				List<XdccRequest> r = (List<XdccRequest>) store.getAll();
+				for (XdccRequest xdccRequest : r) {
+					System.out.println(xdccRequest);
+				}
+				store.clear();
+				store.close();
+			}
+		} finally {
+		}
+	}
+
+	@Test
 	public final void testSearchSpecific() {
 		XdccRequestStore store = null;
 		try {

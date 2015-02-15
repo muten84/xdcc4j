@@ -14,13 +14,16 @@ import org.neodatis.odb.core.query.criteria.And;
 import org.neodatis.odb.core.query.criteria.Where;
 import org.neodatis.odb.impl.core.query.criteria.CriteriaQuery;
 
-
-
 public class XdccRequestStore extends ObjectStore<XdccRequest> {
 
 	public XdccRequestStore(String name) {
 		super(name, XdccRequest.class);
 	}
+
+	public XdccRequest saveOrUpdate(String id, XdccRequest e) {
+		e = XdccRequestCreator.identify(e);
+		return saveOrUpdate(id, e);
+	};
 
 	@Override
 	public XdccRequest insert(XdccRequest e) {
