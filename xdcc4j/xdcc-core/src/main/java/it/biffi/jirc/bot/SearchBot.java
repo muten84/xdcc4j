@@ -101,9 +101,12 @@ public class SearchBot implements Bot {
 					}
 
 				});
+		if (!channel.startsWith("#")) {
+			channel = "#" + channel;
+		}
 		connector.getBot().joinChannel(channel);
 
-		return channelsFuture.get(60000);
+		return channelsFuture.get(120000);
 	}
 
 	public List<String> listChannels() {
