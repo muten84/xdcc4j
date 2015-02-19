@@ -1,0 +1,19 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:b="urn:import:com.github.gwtbootstrap.client.ui">
+	<ui:style>
+	
+	</ui:style>
+
+	<g:HTMLPanel>
+		<!-- <b:Heading size="2">Xdcc Downloader</b:Heading> -->
+		<b:ResponsiveNavbar>
+			<b:Brand>Xdcc Downloader</b:Brand>
+			<!-- <b:Nav> <b:NavLink>Test</b:NavLink> <b:NavLink href="http://www.google.com">Another 
+				Test</b:NavLink> </b:Nav> <b:NavForm size="1" /> <b:Nav alignment="RIGHT"> 
+				<b:NavLink>Test</b:NavLink> </b:Nav> <b:NavText alignment="RIGHT">Right</b:NavText> -->
+			<b:NavSearch ui:field="searchText" size="2" placeholder="Search" alignment="LEFT" />
+		</b:ResponsiveNavbar>
+
+	</g:HTMLPanel>
+</ui:UiBinder> 

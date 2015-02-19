@@ -14,6 +14,10 @@ buildscript {
 apply plugin: 'war'
 apply plugin: 'gwt'
 
+dependencies{
+ gwt ('com.github.gwtbootstrap:gwt-bootstrap:2.3.2.0')
+}
+
 gwt {
     gwtVersion='2.7.0'
     modules 'it.luigibifulco.xdcc4j.ui.WebXdccDownloader'
