@@ -1,7 +1,10 @@
 package it.luigibifulco.xdcc4j.search.query;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
 
 public class XdccQueryBuilder {
 
@@ -13,7 +16,7 @@ public class XdccQueryBuilder {
 
 			private String to;
 
-			private String params;
+			private String[] params;
 
 			private String hostExclude;
 
@@ -28,7 +31,7 @@ public class XdccQueryBuilder {
 			}
 
 			@Override
-			public XdccQuery params(String params) {
+			public XdccQuery params(String... params) {
 				this.params = params;
 				return this;
 			}
@@ -37,7 +40,10 @@ public class XdccQueryBuilder {
 			public Map<String, String> getQueryAsMap() {
 				Map<String, String> map = new HashMap<String, String>();
 				map.put("to", this.to);
-				map.put("params", this.params);
+				String params = Arrays.toString(this.params);
+				params = params.replace("[", "");
+				params = params.replace("]", "");
+				map.put("params", params);
 				map.put(QueryFilter.HOST.toString(), this.hostExclude);
 				map.put(QueryCondition.HOST.toString(), this.hostReplace);
 				map.put(QueryFilter.DESCRIPTION.toString(),

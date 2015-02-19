@@ -6,6 +6,7 @@ import it.luigibifulco.xdcc4j.search.XdccSearchEngine;
 import it.luigibifulco.xdcc4j.search.XdccSearchFactory;
 import it.luigibifulco.xdcc4j.search.cache.XdccCache;
 import it.luigibifulco.xdcc4j.search.engine.SearchEngineType;
+import it.luigibifulco.xdcc4j.search.parser.CmPlusParser;
 import it.luigibifulco.xdcc4j.search.parser.XdccFinderParser;
 import it.luigibifulco.xdcc4j.search.parser.XdccItParser;
 import it.luigibifulco.xdcc4j.search.query.XdccQueryBuilder;
@@ -42,12 +43,12 @@ public class SearchServiceImpl implements SearchService {
 	}
 
 	@Override
-	public List<XdccRequest> search(String where, String what) {
+	public List<XdccRequest> search(String where, String... what) {
 		XdccSearchEngine engine = null;
 		SearchEngineType type = SearchEngineType.typeOf(where);
 		if (type == null) {
 			XdccRequest req = new XdccRequest();
-			req.setDescription(what);
+			req.setDescription(what[0]);
 			return cache.search(req);
 			// cache.search(like)
 		} else {
@@ -62,6 +63,11 @@ public class SearchServiceImpl implements SearchService {
 				engine = engineFactory.http(type,
 						Arrays.asList(new String[] { "search" }), " ",
 						new XdccFinderParser());
+			case cmplus_on_crocmax:
+				engine = engineFactory.http(type,
+						Arrays.asList(new String[] { "func", "q" }), "+",
+						new CmPlusParser());
+				break;
 			default:
 				throw new RuntimeException("Search type not supported: "
 						+ where + " - " + what);
@@ -77,6 +83,7 @@ public class SearchServiceImpl implements SearchService {
 	}
 
 	@Override
+	// TODO: provide a callback for this method!
 	public boolean reindex(final String server, final String channel,
 			final String user, boolean synch) {
 		Future f = worker.submit(new Runnable() {
@@ -84,12 +91,14 @@ public class SearchServiceImpl implements SearchService {
 			@Override
 			public void run() {
 				if (StringUtils.isEmpty(user)) {
-					cache.cacheFrom(server, channel);
+					boolean cached = cache.cacheFrom(server, channel);
 				} else {
 					boolean cached = cache.cacheFrom(server, channel, user);
 				}
-
-				cache.persistCache();
+				System.out
+						.println(">>>> cache operation complete<<<< persisting....");
+				boolean persisted = cache.persistCache();
+				System.out.println("persisted: " + persisted);
 			}
 		});
 		if (synch) {

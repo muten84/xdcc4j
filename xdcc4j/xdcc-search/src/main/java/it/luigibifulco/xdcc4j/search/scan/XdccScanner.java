@@ -15,6 +15,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class XdccScanner {
 
@@ -52,6 +54,7 @@ public class XdccScanner {
 
 	public List<XdccRequest> scan(String server, String channel,
 			boolean parallel) {
+		parallel = false;
 		List<XdccRequest> requests = new ArrayList<XdccRequest>();
 		SearchBot bot = new SearchBot(false);
 		BotClientConfig config = new BotClientConfig();
@@ -84,7 +87,7 @@ public class XdccScanner {
 						// request.setResource("");
 						requests.add(request);
 					}
-					System.out.println("Current requests size is: "
+					System.out.println(u + " Current requests size is: "
 							+ requests.size());
 				} catch (InterruptedException | ExecutionException e) {
 					return requests;
@@ -92,71 +95,85 @@ public class XdccScanner {
 			}
 			bot.stop();
 		} else {
-			ExecutorService service = Executors.newCachedThreadPool();
-			Collection<Future<List<XdccRequest>>> futures = new ArrayList<Future<List<XdccRequest>>>();
-			Collection<Callable<List<XdccRequest>>> tasks = new ArrayList<Callable<List<XdccRequest>>>();
-			System.out.println("scanning " + users.size() + " users...");
-			for (String user : users) {
-				Callable<List<XdccRequest>> task = () -> {
-					SearchBot abot = new SearchBot(false);
-					BotClientConfig aconfig = new BotClientConfig();
-					aconfig.setServer(server);
-					aconfig.setNick("xdccBot" + UUID.randomUUID().toString().substring(0, 6));
-					try {
-						abot.start(config);
-					} catch (BotException e) {
-						return requests;
-					}
-					int lines = abot.getUserListLines(user, channel);
-					System.out.println("scanning user: " + user);
-					List<String> packets = abot.scanUser(user, channel, lines);
-					if (packets == null) {
-						packets = new ArrayList<String>();
-					}
-
-					System.out.println("user " + user + " sent : "
-							+ packets.size() + " packets");
-					List<XdccRequest> reqs = new ArrayList<XdccRequest>();
-					for (String p : packets) {
-						XdccRequest request = templateFromPacket(p);
-						if (request == null) {
-							continue;
-						}
-						request.setChannel(channel);
-						request.setHost(server);
-						request.setPeer(user);
-						// request.setResource("");
-						reqs.add(request);
-					}
-					System.out.println("user " + user
-							+ " scanned current cache size: " + reqs.size()
-							+ " packets");
-					return reqs;
-				};
-				// tasks.add(task);
-				try {
-					Thread.sleep(500);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				futures.add(service.submit(task));
-
-			}
-
-			// try {
-			//
-			// //futures = service.invokeAll(tasks);
-			// } catch (InterruptedException e1) {
-			// e1.printStackTrace();
+			// ExecutorService service = Executors.newCachedThreadPool();
+			// Collection<Future<List<XdccRequest>>> futures = new
+			// ArrayList<Future<List<XdccRequest>>>();
+			// Collection<Callable<List<XdccRequest>>> tasks = new
+			// ArrayList<Callable<List<XdccRequest>>>();
+			// System.out.println("scanning " + users.size() + " users...");
+			// for (String user : users) {
+			// if (!user.contains("DVDRIP")) {
+			// System.out.println("discarding user: " + user);
+			// continue;
 			// }
-			for (Future<List<XdccRequest>> future : futures) {
-				try {
-					requests.addAll(future.get());
-				} catch (InterruptedException | ExecutionException e) {
-
-				}
-			}
+			// try {
+			// Thread.sleep(1000);
+			// } catch (InterruptedException e) {
+			// // TODO Auto-generated catch block
+			// e.printStackTrace();
+			// }
+			// Callable<List<XdccRequest>> task = () -> {
+			// SearchBot abot = new SearchBot(false);
+			// try {
+			// BotClientConfig aconfig = new BotClientConfig();
+			// aconfig.setServer(server);
+			// aconfig.setNick("xdccBot"
+			// + UUID.randomUUID().toString().substring(0, 6));
+			// try {
+			// abot.start(config);
+			// } catch (BotException e) {
+			// return requests;
+			// }
+			// int lines = abot.getUserListLines(user, channel);
+			// System.out.println("scanning user: " + user);
+			// List<String> packets = abot.scanUser(user, channel,
+			// lines);
+			// if (packets == null) {
+			// packets = new ArrayList<String>();
+			// }
+			//
+			// System.out.println("user " + user + " sent : "
+			// + packets.size() + " packets");
+			// List<XdccRequest> reqs = new ArrayList<XdccRequest>();
+			// for (String p : packets) {
+			// XdccRequest request = templateFromPacket(p);
+			// if (request == null) {
+			// continue;
+			// }
+			// request.setChannel(channel);
+			// request.setHost(server);
+			// request.setPeer(user);
+			// // request.setResource("");
+			// reqs.add(request);
+			// }
+			// System.out.println("user " + user
+			// + " scanned current cache size: " + reqs.size()
+			// + " packets");
+			// return reqs;
+			// } finally {
+			// abot.stop();
+			// }
+			// };
+			// // tasks.add(task);
+			//
+			// futures.add(service.submit(task));
+			//
+			// }
+			//
+			// // try {
+			// //
+			// // //futures = service.invokeAll(tasks);
+			// // } catch (InterruptedException e1) {
+			// // e1.printStackTrace();
+			// // }
+			// for (Future<List<XdccRequest>> future : futures) {
+			// try {
+			// requests.addAll(future.get(60000, TimeUnit.SECONDS));
+			// } catch (InterruptedException | ExecutionException |
+			// TimeoutException e) {
+			// e.printStackTrace();
+			// }
+			// }
 
 		}
 

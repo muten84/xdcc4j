@@ -88,7 +88,8 @@ public class XdccCache {
 	public boolean persistCache() {
 		Set<String> keys = cache.keySet();
 		for (String s : keys) {
-			requestStore.saveOrUpdate(s, cache.get(s));
+			//TODO: capire come fare gli update requestStore.saveOrUpdate(s, cache.get(s));
+			requestStore.insert(cache.get(s));
 		}
 		return true;
 	}

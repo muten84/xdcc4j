@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface SearchService {
 
-	public List<XdccRequest> search(String where, String what);
+	public List<XdccRequest> search(String where, String... what);
 
 	public boolean reindex(String server, String channel, String user,
 			boolean synch);

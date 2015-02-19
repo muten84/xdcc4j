@@ -43,4 +43,12 @@ public class SearchServiceTest {
 		}
 	}
 
+	@Test
+	public final void testSearchServiceCmPlus() {
+		List<XdccRequest> request = service.search(
+				SearchEngineType.cmplus_on_crocmax.toString(), "1", "amore");
+		for (XdccRequest xdccRequest : request) {
+			System.out.println(xdccRequest);
+		}
+	}
 }

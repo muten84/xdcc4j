@@ -12,7 +12,7 @@ public interface XdccQuery {
 
 	public XdccQuery replacefilter(Map<QueryCondition, String> replaceMap);
 
-	public XdccQuery params(String to);
+	public XdccQuery params(String... to);
 
 	public Map<String, String> getQueryAsMap();
 
