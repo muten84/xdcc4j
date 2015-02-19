@@ -76,7 +76,7 @@ public class DownloaderRestFacade implements XdccDownloaderService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Map<String, DownloadBean> search(@QueryParam("where") String where,
 			@QueryParam("what") String what) {
-		Map<String, XdccRequest> map = service.search(where, what);
+		Map<String, XdccRequest> map = service.search(where, what.split(","));
 		Map<String, DownloadBean> result = new HashMap<String, DownloadBean>();
 		Set<String> keys = map.keySet();
 		for (String s : keys) {

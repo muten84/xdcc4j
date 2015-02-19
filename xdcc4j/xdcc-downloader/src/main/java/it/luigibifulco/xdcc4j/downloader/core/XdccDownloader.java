@@ -22,7 +22,7 @@ public interface XdccDownloader {
 
 	public int cleanSearch();
 
-	public Map<String, XdccRequest> search(String where, String what);
+	public Map<String, XdccRequest> search(String where, String... what);
 
 	public String startDownload(String id);
 

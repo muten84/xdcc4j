@@ -91,7 +91,7 @@ public class DownloaderCore implements XdccDownloader {
 	}
 
 	@Override
-	public Map<String, XdccRequest> search(String where, String text) {
+	public Map<String, XdccRequest> search(String where, String... text) {
 		Map<String, XdccRequest> searchResult = new HashMap<String, XdccRequest>();
 		// XdccSearch seeker = searchTypesMap.get(where);
 		// if (seeker == null) {
