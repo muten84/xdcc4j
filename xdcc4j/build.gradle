@@ -1,9 +1,57 @@
 allprojects{
-apply plugin: 'java'
-apply plugin: 'eclipse'
- repositories{
- 	mavenCentral()
- }
+	//	javaVersion='1.8'
+	//	javaPath='C:/Program Files/Java/jdk1.8.0_31'
+	//	jdkName='jdk1.8.0_31'
+	// Set sourceCompatibility
+	apply plugin: 'java'
+	apply plugin: 'eclipse'
+	project.ext{
+		sourceCompatibility = 1.8
+		targetCompatibility = 1.8
+	}
+	if (project.hasProperty('javaVersion')) {
+		project.sourceCompatibility = project.javaVersion
+	}
+
+	// Set bootClasspath - but wait until after evaluation, to have all tasks defined
+	project.afterEvaluate {
+		if (project.hasProperty('javaPath')) {
+			project.tasks.withType(AbstractCompile, {
+				it.options.bootClasspath = "${project.javaPath}/jre/lib/rt.jar"
+			})
+		}
+	}
+
+	// Configure Eclipse .classpath
+	//	project.eclipse.classpath.file.whenMerged { Classpath cp ->
+	//		if (project.hasProperty('jdkName')) {
+	//			cp.entries.findAll { it.path.contains('JRE_CONTAINER') }.each { it.path += "/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/$project.jdkName" }
+	//		}
+	//	}
+
+
+
+	//	project.ext{
+	//		javaVersion='1.8'
+	//		javaPath='C:/Program Files/Java/jdk1.8.0_31'
+	//		jdkName='jdk1.8.0_31'
+	//	}
+	repositories{ mavenCentral() }
+
+
+
+	eclipse {
+		jdt {
+			sourceCompatibility = 1.8
+			targetCompatibility = 1.8
+		}
+		classpath{
+			containers.clear()
+			containers.add('org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8')
+		}
+	}
+
+
 }
 subprojects{
 
