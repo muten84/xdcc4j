@@ -11,7 +11,18 @@ apply plugin: 'war'
 apply plugin: 'gwt'
 apply plugin: 'eclipse'
 
-dependencies{ gwt ('com.github.gwtbootstrap:gwt-bootstrap:2.3.2.0') }
+dependencies{
+	runtime project(':xdcc-downloader')
+	runtime('javax.websocket:javax.websocket-api:1.0')
+	runtime('org.eclipse.jetty.websocket:javax-websocket-server-impl:9.2.7.v20150116')
+	runtime('org.eclipse.jetty:jetty-server:9.2.7.v20150116')
+	runtime('org.eclipse.jetty:jetty-servlet:9.2.7.v20150116')
+	runtime('org.eclipse.jetty.websocket:javax-websocket-client-impl:9.2.7.v20150116')
+	runtime('com.sun.jersey.contribs:jersey-guice:1.18.3')
+	runtime('org.codehaus.jackson:jackson-jaxrs:1.9.13')
+	runtime('com.sun.jersey:jersey-json:1.18.3')
+	gwt ('com.github.gwtbootstrap:gwt-bootstrap:2.3.2.0') 
+}
 
 gwt {
 	gwtVersion='2.7.0'

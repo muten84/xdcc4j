@@ -9,7 +9,7 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.ui.RootPanel;
 
 public class IrcMuleEntryPoint implements EntryPoint {
-
+//invoke http://127.0.0.1:8888/services/downloader/setServer?name=irc.ole
 	@Override
 	public void onModuleLoad() {
 		HeaderUi header = new HeaderUi();

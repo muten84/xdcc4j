@@ -1,24 +1,25 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 
-<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
-    version="2.5">
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_5.xsd"
+	version="2.5">
 
-    <display-name>HelloWorld Application</display-name>
-    <description>
-        This is a simple web application with a source code organization
-        based on the recommendations of the Application Developer's Guide.
-    </description>
+	<display-name>HelloWorld Application</display-name>
+	<description>
+		This is a simple web application with a source code organization
+		based on the recommendations of the Application Developer's Guide.
+	</description>
+	<listener>
+		<listener-class>it.luigibifulco.xdcc4j.downloader.service.servlet.XdccDownloadServletListener</listener-class>
+	</listener>
 
-   <!--  <servlet>
-        <servlet-name>HelloServlet</servlet-name>
-        <servlet-class>examples.Hello</servlet-class>
-    </servlet>
+	<filter>
+		<filter-name>guiceFilter</filter-name>
+		<filter-class>com.google.inject.servlet.GuiceFilter</filter-class>
+	</filter>
 
-    <servlet-mapping>
-        <servlet-name>HelloServlet</servlet-name>
-        <url-pattern>/hello</url-pattern>
-    </servlet-mapping> -->
-
+	<filter-mapping>
+		<filter-name>guiceFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
 </web-app> 
