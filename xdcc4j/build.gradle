@@ -17,7 +17,7 @@ allprojects{
 	project.afterEvaluate {
 		if (project.hasProperty('javaPath')) {
 			project.tasks.withType(AbstractCompile, {
-				it.options.bootClasspath = "${project.javaPath}/jre/lib/rt.jar"
+			//	it.options.bootClasspath = "${project.javaPath}/jre/lib/rt.jar"
 			})
 		}
 	}
