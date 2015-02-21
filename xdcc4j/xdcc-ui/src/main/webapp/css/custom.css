@@ -1,3 +1,15 @@
-.modal {
-		margin-left: -400px;
+.row {
+	margin-left: 5px !important;
+}
+
+.downloadButton {
+	margin-left: 10px;
+}
+
+.rowResult {
+	display: block !important;
+	cursor: pointer;
+	margin: 5px;
+	font-size: 14px;
+	text-align: center;
 }

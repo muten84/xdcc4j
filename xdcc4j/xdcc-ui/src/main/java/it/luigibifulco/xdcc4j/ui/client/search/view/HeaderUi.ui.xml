@@ -10,10 +10,6 @@
 	</ui:style>
 
 	<g:HTMLPanel>
-		<!-- <b:Heading size="2">Xdcc Downloader</b:Heading> -->
-		<b:Alert ui:field="alert" visible="false" heading="Warning."
-			type="ERROR" animation="true" close="false">Something
-			went wrong...</b:Alert>
 		<b:Dropdown text="Select server" icon="GITHUB">
 			<b:NavLink>irc.uragano.org</b:NavLink>
 			<b:NavLink>irc.crocmax.net</b:NavLink>
@@ -38,24 +34,6 @@
 				</b:Dropdown>
 			</b:Nav>
 		</b:ResponsiveNavbar>
-
-		<!-- <b:DataGrid alwaysShowScrollBars="true" bordered="true" title="Risultato 
-			della ricerca" ui:field="dataGrid"></b:DataGrid> -->
-		<b:FluidRow>
-			<b:Column size="12">
-				<bi:TableHeader ui:field="listHeader" addStyleNames="text-center">
-
-				</bi:TableHeader>
-				<bi:Table ui:field="list" striped="true" hover="true"
-					bordered="true" addStyleNames="pull-left" condensed="true">
-
-				</bi:Table>
-			</b:Column>
-			<!-- <b:Column size="4"> <bi:TableHeader ui:field="listButtonsHeader" 
-				addStyleNames="text-center"> Opzioni </bi:TableHeader> <bi:Table ui:field="listButtons" 
-				striped="true" hover="true" bordered="true" addStyleNames="pull-right" condensed="true"> 
-				</bi:Table> </b:Column> -->
-		</b:FluidRow>
 		<b:FluidRow>
 			<b:Column size="6">
 				<g:HTMLPanel>

@@ -8,39 +8,7 @@
 		margin: 10px;
 	}
 	</ui:style>
-
 	<g:HTMLPanel>
-		<!-- <b:Heading size="2">Xdcc Downloader</b:Heading> -->
-		<b:Alert ui:field="alert" visible="false" heading="Warning."
-			type="ERROR" animation="true" close="false">Something
-			went wrong...</b:Alert>
-		<b:Dropdown text="Select server" icon="GITHUB">
-			<b:NavLink>irc.uragano.org</b:NavLink>
-			<b:NavLink>irc.crocmax.net</b:NavLink>
-		</b:Dropdown>
-		<b:ResponsiveNavbar>
-			<b:Brand>Xdcc Downloader</b:Brand>
-			<!-- <b:Nav> <b:NavLink>Test</b:NavLink> <b:NavLink href="http://www.google.com">Another 
-				Test</b:NavLink> </b:Nav> <b:NavForm size="1" /> <b:Nav alignment="RIGHT"> 
-				<b:NavLink>Test</b:NavLink> </b:Nav> <b:NavText alignment="RIGHT">Right</b:NavText> -->
-			<b:Nav>
-				<b:NavSearch ui:field="searchText" size="3" placeholder="Cerca..."
-					alignment="LEFT" />
-
-
-			</b:Nav>
-			<b:Nav>
-				<b:Button block="false" enabled="false" ui:field="clearSearchBt">Pulisci</b:Button>
-			</b:Nav>
-			<b:Nav>
-				<b:Dropdown text="...">
-					<b:NavLink>Downloads</b:NavLink>
-				</b:Dropdown>
-			</b:Nav>
-		</b:ResponsiveNavbar>
-
-		<!-- <b:DataGrid alwaysShowScrollBars="true" bordered="true" title="Risultato 
-			della ricerca" ui:field="dataGrid"></b:DataGrid> -->
 		<b:FluidRow>
 			<b:Column size="12">
 				<bi:TableHeader ui:field="listHeader" addStyleNames="text-center">
