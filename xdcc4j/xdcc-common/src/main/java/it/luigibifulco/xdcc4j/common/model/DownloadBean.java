@@ -2,6 +2,9 @@ package it.luigibifulco.xdcc4j.common.model;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+
+@JsonAutoDetect
 public class DownloadBean implements Serializable {
 
 	/**
