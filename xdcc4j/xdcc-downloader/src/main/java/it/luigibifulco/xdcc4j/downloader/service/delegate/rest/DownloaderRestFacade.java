@@ -53,6 +53,14 @@ public class DownloaderRestFacade implements XdccDownloaderService {
 	public boolean setServer(@QueryParam("server") String server) {
 		return service.setServer(server);
 	}
+	
+	@Override
+	@GET
+	@Path("isConnected")
+	@Produces(MediaType.APPLICATION_JSON)
+	public String isConnected(){
+		return service.isConnected();
+	}
 
 	@Override
 	@GET

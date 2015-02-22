@@ -359,4 +359,9 @@ public class DownloaderCore implements XdccDownloader {
 		bot.stop();
 		return list;
 	}
+
+	@Override
+	public String isConnected() {
+		return StringUtils.defaultString(currentServer, "");
+	}
 }

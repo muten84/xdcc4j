@@ -47,4 +47,6 @@ public interface XdccDownloader {
 
 	public int refresh();
 
+	public String isConnected();
+
 }

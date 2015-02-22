@@ -33,4 +33,6 @@ public interface XdccDownloaderService {
 	public Collection<String> listChannels();
 
 	public Collection<String> listUsers(String channel);
+
+	String isConnected();
 }
