@@ -4,6 +4,13 @@
 	<inherits name="com.google.gwt.user.User" />
 	<inherits name="com.google.gwt.activity.Activity" />
 	<inherits name='com.github.gwtbootstrap.Bootstrap' />
+	<inherits name="com.github.nmorel.gwtjackson.GwtJackson" />
+	<inherits name="com.google.gwt.logging.Logging" />
+	<inherits name="it.luigibifulco.xdcc4j.common.model" />
+
+	<set-property name="gwt.logging.logLevel" value="SEVERE" />
+	<set-property name="gwt.logging.enabled" value="TRUE" />
+	<set-property name="gwt.logging.consoleHandler" value="ENABLED" />
 	<entry-point
 		class='it.luigibifulco.xdcc4j.ui.client.search.IrcMuleEntryPoint' />
 
