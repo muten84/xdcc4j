@@ -12,6 +12,9 @@ apply plugin: 'gwt'
 apply plugin: 'eclipse'
 
 dependencies{
+	gwt project(':xdcc-common')
+	providedCompile project(':xdcc-common')
+	//runtime project(':xdcc-common')
 	runtime project(':xdcc-downloader')
 	runtime('javax.websocket:javax.websocket-api:1.0')
 	runtime('org.eclipse.jetty.websocket:javax-websocket-server-impl:9.2.7.v20150116')
@@ -21,7 +24,7 @@ dependencies{
 	runtime('com.sun.jersey.contribs:jersey-guice:1.18.3')
 	runtime('org.codehaus.jackson:jackson-jaxrs:1.9.13')
 	runtime('com.sun.jersey:jersey-json:1.18.3')
-	gwt('com.github.gwtbootstrap:gwt-bootstrap:2.3.2.0') 
+	gwt('com.github.gwtbootstrap:gwt-bootstrap:2.3.2.0')
 	gwt('com.github.nmorel.gwtjackson:gwt-jackson:0.9.0')
 }
 
@@ -29,6 +32,7 @@ gwt {
 	gwtVersion='2.7.0'
 	modules 'it.luigibifulco.xdcc4j.ui.WebXdccDownloader'
 	superDev { noPrecompile=true }
+	src += files(project(':xdcc-common').sourceSets.main.allJava.srcDirs)
 }
 
 eclipse {
