@@ -115,14 +115,22 @@ public class DownloaderCore implements XdccDownloader {
 
 	@Override
 	public String startDownload(final String id) {
+		DownloadBean download = null;
 		XdccRequest request = cache().get(id);
 		if (request == null) {
 			// try fetch from local
 			request = cache.getRequest(id);
 			if (request == null) {
-				return null;
+				// TODO: memorizzare nel db dei downloads tutte le info per
+				// ricostruire la xdccrequest se non dovesse
+				// essere in cache
+				download = cache.getDownload(id);
+				if (download == null) {
+					return null;
+				}
 			}
-			if (StringUtils.isEmpty(request.getDestination())) {
+			if (request != null
+					&& StringUtils.isEmpty(request.getDestination())) {
 				request.setDestination(incomingDir);
 			}
 
@@ -131,14 +139,30 @@ public class DownloaderCore implements XdccDownloader {
 			throw new RuntimeException("incoming dir is empty");
 		}
 		if (currentServer != null && !currentServer.isEmpty()) {
-			request.setHost(currentServer);
+			if (request != null) {
+				request.setHost(currentServer);
+			}
 		}
 		if (downloadMap.get(id) != null
 				&& downloadMap.get(id).getCurrentTransfer() != null) {
-
+			// download tranfer is not null so download was just started
 			return id;
 		}
+		if (download != null) {
+			request = new XdccRequest();
+			request.setId(download.getId());
+			request.setChannel(download.getChannel());
+			request.setHost(download.getServer());
+			request.setDescription(download.getDesc());
+			request.setPeer(download.getFrom());
+			request.setResource(download.getResource());
+			if (StringUtils.isEmpty(request.getDestination())) {
+				request.setDestination(incomingDir);
+			}
+			// request.setTtl(ttl);
+		}
 		XdccFileTransfer xft = FileTransferFactory.createFileTransfer(request);
+
 		final Download d = new Download(request.getId(),
 				request.getDescription(), xft, null);
 		if (downloadMap.containsKey(id)) {
@@ -223,6 +247,17 @@ public class DownloaderCore implements XdccDownloader {
 						}
 						downloadMap.get(id).setState(
 								TransferState.ABORTED.name());
+						if (downloadMap.get(id).getCurrentTransfer() != null) {
+							try {
+								downloadMap.get(id).getCurrentTransfer()
+										.cancel();
+							} catch (Exception ex) {
+
+							}
+							downloadMap.get(id).setCurrentTransfer(null);
+							downloadMap.get(id).setState(
+									TransferState.ABORTED.name());
+						}
 						// cache.removeDownloadFromCache(ConvertUtil.convert(d));
 						// Download d = downloadMap.remove(id);
 						List<DownloadListener> listeners = listenerRegistry
@@ -270,7 +305,17 @@ public class DownloaderCore implements XdccDownloader {
 		if (getDownload(id) == null) {
 			return null;
 		}
+
+		Collection<DownloadBean> beans = cache.getDownloadsFromCache();
+		for (DownloadBean downloadBean : beans) {
+			if (downloadBean.getId().equals(id)) {
+				cache.removeDownloadFromCache(downloadBean);
+				break;
+			}
+		}
 		downloadMap.get(id).getCurrentTransfer().cancel();
+		// should fix issue for download recover in session
+		downloadMap.get(id).setCurrentTransfer(null);
 		return id;
 	}
 
