@@ -18,19 +18,23 @@ public class CmPlusParser implements XdccHtmlParser {
 		Set<XdccRequest> result = new HashSet<XdccRequest>();
 
 		for (Element element : els) {
-			String[] s = element.text().split(" ");
-			StringBuffer buff = new StringBuffer();
-			buff.append(s[1].replace("#", ""));
-			buff.append(",");
-			buff.append(s[2]);
-			buff.append(",");
-			buff.append(s[4]);
-			buff.append(",");
-			buff.append("cm-plus");
-			buff.append(",");
-			buff.append(s[0]);
-			result.add(XdccRequestCreator.convertFromXdccFinderResult(buff
-					.toString()));
+			try {
+				String[] s = element.text().split(" ");
+				StringBuffer buff = new StringBuffer();
+				buff.append(s[1].replace("#", ""));
+				buff.append(",");
+				buff.append(s[2]);
+				buff.append(",");
+				buff.append(s[4]);
+				buff.append(",");
+				buff.append("cm-plus");
+				buff.append(",");
+				buff.append(s[0]);
+				result.add(XdccRequestCreator.convertFromXdccFinderResult(buff
+						.toString()));
+			} catch (Exception e) {
+				continue;
+			}
 		}
 
 		return result;
