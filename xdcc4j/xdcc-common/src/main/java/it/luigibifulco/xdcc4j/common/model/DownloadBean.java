@@ -22,6 +22,14 @@ public class DownloadBean implements Serializable {
 
 	private String state;
 
+	private String server;
+
+	private String from;
+
+	private String channel;
+
+	private String resource;
+
 	public DownloadBean() {
 
 	}
@@ -102,6 +110,38 @@ public class DownloadBean implements Serializable {
 		} else if (!id.equals(other.id))
 			return false;
 		return true;
+	}
+
+	public String getServer() {
+		return server;
+	}
+
+	public void setServer(String server) {
+		this.server = server;
+	}
+
+	public String getFrom() {
+		return from;
+	}
+
+	public void setFrom(String from) {
+		this.from = from;
+	}
+
+	public String getResource() {
+		return resource;
+	}
+
+	public void setResource(String resource) {
+		this.resource = resource;
+	}
+
+	public String getChannel() {
+		return channel;
+	}
+
+	public void setChannel(String channel) {
+		this.channel = channel;
 	}
 
 }
