@@ -54,6 +54,10 @@ public class XdccCache {
 		return downloadsStore.getAll();
 	}
 
+	public DownloadBean getDownload(String id) {
+		return downloadsStore.get(id);
+	}
+
 	public XdccRequest getRequest(String id) {
 		return requestStore.get(id);
 	}
@@ -88,7 +92,8 @@ public class XdccCache {
 	public boolean persistCache() {
 		Set<String> keys = cache.keySet();
 		for (String s : keys) {
-			//TODO: capire come fare gli update requestStore.saveOrUpdate(s, cache.get(s));
+			// TODO: capire come fare gli update requestStore.saveOrUpdate(s,
+			// cache.get(s));
 			requestStore.insert(cache.get(s));
 		}
 		return true;
