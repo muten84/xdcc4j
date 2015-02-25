@@ -189,4 +189,8 @@ public class XdccFileTransferImpl implements XdccFileTransfer {
 		return true;
 	}
 
+	public XdccRequest getRequest() {
+		return request;
+	}
+
 }
