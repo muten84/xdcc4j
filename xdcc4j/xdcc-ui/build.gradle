@@ -13,7 +13,7 @@ apply plugin: 'eclipse'
 
 dependencies{
 	gwt project(':xdcc-common')
-	providedCompile project(':xdcc-common')
+	runtime project(':xdcc-common')
 	//runtime project(':xdcc-common')
 	runtime project(':xdcc-downloader')
 	runtime('javax.websocket:javax.websocket-api:1.0')

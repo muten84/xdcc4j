@@ -3,13 +3,21 @@ package it.luigibifulco.xdcc4j.ui.client.search.view;
 import it.luigibifulco.xdcc4j.ui.client.search.event.SearchHandler;
 
 import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.Dropdown;
 import com.github.gwtbootstrap.client.ui.Form.SubmitEvent;
 import com.github.gwtbootstrap.client.ui.Modal;
+import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.NavSearch;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.GwtEvent.Type;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.RequestException;
+import com.google.gwt.http.client.Response;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -20,6 +28,8 @@ import com.google.gwt.user.client.ui.Widget;
 public class HeaderUi extends Composite {
 
 	public final static Type<SearchHandler> SEARCH = new Type<SearchHandler>();
+
+	public final static Type<SearchHandler> DOWNLOADS = new Type<SearchHandler>();
 
 	public final static Type<SearchHandler> CLEAR = new Type<SearchHandler>();
 
@@ -36,6 +46,12 @@ public class HeaderUi extends Composite {
 	NavSearch searchText;
 
 	@UiField
+	Dropdown dropdown;
+
+	@UiField
+	Dropdown toolsDropdown;
+
+	@UiField
 	Label modalContent;
 
 	@UiField
@@ -43,6 +59,76 @@ public class HeaderUi extends Composite {
 
 	public HeaderUi() {
 		initWidget(uiBinder.createAndBindUi(this));
+		// int links = dropdown.getWidgetCount();
+		int links = dropdown.getMenuWiget().getWidgetCount();
+		for (int i = 0; i < links; i++) {
+			if (!(dropdown.getMenuWiget().getWidget(i) instanceof NavLink)) {
+				continue;
+			}
+			final NavLink slink = (NavLink) dropdown.getMenuWiget()
+					.getWidget(i);
+			slink.addClickHandler(new ClickHandler() {
+
+				@Override
+				public void onClick(ClickEvent event) {
+					final String name = slink.getText();
+					RequestBuilder builder = new RequestBuilder(
+							RequestBuilder.GET,
+							"services/downloader/setServer?server="
+									+ name.trim());
+					try {
+
+						builder.setCallback(new RequestCallback() {
+
+							@Override
+							public void onResponseReceived(Request request,
+									Response response) {
+								if (response.getStatusCode() == 200) {
+									alert("Correttamente connesso a: " + name);
+								}
+
+							}
+
+							@Override
+							public void onError(Request request,
+									Throwable exception) {
+								alert("Non riesco a collegarmi al server "
+										+ name);
+							}
+						});
+						builder.send();
+					} catch (RequestException e) {
+						alert("Un disturbo nella forza.... : " + e.getMessage());
+					}
+
+				}
+			});
+		}
+		NavLink downloadsLink = (NavLink) toolsDropdown.getMenuWiget()
+				.getWidget(0);
+		downloadsLink.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				fireEvent(new ShowDownloadsEvent());
+
+			}
+		});
+	}
+
+	public static class ShowDownloadsEvent extends GwtEvent<SearchHandler> {
+
+		@Override
+		public com.google.gwt.event.shared.GwtEvent.Type<SearchHandler> getAssociatedType() {
+			return DOWNLOADS;
+		}
+
+		@Override
+		protected void dispatch(SearchHandler handler) {
+			handler.onViewDownloads();
+
+		}
+
 	}
 
 	public static class ClearSearchEvent extends GwtEvent<SearchHandler> {
@@ -103,7 +189,7 @@ public class HeaderUi extends Composite {
 
 	}
 
-	private void alert(String text) {
+	public void alert(String text) {
 
 		modalContent.setText(text);
 		modal.show();

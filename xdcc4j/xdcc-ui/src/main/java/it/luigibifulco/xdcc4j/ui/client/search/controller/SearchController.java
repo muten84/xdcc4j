@@ -17,6 +17,7 @@ import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
+import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
@@ -30,6 +31,35 @@ public class SearchController implements SearchHandler {
 	public SearchController() {
 		this.view = Registry.get("searchui");
 		mapper = GWT.create(DownloadBeanMapper.class);
+	}
+
+	@Override
+	public void onViewDownloads() {
+		RequestBuilder builder = new RequestBuilder(RequestBuilder.GET,
+				"services/downloader/getAllDownloads");
+		builder.setCallback(new RequestCallback() {
+			@Override
+			public void onError(Request request, Throwable exception) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void onResponseReceived(Request request, Response response) {
+				String jsonString = response.getText();
+				Map<String, DownloadBean> downloads = getDownloads(jsonString);
+				Registry.register("downloads", downloads);
+				view.clearResult();
+				view.showDownloads();
+			}
+		});
+		try {
+			builder.send();
+		} catch (RequestException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	@Override
@@ -76,6 +106,20 @@ public class SearchController implements SearchHandler {
 
 	}
 
+	private Map<String, DownloadBean> getDownloads(String json) {
+		Map<String, DownloadBean> data = new HashMap<String, DownloadBean>();
+		JSONValue value = JSONParser.parseLenient(json);
+		JSONArray array = value.isArray();
+		int cnt = array.size();
+		for (int i = 0; i < cnt; i++) {
+			JSONValue cv = array.get(i);
+			String dJson = cv.toString();
+			DownloadBean bean = mapper.read(dJson);
+			data.put(bean.getId(), bean);
+		}
+		return data;
+	}
+
 	private Map<String, DownloadBean> getData(String json) {
 		Map<String, DownloadBean> data = new HashMap<String, DownloadBean>();
 		JSONValue value = JSONParser.parseLenient(json);
@@ -89,4 +133,5 @@ public class SearchController implements SearchHandler {
 		}
 		return data;
 	}
+
 }

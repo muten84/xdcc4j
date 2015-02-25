@@ -27,6 +27,7 @@ public class IrcMuleEntryPoint implements EntryPoint {
 		SearchController searchCtrl = new SearchController();
 		header.addHandler(searchCtrl, HeaderUi.SEARCH);
 		header.addHandler(searchCtrl, HeaderUi.CLEAR);
+		header.addHandler(searchCtrl, HeaderUi.DOWNLOADS);
 		searchui.addHandler(new DownloadRequestController(),
 				SearchUI.DOWNLOAD_REQUEST_START);
 		RootPanel.get("headerContainer").add(header);

@@ -7,5 +7,7 @@ import com.google.gwt.event.shared.EventHandler;
 public interface DownloadRequestHandler extends EventHandler {
 
 	public void onDownloadRequest(DownloadBean download);
+	
+	public void onDownloadCancel(DownloadBean download);
 
 }

@@ -6,4 +6,6 @@ public interface SearchHandler extends EventHandler {
 	public void onSearch(String inputText);
 
 	public void onClear();
+
+	public void onViewDownloads();
 }

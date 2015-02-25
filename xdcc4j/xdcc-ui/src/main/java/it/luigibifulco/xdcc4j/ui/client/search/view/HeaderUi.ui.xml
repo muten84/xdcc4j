@@ -10,9 +10,10 @@
 	</ui:style>
 
 	<g:HTMLPanel>
-		<b:Dropdown text="Select server" icon="GITHUB">
-			<b:NavLink>irc.uragano.org</b:NavLink>
-			<b:NavLink>irc.crocmax.net</b:NavLink>
+		<b:Dropdown ui:field="dropdown" text="Select server" icon="GITHUB">
+			<b:NavLink ui:field="uragano">irc.uragano.org</b:NavLink>
+			<b:NavLink ui:field="crocmax">irc.crocmax.net</b:NavLink>
+			<b:NavLink ui:field="openjoke">irc.openjoke.org</b:NavLink>
 		</b:Dropdown>
 		<b:ResponsiveNavbar>
 			<b:Brand>Xdcc Downloader</b:Brand>
@@ -29,7 +30,7 @@
 				<b:Button block="false" enabled="false" ui:field="clearSearchBt">Pulisci</b:Button>
 			</b:Nav>
 			<b:Nav>
-				<b:Dropdown text="...">
+				<b:Dropdown ui:field="toolsDropdown" text="Strumenti">
 					<b:NavLink>Downloads</b:NavLink>
 				</b:Dropdown>
 			</b:Nav>
