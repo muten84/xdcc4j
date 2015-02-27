@@ -113,7 +113,8 @@ public class SearchUI extends Composite {
 					"" + idx);
 			lID.setVisible(false);
 			com.github.gwtbootstrap.client.ui.Label l = new com.github.gwtbootstrap.client.ui.Label(
-					b.getDesc());
+					b.getDesc() + " - " + b.getServer() + " - "
+							+ b.getChannel() + " - " + b.getResource());
 			l.addStyleName("text-center");
 			l.setHeight("20px");
 			l.addStyleName("rowResult");
@@ -150,6 +151,7 @@ public class SearchUI extends Composite {
 			com.github.gwtbootstrap.client.ui.Label lID = new com.github.gwtbootstrap.client.ui.Label(
 					"" + downloadBean.getId());
 			lID.setVisible(false);
+			// TODO: showinfo btn
 			Button restart = new Button();
 			restart.setText("Restart download");
 			restart.addClickHandler(new ClickHandler() {
