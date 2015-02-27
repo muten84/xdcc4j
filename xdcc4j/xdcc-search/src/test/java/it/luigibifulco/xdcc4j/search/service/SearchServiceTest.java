@@ -37,7 +37,7 @@ public class SearchServiceTest {
 	@Test
 	public final void testSearchServiceRemote() {
 		List<XdccRequest> request = service.search(
-				SearchEngineType.xdcc_it.toString(), "amore");
+				SearchEngineType.xdccfinder.name(), "amore");
 		for (XdccRequest xdccRequest : request) {
 			System.out.println(xdccRequest.getDescription());
 		}
