@@ -14,13 +14,24 @@
 			<b:NavLink ui:field="uragano">irc.uragano.org</b:NavLink>
 			<b:NavLink ui:field="crocmax">irc.crocmax.net</b:NavLink>
 			<b:NavLink ui:field="openjoke">irc.openjoke.org</b:NavLink>
+			<b:NavLink ui:field="platinumirc">irc.platinumirc.org</b:NavLink>
+			<b:NavLink ui:field="chlame">irc.chlame.net</b:NavLink>
+			<b:NavLink ui:field="nodeairc">irc.nodeairc.net</b:NavLink>
+			<b:NavLink ui:field="darksin">irc.darksin.net</b:NavLink>
 		</b:Dropdown>
 		<b:ResponsiveNavbar>
 			<b:Brand>Xdcc Downloader</b:Brand>
 			<!-- <b:Nav> <b:NavLink>Test</b:NavLink> <b:NavLink href="http://www.google.com">Another 
 				Test</b:NavLink> </b:Nav> <b:NavForm size="1" /> <b:Nav alignment="RIGHT"> 
 				<b:NavLink>Test</b:NavLink> </b:Nav> <b:NavText alignment="RIGHT">Right</b:NavText> -->
+
 			<b:Nav>
+				<b:Dropdown ui:field="dropdownChannel" text="Select Channel"
+					icon="GITHUB">
+					<b:NavLink ui:field="cmplus">cm-plus</b:NavLink>
+					<b:NavLink ui:field="xdccit">xdcc.it</b:NavLink>
+					<b:NavLink ui:field="xdccfinder">xdccfinder</b:NavLink>
+				</b:Dropdown>
 				<b:NavSearch ui:field="searchText" size="3" placeholder="Cerca..."
 					alignment="LEFT" />
 
