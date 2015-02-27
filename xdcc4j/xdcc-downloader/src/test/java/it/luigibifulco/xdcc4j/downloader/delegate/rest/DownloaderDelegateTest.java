@@ -5,6 +5,7 @@ import it.luigibifulco.xdcc4j.GuiceJUnitRunner.GuiceModules;
 import it.luigibifulco.xdcc4j.downloader.core.XdccDownloader;
 import it.luigibifulco.xdcc4j.downloader.core.service.DownloaderServiceModule;
 import it.luigibifulco.xdcc4j.downloader.service.DownloaderServletModule;
+import it.luigibifulco.xdcc4j.search.engine.SearchEngineType;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -134,10 +135,10 @@ public class DownloaderDelegateTest {
 			HttpClient client = HttpClients.createDefault();
 			String method = "search";
 			String what = "divx";
-			String where = "xdccit";
+			String where = SearchEngineType.xdccfinder.name();
 			String params = "what=" + what + "&where=" + where;
 			HttpGet getRequest = new HttpGet("http://127.0.0.1:" + port
-					+ "/downloader/" + method + "?" + params);
+					+ "/services/downloader/" + method + "?" + params);
 			// getRequest.setParams(params);
 			HttpResponse response = client.execute(getRequest);
 			Assert.assertTrue("response status code is: "
