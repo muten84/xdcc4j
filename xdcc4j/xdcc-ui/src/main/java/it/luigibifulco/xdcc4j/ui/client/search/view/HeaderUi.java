@@ -1,5 +1,6 @@
 package it.luigibifulco.xdcc4j.ui.client.search.view;
 
+import it.luigibifulco.xdcc4j.ui.client.Registry;
 import it.luigibifulco.xdcc4j.ui.client.search.event.SearchHandler;
 
 import com.github.gwtbootstrap.client.ui.Button;
@@ -7,7 +8,9 @@ import com.github.gwtbootstrap.client.ui.Dropdown;
 import com.github.gwtbootstrap.client.ui.Form.SubmitEvent;
 import com.github.gwtbootstrap.client.ui.Modal;
 import com.github.gwtbootstrap.client.ui.NavLink;
+import com.github.gwtbootstrap.client.ui.NavList;
 import com.github.gwtbootstrap.client.ui.NavSearch;
+import com.github.gwtbootstrap.client.ui.base.UnorderedList;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -57,9 +60,13 @@ public class HeaderUi extends Composite {
 	@UiField
 	Button clearSearchBt;
 
+	@UiField
+	Dropdown dropdownChannel;
+
 	public HeaderUi() {
 		initWidget(uiBinder.createAndBindUi(this));
 		// int links = dropdown.getWidgetCount();
+		final UnorderedList servers = dropdown.getMenuWiget();
 		int links = dropdown.getMenuWiget().getWidgetCount();
 		for (int i = 0; i < links; i++) {
 			if (!(dropdown.getMenuWiget().getWidget(i) instanceof NavLink)) {
@@ -71,6 +78,8 @@ public class HeaderUi extends Composite {
 
 				@Override
 				public void onClick(ClickEvent event) {
+					// final NavLink link = ((NavLink) event.getSource());
+
 					final String name = slink.getText();
 					RequestBuilder builder = new RequestBuilder(
 							RequestBuilder.GET,
@@ -83,6 +92,11 @@ public class HeaderUi extends Composite {
 							@Override
 							public void onResponseReceived(Request request,
 									Response response) {
+								for (Widget w : servers) {
+									final NavLink tmp = (NavLink) w;
+									tmp.setActive(false);
+								}
+								slink.setActive(true);
 								if (response.getStatusCode() == 200) {
 									alert("Correttamente connesso a: " + name);
 								}
@@ -114,6 +128,27 @@ public class HeaderUi extends Composite {
 
 			}
 		});
+
+		final UnorderedList channels = (UnorderedList) dropdownChannel
+				.getMenuWiget();
+		for (Widget widget : channels) {
+			final NavLink chLink = (NavLink) widget;
+			Registry.register(chLink.getText(), chLink);
+			chLink.addClickHandler(new ClickHandler() {
+
+				@Override
+				public void onClick(ClickEvent event) {
+					for (Widget w : channels) {
+						final NavLink tmp = (NavLink) w;
+						Registry.<NavLink> get(tmp.getText()).setActive(false);
+					}
+					chLink.setActive(true);
+					Registry.register("searchType", chLink.getText());
+				}
+
+			});
+		}
+
 	}
 
 	public static class ShowDownloadsEvent extends GwtEvent<SearchHandler> {
