@@ -4,6 +4,7 @@ import it.luigibifulco.xdcc4j.common.model.DownloadBean;
 import it.luigibifulco.xdcc4j.ui.client.Registry;
 import it.luigibifulco.xdcc4j.ui.client.search.IrcMuleEntryPoint.DownloadBeanMapper;
 import it.luigibifulco.xdcc4j.ui.client.search.event.SearchHandler;
+import it.luigibifulco.xdcc4j.ui.client.search.view.HeaderUi;
 import it.luigibifulco.xdcc4j.ui.client.search.view.SearchUI;
 
 import java.util.HashMap;
@@ -26,10 +27,13 @@ public class SearchController implements SearchHandler {
 	Logger logger = Logger.getLogger("SearchController");
 	private SearchUI view;
 
+	private HeaderUi header;
+
 	private DownloadBeanMapper mapper;
 
 	public SearchController() {
 		this.view = Registry.get("searchui");
+		this.header = Registry.get("header");
 		mapper = GWT.create(DownloadBeanMapper.class);
 	}
 
@@ -64,28 +68,47 @@ public class SearchController implements SearchHandler {
 
 	@Override
 	public void onSearch(String inputText) {
-		RequestBuilder builder = new RequestBuilder(RequestBuilder.GET,
-				"services/downloader/search?where=cmplus_on_crocmax&what=1,"
-						+ inputText);
+		String searchType = Registry.get("searchType");
+		if (searchType == null || searchType.isEmpty()) {
+			header.alert("Seleziona un motore di ricerca");
+			return;
+		}
+		searchType = searchType.trim();
+		String where = "";
+		if (searchType.equals("cm-plus")) {
+			where = "cmplus_on_crocmax";
+		} else if (searchType.equals("xdcc.it")) {
+			where = "xdcc_it";
+		} else if (searchType.equals("xdccfinder")) {
+			where = "xdccfinder";
+		}
+		// header.alert("Cerco su: " + where + "--->" + searchType);
+		String url = "services/downloader/search?where=" + where + "&";
+		url += "what=";
+		if (where.equals("cmplus_on_crocmax")) {
+			url += "1,";
+		}
+		url += inputText;
+		RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, url);
 		try {
 			builder.setCallback(new RequestCallback() {
 
 				@Override
 				public void onResponseReceived(Request request,
 						Response response) {
+					view.clearResult();
 					logger.info("" + response.getStatusCode());
 					String jsonString = response.getText();
 					Map<String, DownloadBean> searchResult = getData(jsonString);
 					Registry.register("searchresult", searchResult);
-					view.clearResult();
+
 					view.setSearchResult();
 				}
 
 				@Override
 				public void onError(Request request, Throwable exception) {
 					logger.info("error " + exception.getCause());
-					// GWT.log(response.getText());
-
+					view.clearResult();
 				}
 			});
 			builder.send();
