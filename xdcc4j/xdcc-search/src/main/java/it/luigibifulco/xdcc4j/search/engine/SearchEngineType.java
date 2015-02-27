@@ -4,11 +4,11 @@ public enum SearchEngineType {
 
 	xdcc_it("xdcc.it"), xdccfinder("xdccfinder.it"), cmplus_on_crocmax(
 			"5.39.80.142/lista.php");
-	/*cm-plus*/
+	/* cm-plus */
 	// http://pumpit.chickenkiller.com/
 	// http://5.39.80.142/lista.php?func=1&q=
-	/*sunshine*/
-	//http://www.sunshinelist.eu/lista_aggiornata/SuNvcxv9u0342.php
+	/* sunshine */
+	// http://www.sunshinelist.eu/lista_aggiornata/SuNvcxv9u0342.php
 
 	private String domain;
 
@@ -23,14 +23,17 @@ public enum SearchEngineType {
 
 	public static SearchEngineType typeOf(String type) {
 		for (SearchEngineType t : SearchEngineType.values()) {
-			if (t.toString().equals(type)) {
+			if (t.name().trim().equals(type.trim())) {
 				return t;
 			}
 		}
 		switch (type) {
 		case "cmplus_on_crocmax":
 			return SearchEngineType.cmplus_on_crocmax;
-
+		case "xdccfinder":
+			return SearchEngineType.xdccfinder;
+		case "xdccit":
+			return SearchEngineType.xdcc_it;
 		default:
 			break;
 		}
