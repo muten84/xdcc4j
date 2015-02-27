@@ -63,6 +63,7 @@ public class SearchServiceImpl implements SearchService {
 				engine = engineFactory.http(type,
 						Arrays.asList(new String[] { "search" }), " ",
 						new XdccFinderParser());
+				break;
 			case cmplus_on_crocmax:
 				engine = engineFactory.http(type,
 						Arrays.asList(new String[] { "func", "q" }), "+",
