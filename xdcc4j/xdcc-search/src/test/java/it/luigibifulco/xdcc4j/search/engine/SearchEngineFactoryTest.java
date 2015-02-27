@@ -32,7 +32,8 @@ public class SearchEngineFactoryTest {
 	@Test
 	public final void test() {
 
-		XdccSearchEngine xdccit = factory.http(SearchEngineType.xdcc_it,
+		XdccSearchEngine xdccit = factory.http(
+				SearchEngineType.typeOf("xdcc_it"),
 				Arrays.asList(new String[] { "q" }), "+", new XdccItParser());
 		Assert.assertNotNull(xdccit);
 		XdccSearch search = searchTypeFactory.create(xdccit);
