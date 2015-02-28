@@ -112,9 +112,7 @@ public class XdccRequest implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((channel == null) ? 0 : channel.hashCode());
-		result = prime * result + ((host == null) ? 0 : host.hashCode());
-		result = prime * result + ((peer == null) ? 0 : peer.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		return result;
 	}
 
@@ -127,20 +125,10 @@ public class XdccRequest implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		XdccRequest other = (XdccRequest) obj;
-		if (channel == null) {
-			if (other.channel != null)
+		if (id == null) {
+			if (other.id != null)
 				return false;
-		} else if (!channel.equals(other.channel))
-			return false;
-		if (host == null) {
-			if (other.host != null)
-				return false;
-		} else if (!host.equals(other.host))
-			return false;
-		if (peer == null) {
-			if (other.peer != null)
-				return false;
-		} else if (!peer.equals(other.peer))
+		} else if (!id.equals(other.id))
 			return false;
 		return true;
 	}
