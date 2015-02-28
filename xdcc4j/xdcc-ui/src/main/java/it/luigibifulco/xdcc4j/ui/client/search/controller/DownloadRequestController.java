@@ -53,6 +53,7 @@ public class DownloadRequestController implements DownloadRequestHandler {
 
 	@Override
 	public void onDownloadRequest(final DownloadBean download) {
+
 		RequestBuilder connectedRequest = new RequestBuilder(
 				RequestBuilder.GET, "services/downloader/isConnected");
 		final RequestBuilder startDownloadRequest = new RequestBuilder(
@@ -92,8 +93,41 @@ public class DownloadRequestController implements DownloadRequestHandler {
 								+ e.getMessage());
 					}
 				} else {
-					HeaderUi header = Registry.get("header");
-					header.alert("Prova a connetterti prima ad un server, successivamente riprova ad avviare il download");
+
+					// no server forced try to using download reques server
+					String server = download.getServer();
+					if (server == null || server.isEmpty()) {
+						HeaderUi header = Registry.get("header");
+						header.alert("Prova a connetterti prima ad un server, successivamente riprova ad avviare il download");
+						return;
+					}
+					RequestBuilder setServerReq = new RequestBuilder(
+							RequestBuilder.GET,
+							"services/downloader/setServer?server=" + server);
+					setServerReq.setCallback(new RequestCallback() {
+
+						@Override
+						public void onResponseReceived(Request request,
+								Response response) {
+							try {
+								startDownloadRequest.send();
+							} catch (RequestException e) {
+								HeaderUi header = Registry.get("header");
+								header.alert("C'è un disturbo nella forza: "
+										+ e.getMessage());
+							}
+
+						}
+
+						@Override
+						public void onError(Request request, Throwable e) {
+							HeaderUi header = Registry.get("header");
+							header.alert("C'è un disturbo nella forza: "
+									+ e.getMessage());
+
+						}
+					});
+
 				}
 
 			}
@@ -112,5 +146,4 @@ public class DownloadRequestController implements DownloadRequestHandler {
 			header.alert("C'è un disturbo nella forza: " + e.getMessage());
 		}
 	}
-
 }

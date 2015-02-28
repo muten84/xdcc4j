@@ -185,8 +185,8 @@ public class SearchUI extends Composite {
 
 				}
 			}, ClickEvent.getType());
-			pb.setText(downloadBean.getDesc() + "::" + downloadBean.getPerc()
-					+ "%-->@" + (downloadBean.getRate() / 1000) + "KB/s");
+			pb.setText(downloadBean.getDesc() + " - " + downloadBean.getPerc()
+					+ "%" + " - " + (downloadBean.getRate() / 1000) + "KB/s");
 			if (downloadBean.getState().equals("WORKING")) {
 				pb.setColor(Color.SUCCESS);
 				pb.setType(Style.ANIMATED);
