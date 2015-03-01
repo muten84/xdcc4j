@@ -103,6 +103,8 @@ public class FileTransferBot implements IFileTransferBot {
 				}
 			}
 		};
+		// remove prevoious listeners...
+		removeListeners();
 		addEventListener(new MessageEvent(), listener);
 
 		addEventListener(new FileTransferStartEvent(),
@@ -146,6 +148,11 @@ public class FileTransferBot implements IFileTransferBot {
 	public void addEventListener(GenericEvent event,
 			AbstractListener<?> listener) {
 		connector.getEbus().addEventListener(event, listener);
+
+	}
+
+	private void removeListeners() {
+		connector.getEbus().removeAll();
 
 	}
 
