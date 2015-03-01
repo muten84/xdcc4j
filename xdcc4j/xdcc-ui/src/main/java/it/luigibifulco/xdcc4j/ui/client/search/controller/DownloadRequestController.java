@@ -146,4 +146,32 @@ public class DownloadRequestController implements DownloadRequestHandler {
 			header.alert("C'è un disturbo nella forza: " + e.getMessage());
 		}
 	}
+
+	@Override
+	public void onDownloadRemove(final DownloadBean download) {
+		final HeaderUi header = Registry.get("header");
+		RequestBuilder removeRequest = new RequestBuilder(RequestBuilder.GET,
+				"services/downloader/removeDownload?id=" + download.getId());
+		removeRequest.setCallback(new RequestCallback() {
+			@Override
+			public void onError(Request request, Throwable exception) {
+				header.alert("Non riesco a rimouvere questo download: "
+						+ download.getDesc());
+
+			}
+
+			@Override
+			public void onResponseReceived(Request request, Response response) {
+				if (response.getText().contains("true")) {
+					header.alert("Downdload Rimosso: " + download.getDesc());
+				}
+
+			}
+		});
+		try {
+			removeRequest.send();
+		} catch (RequestException e) {
+			header.alert("C'è un disturbo nella forza... " + e.getMessage());
+		}
+	}
 }

@@ -39,15 +39,15 @@ public class SearchUI extends Composite {
 
 		private DownloadBean download;
 
-		private boolean cancel;
+		private String type;
 
 		public DownloadRequestEvent(DownloadBean d) {
 			this.download = d;
 		}
 
-		public DownloadRequestEvent(DownloadBean d, boolean cancel) {
+		public DownloadRequestEvent(DownloadBean d, String type) {
 			this.download = d;
-			this.cancel = cancel;
+			this.type = type;
 		}
 
 		@Override
@@ -57,8 +57,11 @@ public class SearchUI extends Composite {
 
 		@Override
 		protected void dispatch(DownloadRequestHandler handler) {
-			if (cancel) {
+			if (type.equals("cancel")) {
 				handler.onDownloadCancel(download);
+				return;
+			} else if (type.equals("remove")) {
+				handler.onDownloadRemove(download);
 				return;
 			}
 			handler.onDownloadRequest(download);
@@ -162,13 +165,24 @@ public class SearchUI extends Composite {
 
 				}
 			});
-			Button removeDownload = new Button();
-			removeDownload.setText("Cancel download");
-			removeDownload.addClickHandler(new ClickHandler() {
+			Button cancelDownload = new Button();
+			cancelDownload.setText("Cancel download");
+			cancelDownload.addClickHandler(new ClickHandler() {
 
 				@Override
 				public void onClick(ClickEvent event) {
-					fireEvent(new DownloadRequestEvent(downloadBean, true));
+					fireEvent(new DownloadRequestEvent(downloadBean, "cancel"));
+
+				}
+			});
+
+			Button remDownload = new Button();
+			remDownload.setText("Remove download");
+			remDownload.addClickHandler(new ClickHandler() {
+
+				@Override
+				public void onClick(ClickEvent event) {
+					fireEvent(new DownloadRequestEvent(downloadBean, "remove"));
 
 				}
 			});
@@ -212,7 +226,8 @@ public class SearchUI extends Composite {
 				pb.setPercent(99);
 			}
 			r.add(restart);
-			r.add(removeDownload);
+			r.add(cancelDownload);
+			r.add(remDownload);
 			r.add(pb);
 
 			list.add(r);
