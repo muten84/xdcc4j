@@ -34,5 +34,7 @@ public interface XdccDownloaderService {
 
 	public Collection<String> listUsers(String channel);
 
-	String isConnected();
+	public String isConnected();
+
+	public boolean removeDownload(String id);
 }

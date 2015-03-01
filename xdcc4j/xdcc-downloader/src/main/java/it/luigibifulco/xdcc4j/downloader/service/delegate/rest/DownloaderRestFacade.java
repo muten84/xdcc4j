@@ -131,6 +131,14 @@ public class DownloaderRestFacade implements XdccDownloaderService {
 
 	@Override
 	@GET
+	@Path("removeDownload")
+	@Produces(MediaType.APPLICATION_JSON)
+	public boolean removeDownload(@QueryParam("id") String id) {
+		return service.removeDownload(id);
+	}
+
+	@Override
+	@GET
 	@Path("cancelAll")
 	@Produces(MediaType.TEXT_PLAIN)
 	public List<String> cancelAll() {

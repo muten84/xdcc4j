@@ -16,6 +16,7 @@ import it.luigibifulco.xdcc4j.search.cache.XdccCache;
 import it.luigibifulco.xdcc4j.search.service.SearchService;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +29,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
@@ -55,6 +58,8 @@ public class DownloaderCore implements XdccDownloader {
 
 	private ExecutorService queueWorkers;
 
+	private static Logger logger = LoggerFactory.getLogger("DownloaderCore");
+
 	public DownloaderCore(String incominDir) {
 		searchResult = new HashMap<String, XdccRequest>();
 		downloadMap = new ConcurrentHashMap<String, Download>();
@@ -67,6 +72,7 @@ public class DownloaderCore implements XdccDownloader {
 
 	@Override
 	public int refresh() {
+		logger.debug("refresh");
 		Collection<DownloadBean> downloads = cache.getDownloadsFromCache();
 		for (DownloadBean downloadBean : downloads) {
 			Download d = new Download(downloadBean.getId(),
@@ -76,22 +82,26 @@ public class DownloaderCore implements XdccDownloader {
 			d.setState(downloadBean.getState());
 			downloadMap.put(d.getId(), d);
 		}
+		logger.debug("refresh: " + downloadMap.size());
 		return downloadMap.size();
 	}
 
 	@Override
 	public boolean setServer(String server) {
+		logger.debug("setServer: " + server);
 		this.currentServer = server;
 		return true;
 	}
 
 	@Override
 	public Download getDownload(String id) {
+		logger.debug("getDownload: " + id);
 		return downloadMap.get(id);
 	}
 
 	@Override
 	public Map<String, XdccRequest> search(String where, String... text) {
+		logger.debug("search: " + where + " - " + Arrays.asList(text));
 		Map<String, XdccRequest> searchResult = new HashMap<String, XdccRequest>();
 		// XdccSearch seeker = searchTypesMap.get(where);
 		// if (seeker == null) {
@@ -115,6 +125,7 @@ public class DownloaderCore implements XdccDownloader {
 
 	@Override
 	public String startDownload(final String id) {
+		logger.debug("startDownload: " + id);
 		DownloadBean download = null;
 		XdccRequest request = cache().get(id);
 		if (request == null) {
@@ -144,8 +155,9 @@ public class DownloaderCore implements XdccDownloader {
 			}
 		}
 		if (downloadMap.get(id) != null
-				&& downloadMap.get(id).getCurrentTransfer() != null) {
-			// download tranfer is not null so download was just started
+				&& (downloadMap.get(id).getState().equals(TransferState.WORKING
+						.name()))) {
+			// download tranfer is WORKING so download was just started
 			return id;
 		}
 		if (download != null) {
@@ -173,7 +185,7 @@ public class DownloaderCore implements XdccDownloader {
 
 		boolean downloadPersisted = cache.putDownloadInCache(ConvertUtil
 				.convert(d));
-		System.out.println(">>>download persisted: " + true);
+		logger.debug(">>>download persisted: " + downloadPersisted);
 		workers.submit(new Callable<Boolean>() {
 			@Override
 			public Boolean call() throws Exception {
@@ -226,8 +238,8 @@ public class DownloaderCore implements XdccDownloader {
 						}
 						downloadMap.get(id).setState(
 								TransferState.FINISHED.name());
-						cache.removeDownloadFromCache(ConvertUtil.convert(d));
-						downloadMap.remove(id);
+						// cache.removeDownloadFromCache(ConvertUtil.convert(d));
+						// downloadMap.remove(id);
 						List<DownloadListener> listeners = listenerRegistry
 								.get(id);
 						for (DownloadListener downloadListener : listeners) {
@@ -302,20 +314,19 @@ public class DownloaderCore implements XdccDownloader {
 
 	@Override
 	public String cancelDownload(String id) {
+		logger.debug("cancelDownload: " + id);
 		if (getDownload(id) == null) {
 			return null;
 		}
 
-		Collection<DownloadBean> beans = cache.getDownloadsFromCache();
-		for (DownloadBean downloadBean : beans) {
-			if (downloadBean.getId().equals(id)) {
-				cache.removeDownloadFromCache(downloadBean);
-				break;
-			}
+		if (downloadMap.get(id).getCurrentTransfer() != null) {
+			downloadMap.get(id).getCurrentTransfer().cancel();
 		}
-		downloadMap.get(id).getCurrentTransfer().cancel();
+		// downloadMap.get(id).getCurrentTransfer().set
+		// downloadMap.get(id).setCurrentTransfer(null);
+		cache.putDownloadInCache(ConvertUtil.convert(downloadMap.get(id)));
 		// should fix issue for download recover in session
-		downloadMap.get(id).setCurrentTransfer(null);
+
 		return id;
 	}
 
@@ -335,6 +346,7 @@ public class DownloaderCore implements XdccDownloader {
 
 	@Override
 	public int cleanSearch() {
+		logger.debug("cleanSearch");
 		int result = searchResult.size();
 		searchResult.clear();
 		return result;
@@ -342,22 +354,27 @@ public class DownloaderCore implements XdccDownloader {
 
 	@Override
 	public Map<String, XdccRequest> cache() {
+		logger.debug("cache");
 		return new HashMap<String, XdccRequest>(this.searchResult);
 	}
 
 	@Override
 	public Collection<Download> getAllDownloads() {
+		logger.debug("getAllDownloads");
 		return downloadMap.values();
 	}
 
 	@Override
 	public boolean reindex(String channel, String user) {
+		logger.debug("reindex: " + channel + " - " + user);
 		return searchService.reindex(this.currentServer, channel, user, false);
 	}
 
 	@Override
 	public void addDownloadStatusListener(String downloadId,
 			DownloadListener listener) {
+		logger.debug("addDownloadStatusListener: " + downloadId + " - "
+				+ listener);
 		List<DownloadListener> list = listenerRegistry.get(downloadId);
 		if (list == null) {
 			list = new ArrayList<XdccDownloader.DownloadListener>();
@@ -369,12 +386,14 @@ public class DownloaderCore implements XdccDownloader {
 
 	@Override
 	public void removeDownloadStatusListener(String downloadId) {
+		logger.debug("addDownloadStatusListener: " + downloadId);
 		listenerRegistry.remove(downloadId);
 
 	}
 
 	@Override
 	public List<String> listChannels() {
+		logger.debug("listChannels");
 		SearchBot bot = new SearchBot(false);
 		BotClientConfig config = new BotClientConfig();
 		config.setServer(this.currentServer);
@@ -391,6 +410,8 @@ public class DownloaderCore implements XdccDownloader {
 
 	@Override
 	public List<String> listUsers(String channel) {
+		logger.debug("listUsers in: " + channel);
+
 		SearchBot bot = new SearchBot(false);
 		BotClientConfig config = new BotClientConfig();
 		config.setServer(this.currentServer);
@@ -407,6 +428,41 @@ public class DownloaderCore implements XdccDownloader {
 
 	@Override
 	public String isConnected() {
+		logger.debug("isConnected to " + currentServer);
 		return StringUtils.defaultString(currentServer, "");
+	}
+
+	@Override
+	public boolean removeDownload(String id) {
+		logger.debug("removeDownload: " + id);
+		Download d = getDownload(id);
+		if (d == null) {
+			return false;
+		}
+		boolean removed = false;
+		if (d != null) {
+			String state = d.getState();
+			if (!StringUtils.defaultIfEmpty(state, "").equals(
+					TransferState.ABORTED.name())) {
+				logger.warn("for download with id: "
+						+ id
+						+ " there is a remove request discarded cause download status is incompatible: "
+						+ state);
+				return false;
+			}
+
+			Collection<DownloadBean> beans = cache.getDownloadsFromCache();
+			for (DownloadBean downloadBean : beans) {
+				if (downloadBean.getId().equals(id)) {
+					cache.removeDownloadFromCache(downloadBean);
+					removed = true;
+					break;
+				}
+			}
+			if (removed) {
+				downloadMap.remove(id);
+			}
+		}
+		return removed;
 	}
 }
