@@ -4,6 +4,7 @@ import it.luigibifulco.xdcc4j.common.model.DownloadBean;
 
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 public class DownloadStoreTest {
@@ -17,6 +18,18 @@ public class DownloadStoreTest {
 		}
 		// store.remove(new DownloadBean("1e67ac40aca4a36e497dab2c7797b18f",
 		// ""));
+	}
+
+	@Test
+	public final void testRemove() {
+		DownloadBeanStore store = new DownloadBeanStore("downloads.db");
+		Assert.assertTrue(store.count() == 0);
+		store.insert(new DownloadBean("1", "new download"));
+		store.saveOrUpdate("1", new DownloadBean("2", "modified download"));
+		DownloadBean toBeRemoved = store.get("2");
+		Assert.assertTrue(toBeRemoved.getId().equals("2"));
+		store.remove(toBeRemoved);
+		Assert.assertTrue("Store size is: " + store.count(), store.count() == 0);
 	}
 
 	@Test
