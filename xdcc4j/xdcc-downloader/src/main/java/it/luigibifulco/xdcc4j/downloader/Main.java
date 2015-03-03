@@ -4,15 +4,21 @@ import it.luigibifulco.xdcc4j.downloader.core.service.DownloaderServiceModule;
 import it.luigibifulco.xdcc4j.downloader.service.DownloaderServletModule;
 import it.luigibifulco.xdcc4j.downloader.service.XdccDownloaderService;
 import it.luigibifulco.xdcc4j.downloader.service.servlet.websocket.DownloaderEventNotifier;
+import it.luigibifulco.xdcc4j.downloader.system.TrayIconHelper;
 
+import java.net.URL;
 import java.util.EnumSet;
 
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.websocket.server.ServerContainer;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.webapp.WebAppContext;
 import org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer;
 
 import com.google.inject.AbstractModule;
@@ -89,8 +95,48 @@ public class Main {
 				+ inject.getInstance(XdccDownloaderService.class));
 	}
 
+	public static void startWebApp(String webAppPath) throws Exception {
+		Server server = new Server(8080);
+		WebAppContext webapp = new WebAppContext();
+		webapp.setContextPath("/xdcc4j");
+		webapp.setWar(webAppPath);
+		server.setHandler(webapp);
+		server.start();
+
+		server.join();
+	}
+
+	private static void addTrayIcon() {
+		/* Use an appropriate Look and Feel */
+		try {
+			UIManager
+					.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+			// UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
+		} catch (UnsupportedLookAndFeelException ex) {
+			ex.printStackTrace();
+		} catch (IllegalAccessException ex) {
+			ex.printStackTrace();
+		} catch (InstantiationException ex) {
+			ex.printStackTrace();
+		} catch (ClassNotFoundException ex) {
+			ex.printStackTrace();
+		}
+		/* Turn off metal's use of bold fonts */
+		UIManager.put("swing.boldMetal", Boolean.FALSE);
+		// Schedule a job for the event-dispatching thread:
+		// adding TrayIcon.
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				TrayIconHelper.createAndShowGUI();
+			}
+		});
+	}
+
 	public static void main(String[] args) throws Exception {
-		startDownloader();
+		addTrayIcon();
+		URL url = Main.class.getResource("xdcc-ui-1.0.war");
+		startWebApp(url.getFile());
+		// startDownloader();
 		// startEventServer();
 	}
 }
