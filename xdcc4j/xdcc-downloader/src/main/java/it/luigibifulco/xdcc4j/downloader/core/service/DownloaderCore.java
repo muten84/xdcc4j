@@ -442,8 +442,8 @@ public class DownloaderCore implements XdccDownloader {
 		boolean removed = false;
 		if (d != null) {
 			String state = d.getState();
-			if (!StringUtils.defaultIfEmpty(state, "").equals(
-					TransferState.ABORTED.name())) {
+			if (StringUtils.defaultIfEmpty(state, "").equals(
+					TransferState.WORKING.name())) {
 				logger.warn("for download with id: "
 						+ id
 						+ " there is a remove request discarded cause download status is incompatible: "
@@ -456,7 +456,7 @@ public class DownloaderCore implements XdccDownloader {
 				if (downloadBean.getId().equals(id)) {
 					cache.removeDownloadFromCache(downloadBean);
 					removed = true;
-					break;
+					// break;
 				}
 			}
 			if (removed) {
