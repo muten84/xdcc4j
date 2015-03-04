@@ -134,8 +134,8 @@ public class Main {
 
 	public static void main(String[] args) throws Exception {
 		addTrayIcon();
-		URL url = Main.class.getResource("xdcc-ui-1.0.war");
-		startWebApp(url.getFile());
+		// URL url = Main.class.getResource("xdcc-ui-1.0.war");
+		startWebApp(args[0]);
 		// startDownloader();
 		// startEventServer();
 	}
