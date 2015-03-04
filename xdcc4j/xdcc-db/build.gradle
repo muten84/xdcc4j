@@ -1,10 +1,6 @@
-repositories{
-	maven{
-		url 'http://hypergraphdb.org/maven'
-	}
-}
 
 dependencies{
-	compile project(':xdcc-common')
+	//compile project(':xdcc-common')
+	compile('it.luigibifulco.xdcc4j:xdcc-common:1.0')
 	compile('org.neodatis.odb:neodatis-odb:1.9+')
 }
