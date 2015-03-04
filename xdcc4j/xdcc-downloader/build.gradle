@@ -1,6 +1,8 @@
+apply plugin:'application'
+mainClassName = "it.luigibifulco.xdcc4j.downloader.Main"
 dependencies{
-	compile project(':xdcc-ft');
-	testCompile project(':xdcc-test-util')
+	compile('it.luigibifulco.xdcc4j:xdcc-ft:1.0')
+	testCompile('it.luigibifulco.xdcc4j:xdcc-test-util:1.0')
 	testCompile('org.apache.httpcomponents:httpclient:4.3.6')
 	compile('com.google.inject.extensions:guice-servlet:4.0-beta5')
 	//8.1.14.v20131031
@@ -11,8 +13,13 @@ dependencies{
 	compile('org.eclipse.jetty.websocket:javax-websocket-client-impl:9.2.7.v20150116')
 	compile('com.sun.jersey.contribs:jersey-guice:1.18.3')
 	compile('org.codehaus.jackson:jackson-jaxrs:1.9.13')
-	runtime('com.sun.jersey:jersey-json:1.18.3')
-	
-	
-	
+	runtime('com.sun.jersey:jersey-json:1.18.3')	
+}
+//appArgs='../war'
+distZip {
+    into(project.name+'-'+project.version) {
+        from './dist'
+        include 'war/**/*'
+        include 'bin/**/*'
+    }
 }
