@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.springsource.ide.eclipse.gradle.launch">
+<stringAttribute key="org.eclipse.debug.core.ATTR_REFRESH_SCOPE" value="${workspace}"/>
+<stringAttribute key="org.eclipse.debug.ui.ATTR_CAPTURE_IN_FILE" value="package.gradle.launch"/>
+<booleanAttribute key="org.eclipse.debug.ui.ATTR_LAUNCH_IN_BACKGROUND" value="false"/>
+<listAttribute key="org.eclipse.debug.ui.favoriteGroups">
+<listEntry value="org.eclipse.ui.externaltools.launchGroup"/>
+</listAttribute>
+<stringAttribute key="org.springsource.ide.eclipse.gradle.launch.PROJECT" value="xdcc4j"/>
+<stringAttribute key="org.springsource.ide.eclipse.gradle.launch.TASKTEXT" value="clean install :xdcc-ui:war :xdcc-downloader:distZip&#10;"/>
+</launchConfiguration>
