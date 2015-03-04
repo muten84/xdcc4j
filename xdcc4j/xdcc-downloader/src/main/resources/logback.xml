@@ -13,4 +13,5 @@
 	<logger name="it.luigibifulco.xdcc4j" level="DEBUG">
 		<appender-ref ref="STDOUT" />
 	</logger>
+
 </configuration>

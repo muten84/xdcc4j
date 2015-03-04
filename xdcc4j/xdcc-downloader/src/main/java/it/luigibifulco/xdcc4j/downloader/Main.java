@@ -6,7 +6,6 @@ import it.luigibifulco.xdcc4j.downloader.service.XdccDownloaderService;
 import it.luigibifulco.xdcc4j.downloader.service.servlet.websocket.DownloaderEventNotifier;
 import it.luigibifulco.xdcc4j.downloader.system.TrayIconHelper;
 
-import java.net.URL;
 import java.util.EnumSet;
 
 import javax.swing.SwingUtilities;

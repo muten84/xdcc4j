@@ -22,4 +22,5 @@ distZip {
         include 'war/**/*'
         include 'bin/**/*'
     }
+
 }

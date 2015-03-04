@@ -1,4 +1,3 @@
-
 dependencies{
 	//compile project(':xdcc-common')
 	compile('it.luigibifulco.xdcc4j:xdcc-common:1.0')
