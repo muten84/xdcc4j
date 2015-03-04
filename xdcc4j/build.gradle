@@ -36,7 +36,12 @@ allprojects{
 	//		javaPath='C:/Program Files/Java/jdk1.8.0_31'
 	//		jdkName='jdk1.8.0_31'
 	//	}
-	repositories{ mavenCentral() }
+	
+
+	repositories{
+		mavenLocal() 
+		mavenCentral()
+ 	}
 
 
 
@@ -54,7 +59,7 @@ allprojects{
 
 }
 subprojects{
-
+	apply plugin: 'maven'
 	project.group='it.luigibifulco.xdcc4j'
 	project.version='1.0'
 	dependencies{
@@ -70,3 +75,4 @@ subprojects{
 		
 		}
 }
+
