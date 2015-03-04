@@ -15,7 +15,7 @@ dependencies{
 	gwt project(':xdcc-common')
 	runtime project(':xdcc-common')
 	//runtime project(':xdcc-common')
-	runtime project(':xdcc-downloader')
+	runtime('it.luigibifulco.xdcc4j:xdcc-downloader:1.0')
 	runtime('javax.websocket:javax.websocket-api:1.0')
 	runtime('org.eclipse.jetty.websocket:javax-websocket-server-impl:9.2.7.v20150116')
 	runtime('org.eclipse.jetty:jetty-server:9.2.7.v20150116')
@@ -35,10 +35,21 @@ gwt {
 	src += files(project(':xdcc-common').sourceSets.main.allJava.srcDirs)
 }
 
-eclipse {
-
-	classpath{
-
-		containers.add('com.google.gwt.eclipse.core.GWT_CONTAINER')
+	eclipse {
+		jdt {
+			sourceCompatibility = 1.7
+			targetCompatibility = 1.7
+		}
+		classpath{
+			containers.clear()
+			containers.add('org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7')
+			containers.add('com.google.gwt.eclipse.core.GWT_CONTAINER')
+		}
 	}
+
+task explodedWar(type: Copy) {
+    into "../xdcc-downloader/dist/war/"
+    with war
 }
+
+war.dependsOn explodedWar
