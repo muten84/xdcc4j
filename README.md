@@ -8,37 +8,16 @@ This is a modular project :
  - xdcc-common contains all common model and utils class.
  - xdcc-search offer the basic API for searching on most suitable irc database bot on various channels.
  - xdcc-ft (ft stay for File Transfer) offer basic API to start new file transfer in very simple way.
- - xdcc-downloader: it can use xdcc-search and xdcc-ft for starting more downloads in parallel mode.
+ - xdcc-downloader: it can use xdcc-search and xdcc-ft for starting more downloads in parallel mode. It expose an awesome REST API for managing your downloader. 
+ - xdcc-ui contains basic User Interface widget providing basic user experience. Trough the web ui experience, users can control search and downloads of wanted files. 
  
- Actual State:
-  - xdcc-search actually support only the xdcc.it site, i'm working for supporting more databases.
-  - xdcc-ft can only start in-memory file transfer. It will be extended with a FileTransferService and with a persistent layer
-  - xdcc-downloader actually it's a simple demo of how to use xdcc-search together with xdcc-ft.
-  The SimpleXdccDownloader show how they can be used:
-  
-Let's see simple demo code:
-  
-	 	XdccDownloader downloader = new SimpleXdccDownloader("xdcc.it");
-  
-  search what you want:
+Distributions:
+Xdcc Downloader 1.0-pre-alpha was released. There are some known issues. It will be solved in the next beta release. However your downloads and your search operation will work nicely. If you find some bugs or mistakes you can contact me, and feel free to open issues on github.
+The pre-alpha release provide a nice "Web Distribution" with a stand-alone server working on Windows Platform.
+You can download binaries of pre-alpha release frome here:
 
-		 downloader.search("my favourite series");
-  
-SimpleXdccDownloader is statefull so let's start the party....if you want to leave all the work to the downloader you can invoke the startAnyAvailableFromList method:
-   
-  		String id = downloader.startAnyAvailableFromList();
-  
-Check the download status:
+Once started the tray icon is showed on your system. Double click on and the browser will start with the UI for searching and downloading. Follow the istruction messages and good luck with your downloads.
 
-   	Download d = downloader.getDownload(id);
- 
-   	TransferState state = d.getCurrentTransfer().getState();
- 
-   	Assert.assertTrue(state == TransferState.WORKING);
- 
-That's all!
-  
-Check out test classes for more details and stay tuned, i'm working for docs and web-gui!!
   
   
  
