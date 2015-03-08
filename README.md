@@ -14,7 +14,7 @@ This is a modular project :
 Distributions:
 Xdcc Downloader 1.0-pre-alpha was released. There are some known issues. It will be solved in the next beta release. However your downloads and your search operation will work nicely. If you find some bugs or mistakes you can contact me, and feel free to open issues on github.
 The pre-alpha release provide a nice "Web Distribution" with a stand-alone server working on Windows Platform.
-You can download binaries of pre-alpha release frome here:
+You can download binaries of pre-alpha release frome here: http://www.filedropper.com/xdcc-downloader-10-pre-alpha
 
 Once started the tray icon is showed on your system. Double click on and the browser will start with the UI for searching and downloading. Follow the istruction messages and good luck with your downloads.
 
