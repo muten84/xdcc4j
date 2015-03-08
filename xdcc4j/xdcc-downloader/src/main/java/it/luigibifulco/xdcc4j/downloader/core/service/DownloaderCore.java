@@ -54,7 +54,7 @@ public class DownloaderCore implements XdccDownloader {
 
 	private ExecutorService workers;
 
-	private ConcurrentHashMap<String, List<DownloadListener>> listenerRegistry;
+	private ConcurrentHashMap<String, DownloadListener> listenerRegistry;
 
 	private ExecutorService queueWorkers;
 
@@ -64,7 +64,7 @@ public class DownloaderCore implements XdccDownloader {
 		searchResult = new HashMap<String, XdccRequest>();
 		downloadMap = new ConcurrentHashMap<String, Download>();
 		this.incomingDir = incominDir;
-		listenerRegistry = new ConcurrentHashMap<String, List<XdccDownloader.DownloadListener>>();
+		listenerRegistry = new ConcurrentHashMap<String, DownloadListener>();
 		workers = Executors.newCachedThreadPool();
 		queueWorkers = Executors.newFixedThreadPool(1);
 
@@ -196,16 +196,13 @@ public class DownloaderCore implements XdccDownloader {
 						d.setStatusListener(this);
 						Download d = downloadMap.get(id);
 						// d.getCurrentTransfer().getState().name();
-						List<DownloadListener> listeners = listenerRegistry
-								.get(id);
-						for (DownloadListener downloadListener : listeners) {
-							Callable<Boolean> task = () -> {
-								downloadListener.onDownloadStausUpdate(id,
-										"start", 0, 0);
-								return true;
-							};
-							queueWorkers.submit(task);
-						}
+						DownloadListener listener = listenerRegistry.get(id);
+
+						Callable<Boolean> task = () -> {
+							listener.onDownloadStausUpdate(id, "start", 0, 0);
+							return true;
+						};
+						queueWorkers.submit(task);
 
 					}
 
@@ -218,16 +215,14 @@ public class DownloaderCore implements XdccDownloader {
 								TransferState.WORKING.name());
 						downloadMap.get(id).setPercentage(perc);
 						downloadMap.get(id).setRate(rate);
-						List<DownloadListener> listeners = listenerRegistry
-								.get(id);
-						for (DownloadListener downloadListener : listeners) {
-							Callable<Boolean> task = () -> {
-								downloadListener.onDownloadStausUpdate(id,
-										"progress", perc, rate);
-								return true;
-							};
-							queueWorkers.submit(task);
-						}
+						DownloadListener listener = listenerRegistry.get(id);
+
+						Callable<Boolean> task = () -> {
+							listener.onDownloadStausUpdate(id, "progress",
+									perc, rate);
+							return true;
+						};
+						queueWorkers.submit(task);
 
 					}
 
@@ -240,16 +235,15 @@ public class DownloaderCore implements XdccDownloader {
 								TransferState.FINISHED.name());
 						// cache.removeDownloadFromCache(ConvertUtil.convert(d));
 						// downloadMap.remove(id);
-						List<DownloadListener> listeners = listenerRegistry
-								.get(id);
-						for (DownloadListener downloadListener : listeners) {
-							Callable<Boolean> task = () -> {
-								downloadListener.onDownloadStausUpdate(id,
-										"finish", 100, 100);
-								return true;
-							};
-							queueWorkers.submit(task);
-						}
+						DownloadListener listener = listenerRegistry.get(id);
+
+						Callable<Boolean> task = () -> {
+							listener.onDownloadStausUpdate(id, "finish", 100,
+									100);
+							return true;
+						};
+						queueWorkers.submit(task);
+
 					}
 
 					@Override
@@ -272,30 +266,27 @@ public class DownloaderCore implements XdccDownloader {
 						}
 						// cache.removeDownloadFromCache(ConvertUtil.convert(d));
 						// Download d = downloadMap.remove(id);
-						List<DownloadListener> listeners = listenerRegistry
-								.get(id);
-						for (DownloadListener downloadListener : listeners) {
-							Callable<Boolean> task = () -> {
-								downloadListener.onDownloadStausUpdate(id,
-										"error", d.getPercentage(), d.getRate());
-								return true;
-							};
-							queueWorkers.submit(task);
-						}
+						DownloadListener listener = listenerRegistry.get(id);
+
+						Callable<Boolean> task = () -> {
+							listener.onDownloadStausUpdate(id, "error",
+									d.getPercentage(), d.getRate());
+							return true;
+						};
+						queueWorkers.submit(task);
+
 					}
 
 					@Override
 					public void onStatusUpdate(String status) {
-						List<DownloadListener> listeners = listenerRegistry
-								.get(id);
-						for (DownloadListener downloadListener : listeners) {
-							Callable<Boolean> task = () -> {
-								downloadListener.onDownloadStausUpdate(id,
-										status, d.getPercentage(), d.getRate());
-								return true;
-							};
-							queueWorkers.submit(task);
-						}
+						DownloadListener listener = listenerRegistry.get(id);
+
+						Callable<Boolean> task = () -> {
+							listener.onDownloadStausUpdate(id, status,
+									d.getPercentage(), d.getRate());
+							return true;
+						};
+						queueWorkers.submit(task);
 
 					}
 				});
@@ -375,12 +366,8 @@ public class DownloaderCore implements XdccDownloader {
 			DownloadListener listener) {
 		logger.debug("addDownloadStatusListener: " + downloadId + " - "
 				+ listener);
-		List<DownloadListener> list = listenerRegistry.get(downloadId);
-		if (list == null) {
-			list = new ArrayList<XdccDownloader.DownloadListener>();
-		}
-		list.add(listener);
-		listenerRegistry.put(downloadId, list);
+
+		listenerRegistry.put(downloadId, listener);
 
 	}
 
@@ -454,7 +441,11 @@ public class DownloaderCore implements XdccDownloader {
 			Collection<DownloadBean> beans = cache.getDownloadsFromCache();
 			for (DownloadBean downloadBean : beans) {
 				if (downloadBean.getId().equals(id)) {
-					cache.removeDownloadFromCache(downloadBean);
+					try {
+						cache.removeDownloadFromCache(downloadBean);
+					} catch (Exception e) {
+
+					}
 					removed = true;
 					// break;
 				}

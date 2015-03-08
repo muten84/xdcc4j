@@ -5,6 +5,7 @@ import it.luigibifulco.xdcc4j.downloader.core.XdccDownloader;
 import it.luigibifulco.xdcc4j.downloader.core.XdccDownloader.DownloadListener;
 import it.luigibifulco.xdcc4j.downloader.core.model.Download;
 import it.luigibifulco.xdcc4j.downloader.core.util.ConvertUtil;
+import it.luigibifulco.xdcc4j.ft.XdccFileTransfer.TransferState;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -20,7 +21,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 
 @ClientEndpoint
-@ServerEndpoint(value = "/socket")
+@ServerEndpoint(value = "/downloads")
 @WebSocket
 public class DownloaderEventNotifier {
 
@@ -42,6 +43,7 @@ public class DownloaderEventNotifier {
 	@OnWebSocketClose
 	public void onClose(int statusCode, String reason) {
 		System.out.printf("Connection closed: %d - %s%n", statusCode, reason);
+		removeAllListeners();
 
 	}
 
@@ -51,6 +53,7 @@ public class DownloaderEventNotifier {
 		System.out.println("you can now receive notification from --->: "
 				+ this.core);
 		this.session = session;
+		removeAllListeners();
 		Collection<Download> downloads = core.getAllDownloads();
 		if (downloads != null) {
 			for (Download download : downloads) {
@@ -81,25 +84,37 @@ public class DownloaderEventNotifier {
 		this.core = core;
 	}
 
+	private void removeAllListeners() {
+		Collection<Download> downs = core.getAllDownloads();
+		for (Download downloadBean : downs) {
+			core.removeDownloadStatusListener(downloadBean.getId());
+		}
+
+	}
+
 	private void addDownloadListener(DownloadBean d) {
 		core.addDownloadStatusListener(d.getId(), new DownloadListener() {
 
 			@Override
 			public void onDownloadStausUpdate(String id, String updateMessage,
 					int percentage, int rate) {
+				Download down = core.getDownload(id);
+				DownloadBean bean = it.luigibifulco.xdcc4j.downloader.util.ConvertUtil
+						.convertFromXdccRequest(down);
+				bean.setState(TransferState.WORKING.name());
+				// if (updateMessage.equals("progress")) {
 				String json;
 				try {
-
-					json = mapper.writer().writeValueAsString(d);
+					// d.setPerc(perc);
+					json = mapper.writer().writeValueAsString(bean);
 					session.getRemote().sendString(json);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-
 			}
+			// }
 		});
 	}
 
-	
 }

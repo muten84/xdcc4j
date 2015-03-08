@@ -3,7 +3,6 @@ package it.luigibifulco.xdcc4j.ui.client.search.view;
 import it.luigibifulco.xdcc4j.common.model.DownloadBean;
 import it.luigibifulco.xdcc4j.ui.client.Registry;
 import it.luigibifulco.xdcc4j.ui.client.search.event.DownloadRequestHandler;
-import it.luigibifulco.xdcc4j.ui.client.search.event.SearchHandler;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -34,6 +33,8 @@ public class SearchUI extends Composite {
 
 	public final static Type<DownloadRequestHandler> DOWNLOAD_REQUEST_START = new Type<DownloadRequestHandler>();
 
+	public final static Type<DownloadRequestHandler> DOWNLOAD_UPDATE = new Type<DownloadRequestHandler>();
+
 	public static class DownloadRequestEvent extends
 			GwtEvent<DownloadRequestHandler> {
 
@@ -63,6 +64,9 @@ public class SearchUI extends Composite {
 			} else if (type.equals("remove")) {
 				handler.onDownloadRemove(download);
 				return;
+			} else if (type.equals("update")) {
+				handler.onDownloadStatusUpdate(download);
+				return;
 			}
 			handler.onDownloadRequest(download);
 
@@ -77,6 +81,8 @@ public class SearchUI extends Composite {
 
 	public SearchUI() {
 		currentResult = new HashMap<Integer, DownloadBean>();
+		progressBars = new HashMap<String, ProgressBar>();
+		labels = new HashMap<String, Label>();
 		initWidget(uiBinder.createAndBindUi(this));
 		listHeader
 				.setText("Inserisci una parola chiave per avviare la ricerca e non dimenticare di collegarti ad un server se non l'hai ancora fatto...");
@@ -84,6 +90,10 @@ public class SearchUI extends Composite {
 
 	@UiField
 	Table list;
+
+	private Map<String, ProgressBar> progressBars;
+
+	private Map<String, Label> labels;
 
 	@UiField
 	TableHeader listHeader;
@@ -145,12 +155,40 @@ public class SearchUI extends Composite {
 		}
 	}
 
+	public void removeDownloadRow() {
+
+	}
+
+	public void addDownloadRow() {
+
+	}
+
+	public void updateDowloadRow(DownloadBean downloadBean) {
+		ProgressBar pb = progressBars.get(downloadBean.getId());
+		Label l = labels.get(downloadBean.getId());
+		if (pb == null) {
+			return;
+		}
+		pb.setPercent((int) downloadBean.getPerc());
+		pb.setText(downloadBean.getPerc() + "%");
+		String slabel = downloadBean.getDesc() + " - " + downloadBean.getPerc()
+				+ "%" + " - " + (downloadBean.getRate() / 1000) + "KB/s";
+		l.setText(slabel);
+	}
+
 	public void showDownloads() {
+		progressBars.clear();
 		Map<String, DownloadBean> downloads = Registry.get("downloads");
 		listHeader.setText("I tuoi downloads: ");
 		Collection<DownloadBean> beans = downloads.values();
 		for (final DownloadBean downloadBean : beans) {
+			String slabel = downloadBean.getDesc() + " - "
+					+ downloadBean.getPerc() + "%" + " - "
+					+ (downloadBean.getRate() / 1000) + "KB/s";
 			Row r = new Row();
+			com.github.gwtbootstrap.client.ui.Label info = new com.github.gwtbootstrap.client.ui.Label(
+					slabel);
+			labels.put(downloadBean.getId(), info);
 			com.github.gwtbootstrap.client.ui.Label lID = new com.github.gwtbootstrap.client.ui.Label(
 					"" + downloadBean.getId());
 			lID.setVisible(false);
@@ -199,8 +237,7 @@ public class SearchUI extends Composite {
 
 				}
 			}, ClickEvent.getType());
-			pb.setText(downloadBean.getDesc() + " - " + downloadBean.getPerc()
-					+ "%" + " - " + (downloadBean.getRate() / 1000) + "KB/s");
+			pb.setText("" + downloadBean.getPerc());
 			if (downloadBean.getState().equals("WORKING")) {
 				pb.setColor(Color.SUCCESS);
 				pb.setType(Style.ANIMATED);
@@ -215,20 +252,23 @@ public class SearchUI extends Composite {
 			} else if (downloadBean.getState().equals("RUNNABLE")) {
 				pb.setColor(Color.DEFAULT);
 				pb.setType(Style.ANIMATED);
-				pb.setPercent(99);
+				// pb.setPercent(99);
 			} else if (downloadBean.getState().equals("IDLE")) {
 				pb.setColor(Color.WARNING);
 				pb.setType(Style.STRIPED);
-				pb.setPercent(99);
+				// pb.setPercent(99);
 			} else {
 				pb.setColor(Color.INFO);
 				pb.setType(Style.ANIMATED);
-				pb.setPercent(99);
+				// pb.setPercent(99);
 			}
 			r.add(restart);
 			r.add(cancelDownload);
 			r.add(remDownload);
+			r.add(info);
 			r.add(pb);
+
+			progressBars.put(downloadBean.getId(), pb);
 
 			list.add(r);
 		}

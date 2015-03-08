@@ -12,4 +12,6 @@ public interface DownloadRequestHandler extends EventHandler {
 
 	public void onDownloadRemove(DownloadBean download);
 
+	public void onDownloadStatusUpdate(DownloadBean download);
+
 }

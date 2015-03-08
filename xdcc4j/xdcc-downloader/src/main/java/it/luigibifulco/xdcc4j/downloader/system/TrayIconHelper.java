@@ -183,7 +183,7 @@ public class TrayIconHelper {
 		if (Desktop.isDesktopSupported()) {
 			try {
 				Desktop.getDesktop().browse(
-						new URI("http://127.0.0.1:8080/xdcc4j/"));
+						new URI("http://127.0.0.1:8888/xdcc4j/"));
 			} catch (IOException | URISyntaxException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();

@@ -95,7 +95,7 @@ public class Main {
 	}
 
 	public static void startWebApp(String webAppPath) throws Exception {
-		Server server = new Server(8080);
+		Server server = new Server(8888);
 		WebAppContext webapp = new WebAppContext();
 		webapp.setContextPath("/xdcc4j");
 		webapp.setWar(webAppPath);
@@ -132,9 +132,10 @@ public class Main {
 	}
 
 	public static void main(String[] args) throws Exception {
+
 		addTrayIcon();
-		// URL url = Main.class.getResource("xdcc-ui-1.0.war");
 		startWebApp(args[0]);
+
 		// startDownloader();
 		// startEventServer();
 	}

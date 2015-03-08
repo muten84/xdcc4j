@@ -18,9 +18,9 @@ public class DownloadEventServlet extends WebSocketServlet {
 
 	@Override
 	public void configure(WebSocketServletFactory factory) {
-		factory.getPolicy().setIdleTimeout(10000);
+		factory.getPolicy().setIdleTimeout(60000);
 		factory.setCreator(wsCreator);
-		// factory.register(EventSocket.class);
+		// factory.register(DownloaderEventNotifier.class);
 
 	}
 

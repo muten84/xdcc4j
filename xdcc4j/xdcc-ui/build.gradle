@@ -26,6 +26,7 @@ dependencies{
 	runtime('com.sun.jersey:jersey-json:1.18.3')
 	gwt('com.github.gwtbootstrap:gwt-bootstrap:2.3.2.0')
 	gwt('com.github.nmorel.gwtjackson:gwt-jackson:0.9.0')
+	gwt('org.realityforge.gwt.websockets:gwt-websockets:1.1.2')
 }
 
 gwt {

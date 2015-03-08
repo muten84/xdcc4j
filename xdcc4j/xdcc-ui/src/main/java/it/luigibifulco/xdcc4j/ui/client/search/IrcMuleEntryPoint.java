@@ -24,12 +24,17 @@ public class IrcMuleEntryPoint implements EntryPoint {
 		Registry.register("header", header);
 		Registry.register("searchui", searchui);
 
+		
+		DownloadRequestController downloadsController = new DownloadRequestController();
+		Registry.register("downloadsController", downloadsController);
+		searchui.addHandler(downloadsController,
+				SearchUI.DOWNLOAD_REQUEST_START);
+		
 		SearchController searchCtrl = new SearchController();
 		header.addHandler(searchCtrl, HeaderUi.SEARCH);
 		header.addHandler(searchCtrl, HeaderUi.CLEAR);
 		header.addHandler(searchCtrl, HeaderUi.DOWNLOADS);
-		searchui.addHandler(new DownloadRequestController(),
-				SearchUI.DOWNLOAD_REQUEST_START);
+
 		RootPanel.get("headerContainer").add(header);
 		RootPanel.get("bodyContainer").add(searchui);
 	}

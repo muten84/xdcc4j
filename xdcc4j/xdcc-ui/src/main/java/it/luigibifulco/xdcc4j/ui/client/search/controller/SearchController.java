@@ -4,6 +4,7 @@ import it.luigibifulco.xdcc4j.common.model.DownloadBean;
 import it.luigibifulco.xdcc4j.ui.client.Registry;
 import it.luigibifulco.xdcc4j.ui.client.search.IrcMuleEntryPoint.DownloadBeanMapper;
 import it.luigibifulco.xdcc4j.ui.client.search.event.SearchHandler;
+import it.luigibifulco.xdcc4j.ui.client.search.event.XdccWebSocket;
 import it.luigibifulco.xdcc4j.ui.client.search.view.HeaderUi;
 import it.luigibifulco.xdcc4j.ui.client.search.view.SearchUI;
 
@@ -13,6 +14,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
@@ -31,10 +33,18 @@ public class SearchController implements SearchHandler {
 
 	private DownloadBeanMapper mapper;
 
+	private XdccWebSocket websocket;
+
+	private HandlerManager ebus;
+
 	public SearchController() {
 		this.view = Registry.get("searchui");
 		this.header = Registry.get("header");
 		mapper = GWT.create(DownloadBeanMapper.class);
+		ebus = new HandlerManager(this);
+		websocket = new XdccWebSocket(this.ebus);
+		ebus.addHandler(SearchUI.DOWNLOAD_REQUEST_START,
+				Registry.<DownloadRequestController> get("downloadsController"));
 	}
 
 	@Override
@@ -55,6 +65,7 @@ public class SearchController implements SearchHandler {
 				Registry.register("downloads", downloads);
 				view.clearResult();
 				view.showDownloads();
+
 			}
 		});
 		try {
@@ -63,6 +74,10 @@ public class SearchController implements SearchHandler {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		websocket.start();
+	}
+
+	public void onDowloadUpdate(DownloadBean d) {
 
 	}
 
@@ -117,6 +132,7 @@ public class SearchController implements SearchHandler {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		websocket.stop();
 		// view.setSearchResult(Arrays.asList(new String[] { "asdsd",
 		// "asdsdsas",
 		// "dsdsdddddddddddd" }));
@@ -126,7 +142,7 @@ public class SearchController implements SearchHandler {
 	@Override
 	public void onClear() {
 		view.clearResult();
-
+		
 	}
 
 	private Map<String, DownloadBean> getDownloads(String json) {

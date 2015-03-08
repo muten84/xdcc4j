@@ -4,6 +4,7 @@ import it.luigibifulco.xdcc4j.common.model.DownloadBean;
 import it.luigibifulco.xdcc4j.ui.client.Registry;
 import it.luigibifulco.xdcc4j.ui.client.search.event.DownloadRequestHandler;
 import it.luigibifulco.xdcc4j.ui.client.search.view.HeaderUi;
+import it.luigibifulco.xdcc4j.ui.client.search.view.SearchUI;
 
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
@@ -173,5 +174,11 @@ public class DownloadRequestController implements DownloadRequestHandler {
 		} catch (RequestException e) {
 			header.alert("C'è un disturbo nella forza... " + e.getMessage());
 		}
+	}
+
+	@Override
+	public void onDownloadStatusUpdate(DownloadBean download) {
+		SearchUI ui = Registry.get("searchui");
+		ui.updateDowloadRow(download);
 	}
 }
