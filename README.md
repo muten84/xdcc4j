@@ -7,8 +7,8 @@ This is a modular project :
 
  - xdcc-common contains all common model and utils class.
  - xdcc-search offer the basic API for searching on most suitable irc database bot on various channels.
- - xdcc-ft (ft stay for File Transfer) offer basic API to start new file transfer in very simple way.
- - xdcc-downloader: it can use xdcc-search and xdcc-ft for starting more downloads in parallel mode. It expose an awesome REST API for managing your downloader. 
+ - xdcc-ft (ft stay for File Transfer) offer basic API to start, cancel, pause resume and remove your file transfers in really simple way.
+ - xdcc-downloader: it can use xdcc-search and xdcc-ft for starting more downloads in parallel mode. It expose an awesome high level REST API for managing your downloader. 
  - xdcc-ui contains basic User Interface widget providing basic user experience. Trough the web ui experience, users can control search and downloads of wanted files. 
  
 Distributions:
