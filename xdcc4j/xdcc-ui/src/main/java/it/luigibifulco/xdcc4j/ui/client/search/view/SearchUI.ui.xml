@@ -27,7 +27,7 @@
 		<b:FluidRow>
 			<b:Column size="6">
 				<g:HTMLPanel>
-					<b:Modal ui:field="modal" title="Attenzione" backdrop="STATIC"
+					<b:Modal ui:field="modal" backdrop="STATIC"
 						keyboard="true" animation="true" maxHeigth="600px">
 						<g:Label ui:field="modalContent"></g:Label>
 						<b:ModalFooter>

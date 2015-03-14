@@ -13,7 +13,12 @@ import it.luigibifulco.xdcc4j.search.query.XdccQueryBuilder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -38,8 +43,64 @@ public class SearchServiceImpl implements SearchService {
 
 	private ExecutorService worker;
 
-	public SearchServiceImpl() {
+	private Map<String, XdccSearchEngine> engines;
+
+	@Inject
+	public SearchServiceImpl(SearchEngineFactory engineFactory) {
+		this.engineFactory = engineFactory;
 		worker = Executors.newFixedThreadPool(1);
+		engines = new HashMap<String, XdccSearchEngine>();
+		SearchEngineType[] values = SearchEngineType.values();
+		for (SearchEngineType type : values) {
+			XdccSearchEngine engine = null;
+			switch (type) {
+			case xdcc_it:
+				engine = engineFactory.http(type,
+						Arrays.asList(new String[] { "q" }), "+",
+						new XdccItParser());
+				engines.put(type.name(), engine);
+				continue;
+			case xdccfinder:
+				engine = engineFactory.http(type,
+						Arrays.asList(new String[] { "search" }), " ",
+						new XdccFinderParser());
+				engines.put(type.name(), engine);
+				continue;
+			case cmplus_on_crocmax:
+				engine = engineFactory.http(type,
+						Arrays.asList(new String[] { "func", "q" }), "+",
+						new CmPlusParser());
+				engines.put(type.name(), engine);
+				continue;
+			}
+		}
+	}
+
+	@Override
+	public List<XdccRequest> searchAll(String what) {
+		List<XdccRequest> result = new ArrayList<XdccRequest>();
+		Collection<XdccSearchEngine> searchEngines = engines.values();
+		for (XdccSearchEngine xdccSearchEngine : searchEngines) {
+			if (xdccSearchEngine.getType().equals(
+					SearchEngineType.cmplus_on_crocmax.name())
+					|| xdccSearchEngine.getType().equals(
+							SearchEngineType.cmplus_on_crocmax.toString())) {
+				result.addAll(new ArrayList<XdccRequest>(searchTypeFactory
+						.create(xdccSearchEngine).search(
+								XdccQueryBuilder.create().params("1", what))));
+			} else {
+				result.addAll(new ArrayList<XdccRequest>(searchTypeFactory
+						.create(xdccSearchEngine).search(
+								XdccQueryBuilder.create().params(what))));
+			}
+		}
+		Collections.sort(result, new Comparator<XdccRequest>() {
+			@Override
+			public int compare(XdccRequest o1, XdccRequest o2) {
+				return o1.getDescription().compareTo(o2.getDescription());
+			}
+		});
+		return result;
 	}
 
 	@Override
@@ -53,28 +114,7 @@ public class SearchServiceImpl implements SearchService {
 			// cache.search(like)
 		} else {
 			// remote search
-			switch (type) {
-			case xdcc_it:
-				engine = engineFactory.http(type,
-						Arrays.asList(new String[] { "q" }), "+",
-						new XdccItParser());
-				break;
-			case xdccfinder:
-				engine = engineFactory.http(type,
-						Arrays.asList(new String[] { "search" }), " ",
-						new XdccFinderParser());
-				break;
-			case cmplus_on_crocmax:
-				engine = engineFactory.http(type,
-						Arrays.asList(new String[] { "func", "q" }), "+",
-						new CmPlusParser());
-				break;
-			default:
-				throw new RuntimeException("Search type not supported: "
-						+ where + " - " + what);
-
-			}
-
+			engine = engines.get(where);
 		}
 		if (engine != null) {
 			return new ArrayList<XdccRequest>(searchTypeFactory.create(engine)

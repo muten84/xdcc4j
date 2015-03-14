@@ -15,6 +15,8 @@ public interface XdccFileTransfer {
 
 		public void onFinish();
 
+		public void onCancel();
+
 		public void onError(Throwable e);
 	}
 

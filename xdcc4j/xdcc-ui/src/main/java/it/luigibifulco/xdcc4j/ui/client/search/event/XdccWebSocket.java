@@ -21,10 +21,18 @@ public class XdccWebSocket {
 	public XdccWebSocket(HandlerManager ebus) {
 		this.ebus = ebus;
 		mapper = GWT.create(DownloadBeanMapper.class);
+
 	}
-	
-	public void stop(){
+
+	public void stop() {
 		webSocket.close();
+
+	}
+
+	public void subscribeDownloadStatus(DownloadBean d) {
+		String json = mapper.write(d);
+		webSocket.send(json);
+
 	}
 
 	public void start() {
@@ -55,7 +63,7 @@ public class XdccWebSocket {
 				@Override
 				public void onOpen(WebSocket webSocket) {
 					HeaderUi header = Registry.<HeaderUi> get("header");
-					header.alert("Benvenuto nella pagina dei downloads");
+					// header.alert("Benvenuto nella pagina dei downloads");
 					super.onOpen(webSocket);
 				}
 			});

@@ -50,4 +50,6 @@ public interface XdccDownloader {
 	public String isConnected();
 
 	public boolean removeDownload(String id);
+
+	public int resumeAllDownloads();
 }

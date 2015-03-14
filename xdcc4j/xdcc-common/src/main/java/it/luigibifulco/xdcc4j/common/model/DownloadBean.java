@@ -30,6 +30,8 @@ public class DownloadBean implements Serializable {
 
 	private String resource;
 
+	private String statusMessage;
+
 	public DownloadBean() {
 
 	}
@@ -142,6 +144,14 @@ public class DownloadBean implements Serializable {
 
 	public void setChannel(String channel) {
 		this.channel = channel;
+	}
+
+	public String getStatusMessage() {
+		return statusMessage;
+	}
+
+	public void setStatusMessage(String statusMessage) {
+		this.statusMessage = statusMessage;
 	}
 
 }

@@ -30,8 +30,7 @@ public class CmPlusParser implements XdccHtmlParser {
 				buff.append("cm-plus");
 				buff.append(",");
 				buff.append(s[0]);
-				result.add(XdccRequestCreator.convertFromXdccFinderResult(buff
-						.toString()));
+				result.add(XdccRequestCreator.convertFromCmPlus(buff.toString()));
 			} catch (Exception e) {
 				continue;
 			}

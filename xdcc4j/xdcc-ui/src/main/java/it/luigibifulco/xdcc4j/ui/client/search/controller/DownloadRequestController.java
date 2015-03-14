@@ -3,6 +3,7 @@ package it.luigibifulco.xdcc4j.ui.client.search.controller;
 import it.luigibifulco.xdcc4j.common.model.DownloadBean;
 import it.luigibifulco.xdcc4j.ui.client.Registry;
 import it.luigibifulco.xdcc4j.ui.client.search.event.DownloadRequestHandler;
+import it.luigibifulco.xdcc4j.ui.client.search.event.XdccWebSocket;
 import it.luigibifulco.xdcc4j.ui.client.search.view.HeaderUi;
 import it.luigibifulco.xdcc4j.ui.client.search.view.SearchUI;
 
@@ -26,11 +27,11 @@ public class DownloadRequestController implements DownloadRequestHandler {
 
 				String sRsp = response.getText();
 				if (sRsp != null && !sRsp.isEmpty()) {
-					header.alert("Il Download di " + download.getDesc() + "da"
+					header.info("Il Download di " + download.getDesc() + "da"
 							+ download.getFrom() + "@" + download.getChannel()
 							+ " e' stato annullato!");
 				} else {
-					header.alert("Il Download di " + download.getDesc() + "da"
+					header.info("Il Download di " + download.getDesc() + "da"
 							+ download.getFrom() + "@" + download.getChannel()
 							+ " NON e' stato annullato!");
 				}
@@ -39,7 +40,7 @@ public class DownloadRequestController implements DownloadRequestHandler {
 
 			@Override
 			public void onError(Request request, Throwable exception) {
-				header.alert("Il Download di " + download.getDesc() + "da"
+				header.info("Il Download di " + download.getDesc() + "da"
 						+ download.getFrom() + "@" + download.getChannel()
 						+ " NON e' stato annullato: " + exception.getMessage());
 
@@ -48,7 +49,7 @@ public class DownloadRequestController implements DownloadRequestHandler {
 		try {
 			cancelRequest.send();
 		} catch (RequestException e) {
-			header.alert("C'è un disturbo nella forza: " + e.getMessage());
+			header.info("C'è un disturbo nella forza: " + e.getMessage());
 		}
 	}
 
@@ -71,8 +72,10 @@ public class DownloadRequestController implements DownloadRequestHandler {
 						@Override
 						public void onResponseReceived(Request request,
 								Response response) {
+							XdccWebSocket socket = Registry.get("websocket");
+							socket.subscribeDownloadStatus(download);
 							HeaderUi header = Registry.get("header");
-							header.alert("Download di "
+							header.info("Download di "
 									+ download.getDesc()
 									+ " avviato. Consulta la pagina dei downloads per monitorare lo stato dei tuoi downloads.");
 
@@ -81,7 +84,7 @@ public class DownloadRequestController implements DownloadRequestHandler {
 						@Override
 						public void onError(Request request, Throwable exception) {
 							HeaderUi header = Registry.get("header");
-							header.alert("Non riesco ad avviare il download di "
+							header.info("Non riesco ad avviare il download di "
 									+ download.getDesc());
 
 						}
@@ -90,7 +93,7 @@ public class DownloadRequestController implements DownloadRequestHandler {
 						startDownloadRequest.send();
 					} catch (RequestException e) {
 						HeaderUi header = Registry.get("header");
-						header.alert("C'è un disturbo nella forza: "
+						header.info("C'è un disturbo nella forza: "
 								+ e.getMessage());
 					}
 				} else {
@@ -99,7 +102,7 @@ public class DownloadRequestController implements DownloadRequestHandler {
 					String server = download.getServer();
 					if (server == null || server.isEmpty()) {
 						HeaderUi header = Registry.get("header");
-						header.alert("Prova a connetterti prima ad un server, successivamente riprova ad avviare il download");
+						header.info("Prova a connetterti prima ad un server, successivamente riprova ad avviare il download");
 						return;
 					}
 					RequestBuilder setServerReq = new RequestBuilder(
@@ -114,7 +117,7 @@ public class DownloadRequestController implements DownloadRequestHandler {
 								startDownloadRequest.send();
 							} catch (RequestException e) {
 								HeaderUi header = Registry.get("header");
-								header.alert("C'è un disturbo nella forza: "
+								header.info("C'è un disturbo nella forza: "
 										+ e.getMessage());
 							}
 
@@ -123,7 +126,7 @@ public class DownloadRequestController implements DownloadRequestHandler {
 						@Override
 						public void onError(Request request, Throwable e) {
 							HeaderUi header = Registry.get("header");
-							header.alert("C'è un disturbo nella forza: "
+							header.info("C'è un disturbo nella forza: "
 									+ e.getMessage());
 
 						}
@@ -136,7 +139,7 @@ public class DownloadRequestController implements DownloadRequestHandler {
 			@Override
 			public void onError(Request request, Throwable exception) {
 				HeaderUi header = Registry.get("header");
-				header.alert("Non riesco a capire se sei connesso ad un server");
+				header.info("Non riesco a capire se sei connesso ad un server");
 
 			}
 		});
@@ -144,7 +147,7 @@ public class DownloadRequestController implements DownloadRequestHandler {
 			connectedRequest.send();
 		} catch (RequestException e) {
 			HeaderUi header = Registry.get("header");
-			header.alert("C'è un disturbo nella forza: " + e.getMessage());
+			header.info("C'è un disturbo nella forza: " + e.getMessage());
 		}
 	}
 
@@ -156,7 +159,7 @@ public class DownloadRequestController implements DownloadRequestHandler {
 		removeRequest.setCallback(new RequestCallback() {
 			@Override
 			public void onError(Request request, Throwable exception) {
-				header.alert("Non riesco a rimouvere questo download: "
+				header.info("Non riesco a rimouvere questo download: "
 						+ download.getDesc());
 
 			}
@@ -164,7 +167,7 @@ public class DownloadRequestController implements DownloadRequestHandler {
 			@Override
 			public void onResponseReceived(Request request, Response response) {
 				if (response.getText().contains("true")) {
-					header.alert("Downdload Rimosso: " + download.getDesc());
+					header.info("Downdload Rimosso: " + download.getDesc());
 				}
 
 			}
@@ -172,7 +175,7 @@ public class DownloadRequestController implements DownloadRequestHandler {
 		try {
 			removeRequest.send();
 		} catch (RequestException e) {
-			header.alert("C'è un disturbo nella forza... " + e.getMessage());
+			header.info("C'è un disturbo nella forza... " + e.getMessage());
 		}
 	}
 

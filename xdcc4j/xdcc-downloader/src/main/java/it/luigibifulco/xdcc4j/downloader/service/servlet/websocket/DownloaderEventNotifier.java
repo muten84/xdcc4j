@@ -55,11 +55,13 @@ public class DownloaderEventNotifier {
 		this.session = session;
 		removeAllListeners();
 		Collection<Download> downloads = core.getAllDownloads();
-		if (downloads != null) {
+		if (downloads != null && downloads.size() > 0) {
 			for (Download download : downloads) {
 				addDownloadListener(ConvertUtil.convert(download));
 			}
+			core.resumeAllDownloads();
 		}
+
 	}
 
 	@OnWebSocketMessage
@@ -102,6 +104,7 @@ public class DownloaderEventNotifier {
 				DownloadBean bean = it.luigibifulco.xdcc4j.downloader.util.ConvertUtil
 						.convertFromXdccRequest(down);
 				bean.setState(TransferState.WORKING.name());
+				bean.setStatusMessage(updateMessage);
 				// if (updateMessage.equals("progress")) {
 				String json;
 				try {

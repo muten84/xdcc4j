@@ -8,6 +8,7 @@ import it.luigibifulco.xdcc4j.common.model.XdccRequest;
 import it.luigibifulco.xdcc4j.ft.XdccFileTransfer;
 
 import java.io.File;
+import java.text.Normalizer.Form;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -35,6 +36,8 @@ public class XdccFileTransferImpl implements XdccFileTransfer {
 	ScheduledExecutorService scheduler;
 
 	private long connectTimeout;
+
+	private FileTransferStatusListener listener;
 
 	public XdccFileTransferImpl(XdccRequest request, long connectTimeout,
 			long requestTTL) throws BotException {
@@ -72,6 +75,12 @@ public class XdccFileTransferImpl implements XdccFileTransfer {
 
 	@Override
 	public boolean start(final FileTransferStatusListener l) {
+		if (this.listener != null) {
+			throw new RuntimeException(
+					"Listener alreay attached cancel download first");
+		}
+		this.listener = l;
+
 		if (state == TransferState.IDLE) {
 			try {
 				init();
@@ -87,10 +96,10 @@ public class XdccFileTransferImpl implements XdccFileTransfer {
 						public void onFinish(Exception e) {
 							state = TransferState.FINISHED;
 							if (e == null) {
-								System.out.println("FINISH TRANSFER SUCCESS");
+								LOGGER.info("FINISH TRANSFER SUCCESS");
 								l.onFinish();
 							} else {
-								System.out.println("FINISH TRANSFER ERROR: "
+								LOGGER.info("FINISH TRANSFER ERROR: "
 										+ e.getMessage());
 								l.onError(e);
 								// e.printStackTrace();
@@ -100,8 +109,8 @@ public class XdccFileTransferImpl implements XdccFileTransfer {
 
 						@Override
 						public void onPreStartUpdate(String data) {
+							LOGGER.info("onPreStartUpdate:" + data);
 							l.onStatusUpdate(data);
-							System.out.println("onPreStartUpdate:" + data);
 
 						}
 					});
@@ -119,11 +128,13 @@ public class XdccFileTransferImpl implements XdccFileTransfer {
 					int perc = (int) transfer.getProgressPercentage();
 					int rate = (int) transfer.getTransferRate();
 					if (perc >= 100 || state == TransferState.FINISHED) {
+						state = TransferState.FINISHED;
 						cancel();
+						l.onFinish();
 						return;
 					}
-					System.out.println("Transfer state: " + perc + "%"
-							+ "rate: " + rate);
+					LOGGER.info("Transfer state: " + perc + "%" + "rate: "
+							+ rate);
 					l.onProgress(perc, rate);
 
 				};
@@ -133,14 +144,18 @@ public class XdccFileTransferImpl implements XdccFileTransfer {
 				return true;
 			} else {
 				LOGGER.info("packet requested but transfer not started");
-				state = TransferState.FINISHED;
-				l.onFinish();
+				// state = TransferState.FINISHED;
+				cancel();
+				l.onError(new RuntimeException(
+						"packet requested but transfer not started please restart download"));
+				// l.onFinish();
 				return false;
 			}
 		} else {
 			LOGGER.info("state of transfer is not in runnable");
-			state = TransferState.FINISHED;
-			l.onFinish();
+			state = TransferState.ABORTED;
+			l.onError(new RuntimeException(
+					"state of transfer is not in runnable please restart download or change server"));
 			return false;
 		}
 
@@ -148,15 +163,37 @@ public class XdccFileTransferImpl implements XdccFileTransfer {
 
 	@Override
 	public boolean cancel() {
-		state = TransferState.ABORTED;
-		if (currentTask != null) {
-			currentTask.cancel(true);
+		boolean fromworking = false;
+		if (state == TransferState.WORKING) {
+			fromworking = true;
 		}
-		scheduler.shutdownNow();
-		scheduler = null;
-		if (bot != null) {
-			bot.stop();
+		bot.sendMessage(request.getPeer(), "xdcc remove");
+		bot.sendMessage(request.getPeer(), "xdcc remove #" + request.getResource());
+		state = TransferState.ABORTED;		
+		try {
+			if (bot != null) {
+				bot.stop();
+			}
+		} catch (Exception e) {
+
 		}
+		try {
+			if (currentTask != null) {
+				currentTask.cancel(true);
+			}
+		} catch (Exception e) {
+
+		}
+		try {
+			scheduler.shutdownNow();
+			scheduler = null;
+		} catch (Exception e) {
+
+		}
+		if (fromworking) {
+			listener.onCancel();
+		}
+		this.listener = null;
 		// request = null;
 		return true;
 	}

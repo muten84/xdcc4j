@@ -1,9 +1,9 @@
 dependencies{
 
 compile('org.jsoup:jsoup:1.8.1')
-compile('it.luigibifulco.xdcc4j:xdcc-common:1.0')
-compile('it.luigibifulco.xdcc4j:xdcc-core:1.0')
-compile('it.luigibifulco.xdcc4j:xdcc-db:1.0')
+compile('it.luigibifulco.xdcc4j:xdcc-common:'+projectVersion)
+compile('it.luigibifulco.xdcc4j:xdcc-core:'+projectVersion)
+compile('it.luigibifulco.xdcc4j:xdcc-db:'+projectVersion)
 testCompile project(':xdcc-test-util')
 
 }

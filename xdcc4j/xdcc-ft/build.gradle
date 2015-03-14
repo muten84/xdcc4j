@@ -1,6 +1,6 @@
 dependencies{	
-	compile('it.luigibifulco.xdcc4j:xdcc-common:1.0')
-	compile('it.luigibifulco.xdcc4j:xdcc-core:1.0')
-	compile('it.luigibifulco.xdcc4j:xdcc-search:1.0')
+	compile('it.luigibifulco.xdcc4j:xdcc-common:'+projectVersion)
+	compile('it.luigibifulco.xdcc4j:xdcc-core:'+projectVersion)
+	compile('it.luigibifulco.xdcc4j:xdcc-search:'+projectVersion)
 
 }

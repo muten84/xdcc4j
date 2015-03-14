@@ -1,5 +1,5 @@
 dependencies{
 	//compile project(':xdcc-common')
-	compile('it.luigibifulco.xdcc4j:xdcc-common:1.0')
+	compile('it.luigibifulco.xdcc4j:xdcc-common:'+projectVersion)
 	compile('org.neodatis.odb:neodatis-odb:1.9+')
 }

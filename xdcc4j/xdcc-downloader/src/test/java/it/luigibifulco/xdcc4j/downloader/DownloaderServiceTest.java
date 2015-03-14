@@ -37,30 +37,29 @@ public class DownloaderServiceTest {
 
 	@Test
 	public final void testDownload() throws InterruptedException {
-		downloader.setServer("irc.uragano.org");
-		downloader.search("xdccit", "divx ita");
-		Collection<XdccRequest> reqs = downloader.cache().values();
-		for (XdccRequest xdccRequest : reqs) {
-			System.out.println(xdccRequest);
-			xdccRequest.setTtl(60000);
-		}
+		downloader.setServer("irc.crocmax.net");
 		String downloadId = null;
-		Iterator<String> iter = downloader.cache().keySet().iterator();
-		while (iter.hasNext()) {
-			downloadId = downloader.startDownload(iter.next());
+		Iterator<XdccRequest> requests = downloader.search("", "2013").values()
+				.iterator();
+		while (requests.hasNext()) {
+			downloadId = requests.next().getId();
+			downloadId = downloader.startDownload(downloadId);
+			Thread.sleep(15000);
 			Assert.assertNotNull(downloader.getDownload(downloadId));
-
 			if (downloader.getDownload(downloadId).getState()
-					.equals(TransferState.RUNNABLE.name())) {
+					.equals(TransferState.RUNNABLE.name())
+					|| downloader.getDownload(downloadId).getState()
+							.equals(TransferState.WORKING.name())) {
+				downloadId = downloader.cancelDownload(downloadId);
 				break;
+			} else {
+				continue;
 			}
-			downloader.cancelDownload(downloadId);
-		}
-		if (downloader.getDownload(downloadId).getState()
-				.equals(TransferState.WORKING.name())) {
-			Assert.assertTrue(downloader.getDownload(downloadId).getRate() > 0);
+
 		}
 		Thread.sleep(15000);
+		Assert.assertTrue(downloader.getDownload(downloadId).getState()
+				.equals(TransferState.ABORTED.name()));
 
 	}
 }

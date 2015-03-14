@@ -75,6 +75,12 @@ public class XdccFileTransferImplTest {
 					// TODO Auto-generated method stub
 
 				}
+
+				@Override
+				public void onCancel() {
+					// TODO Auto-generated method stub
+					
+				}
 			});
 			System.out.println(xdccFt.getState());
 			if (started) {
@@ -140,6 +146,12 @@ public class XdccFileTransferImplTest {
 				public void onStatusUpdate(String status) {
 					// TODO Auto-generated method stub
 
+				}
+
+				@Override
+				public void onCancel() {
+					// TODO Auto-generated method stub
+					
 				}
 			});
 			System.out.println(xdccFt.getState());

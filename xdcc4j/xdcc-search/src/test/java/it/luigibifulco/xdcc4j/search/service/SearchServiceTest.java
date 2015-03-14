@@ -8,6 +8,8 @@ import it.luigibifulco.xdcc4j.search.engine.SearchEngineType;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -23,6 +25,18 @@ public class SearchServiceTest {
 	@Test
 	public final void testReindex() {
 		service.reindex("irc.uragano.org", "#sunshine", "SUN|DVDRIP|23", true);
+	}
+
+	@Test
+	public final void searchAll() {
+		String what = "gotham 1x01";
+		List<XdccRequest> request = service.searchAll(what);
+		Assert.assertNotNull(request);
+		Assert.assertTrue(request.size() > 0);
+		for (XdccRequest xdccRequest : request) {
+			// if (StringUtils.isEmpty(xdccRequest.getHost()))
+			System.out.println(xdccRequest);
+		}
 	}
 
 	@Test
@@ -46,7 +60,7 @@ public class SearchServiceTest {
 	@Test
 	public final void testSearchServiceCmPlus() {
 		List<XdccRequest> request = service.search(
-				SearchEngineType.cmplus_on_crocmax.toString(), "1", "amore");
+				SearchEngineType.cmplus_on_crocmax.name(), "1", "2013");
 		for (XdccRequest xdccRequest : request) {
 			System.out.println(xdccRequest);
 		}

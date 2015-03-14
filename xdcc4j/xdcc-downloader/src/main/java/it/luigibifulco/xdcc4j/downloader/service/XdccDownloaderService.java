@@ -37,4 +37,6 @@ public interface XdccDownloaderService {
 	public String isConnected();
 
 	public boolean removeDownload(String id);
+
+	public int resumeAllDownloads();
 }

@@ -103,11 +103,22 @@ public class SearchUI extends Composite {
 	public void clearResult() {
 		listHeader
 				.setText("Inserisci una parola chiave per avviare la ricerca e non dimenticare di collegarti ad un server se non l'hai ancora fatto...");
+		int count = list.getWidgetCount();
+
+		for (int i = 0; i < count; i++) {
+			try {
+				list.remove(i);
+			} catch (Exception e) {
+				continue;
+			}
+
+		}
 		list.clear();
 	}
 
 	public void setSearchResult() {
 		listHeader.setText("Risultato della ricerca:");
+		currentResult.clear();
 		Map<String, DownloadBean> map = Registry.get("searchresult");
 		Collection<DownloadBean> beans = map.values();
 		int cnt = 0;
@@ -171,8 +182,15 @@ public class SearchUI extends Composite {
 		}
 		pb.setPercent((int) downloadBean.getPerc());
 		pb.setText(downloadBean.getPerc() + "%");
+		String msg = downloadBean.getStatusMessage();
+		if (msg == null) {
+			msg = "";
+		}
 		String slabel = downloadBean.getDesc() + " - " + downloadBean.getPerc()
 				+ "%" + " - " + (downloadBean.getRate() / 1000) + "KB/s";
+		if (!msg.isEmpty()) {
+			slabel += " --> " + msg;
+		}
 		l.setText(slabel);
 	}
 
@@ -182,9 +200,15 @@ public class SearchUI extends Composite {
 		listHeader.setText("I tuoi downloads: ");
 		Collection<DownloadBean> beans = downloads.values();
 		for (final DownloadBean downloadBean : beans) {
+			String msg = downloadBean.getStatusMessage() == null ? ""
+					: downloadBean.getStatusMessage();
 			String slabel = downloadBean.getDesc() + " - "
 					+ downloadBean.getPerc() + "%" + " - "
-					+ (downloadBean.getRate() / 1000) + "KB/s";
+					+ (downloadBean.getRate() / 1000) + "KB/s ";
+			String append = "--> " + downloadBean.getStatusMessage();
+			if (!msg.isEmpty()) {
+				slabel += append;
+			}
 			Row r = new Row();
 			com.github.gwtbootstrap.client.ui.Label info = new com.github.gwtbootstrap.client.ui.Label(
 					slabel);

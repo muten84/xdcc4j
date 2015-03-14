@@ -11,4 +11,6 @@ public interface SearchService {
 	public boolean reindex(String server, String channel, String user,
 			boolean synch);
 
+	public List<XdccRequest> searchAll(String what);
+
 }

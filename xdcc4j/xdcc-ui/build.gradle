@@ -15,7 +15,7 @@ dependencies{
 	gwt project(':xdcc-common')
 	runtime project(':xdcc-common')
 	//runtime project(':xdcc-common')
-	runtime('it.luigibifulco.xdcc4j:xdcc-downloader:1.0')
+	runtime('it.luigibifulco.xdcc4j:xdcc-downloader:'+projectVersion)
 	runtime('javax.websocket:javax.websocket-api:1.0')
 	runtime('org.eclipse.jetty.websocket:javax-websocket-server-impl:9.2.7.v20150116')
 	runtime('org.eclipse.jetty:jetty-server:9.2.7.v20150116')

@@ -21,6 +21,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,7 +85,12 @@ public class DownloaderRestFacade implements XdccDownloaderService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Map<String, DownloadBean> search(@QueryParam("where") String where,
 			@QueryParam("what") String what) {
-		Map<String, XdccRequest> map = service.search(where, what.split(","));
+		Map<String, XdccRequest> map = null;
+		if (StringUtils.isEmpty(where)) {
+			map = service.search("", what.split(",")[0]);
+		} else {
+			map = service.search(where, what.split(","));
+		}
 		Map<String, DownloadBean> result = new HashMap<String, DownloadBean>();
 		Set<String> keys = map.keySet();
 		for (String s : keys) {
@@ -92,6 +98,15 @@ public class DownloaderRestFacade implements XdccDownloaderService {
 			result.put(s, ConvertUtil.convertFromXdccRequest(req));
 		}
 		return result;
+
+	}
+
+	@Override
+	@GET
+	@Path("resumeAllDownloads")
+	@Produces(MediaType.APPLICATION_JSON)
+	public int resumeAllDownloads() {
+		return service.resumeAllDownloads();
 	}
 
 	@Override

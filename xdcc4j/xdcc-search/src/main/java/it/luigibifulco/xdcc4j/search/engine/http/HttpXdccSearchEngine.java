@@ -1,6 +1,7 @@
 package it.luigibifulco.xdcc4j.search.engine.http;
 
 import it.luigibifulco.xdcc4j.common.model.XdccRequest;
+import it.luigibifulco.xdcc4j.search.SearchUtil;
 import it.luigibifulco.xdcc4j.search.XdccSearchEngine;
 import it.luigibifulco.xdcc4j.search.engine.SearchEngineType;
 import it.luigibifulco.xdcc4j.search.parser.XdccHtmlParser;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -51,7 +53,12 @@ public class HttpXdccSearchEngine implements XdccSearchEngine {
 		try {
 			Set<XdccRequest> result = parser
 					.parseDocument(httpQuery(encodeQuery(query)));
-
+			for (XdccRequest xdccRequest : result) {
+				if (StringUtils.isEmpty(xdccRequest.getHost())) {
+					xdccRequest.setHost(SearchUtil.getInstance()
+							.getHostFromChannel(xdccRequest.getChannel()));
+				}
+			}
 			return result;
 		} catch (IOException e) {
 			throw new RuntimeException(e);

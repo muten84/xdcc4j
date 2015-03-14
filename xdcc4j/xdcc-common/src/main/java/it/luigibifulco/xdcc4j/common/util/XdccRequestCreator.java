@@ -40,6 +40,22 @@ public class XdccRequestCreator {
 
 	}
 
+	public static XdccRequest convertFromCmPlus(String result) {
+
+		String[] splitted = result.split(",");
+		if (splitted.length == 5) {
+			String channel = splitted[3].trim();
+			String peer = splitted[4].trim();
+			String resource = splitted[0].replace("#", "").trim();
+			XdccRequest request = create(channel, peer, resource);
+			request.setDescription(splitted[2]);
+			request.setHost("irc.crocmax.net");
+			request.setChannel("cm-plus");
+			return identify(request);
+		}
+		return null;
+	}
+
 	public static XdccRequest convertFromXdccFinderResult(String result) {
 
 		String[] splitted = result.split(",");

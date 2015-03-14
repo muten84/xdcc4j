@@ -10,15 +10,11 @@
 	</ui:style>
 
 	<g:HTMLPanel>
-		<b:Dropdown ui:field="dropdown" text="Select server" icon="GITHUB">
-			<b:NavLink ui:field="uragano">irc.uragano.org</b:NavLink>
-			<b:NavLink ui:field="crocmax">irc.crocmax.net</b:NavLink>
-			<b:NavLink ui:field="openjoke">irc.openjoke.org</b:NavLink>
-			<b:NavLink ui:field="platinumirc">irc.platinumirc.org</b:NavLink>
-			<b:NavLink ui:field="chlame">irc.chlame.net</b:NavLink>
-			<b:NavLink ui:field="nodeairc">irc.nodeairc.net</b:NavLink>
-			<b:NavLink ui:field="darksin">irc.darksin.net</b:NavLink>
-		</b:Dropdown>
+		<!-- <b:Dropdown ui:field="dropdown" text="Select server" icon="GITHUB"> 
+			<b:NavLink ui:field="uragano">irc.uragano.org</b:NavLink> <b:NavLink ui:field="crocmax">irc.crocmax.net</b:NavLink> 
+			<b:NavLink ui:field="openjoke">irc.openjoke.org</b:NavLink> <b:NavLink ui:field="platinumirc">irc.platinumirc.org</b:NavLink> 
+			<b:NavLink ui:field="chlame">irc.chlame.net</b:NavLink> <b:NavLink ui:field="nodeairc">irc.nodeairc.net</b:NavLink> 
+			<b:NavLink ui:field="darksin">irc.darksin.net</b:NavLink> </b:Dropdown> -->
 		<b:ResponsiveNavbar>
 			<b:Brand>Xdcc Downloader</b:Brand>
 			<!-- <b:Nav> <b:NavLink>Test</b:NavLink> <b:NavLink href="http://www.google.com">Another 
@@ -26,31 +22,42 @@
 				<b:NavLink>Test</b:NavLink> </b:Nav> <b:NavText alignment="RIGHT">Right</b:NavText> -->
 
 			<b:Nav>
-				<b:Dropdown ui:field="dropdownChannel" text="Select Channel"
-					icon="GITHUB">
-					<b:NavLink ui:field="cmplus">cm-plus</b:NavLink>
-					<b:NavLink ui:field="xdccit">xdcc.it</b:NavLink>
-					<b:NavLink ui:field="xdccfinder">xdccfinder</b:NavLink>
-				</b:Dropdown>
+				<!-- <b:Dropdown ui:field="dropdownChannel" text="Select Channel" icon="GITHUB"> 
+					<b:NavLink ui:field="cmplus">cm-plus</b:NavLink> <b:NavLink ui:field="xdccit">xdcc.it</b:NavLink> 
+					<b:NavLink ui:field="xdccfinder">xdccfinder</b:NavLink> </b:Dropdown> -->
 				<b:NavSearch ui:field="searchText" size="3" placeholder="Cerca..."
 					alignment="LEFT" />
-
+				<b:Button block="false" enabled="true" ui:field="searchBt">Cerca</b:Button>
 
 			</b:Nav>
 			<b:Nav>
+
 				<b:Button block="false" enabled="false" ui:field="clearSearchBt">Pulisci</b:Button>
+				<b:Button block="false" enabled="true" ui:field="showDownloadsBt">Downloads</b:Button>
+
 			</b:Nav>
-			<b:Nav>
-				<b:Dropdown ui:field="toolsDropdown" text="Strumenti">
-					<b:NavLink>Downloads</b:NavLink>
-				</b:Dropdown>
-			</b:Nav>
+			<!-- <b:Nav> <b:Dropdown ui:field="toolsDropdown" text="Strumenti"> <b:NavLink>Downloads</b:NavLink> 
+				</b:Dropdown> </b:Nav> -->
 		</b:ResponsiveNavbar>
 		<b:FluidRow>
 			<b:Column size="6">
 				<g:HTMLPanel>
-					<b:Modal ui:field="modal" title="Attenzione" backdrop="STATIC"
-						keyboard="true" animation="true" maxHeigth="600px">
+					<b:Modal ui:field="modalClosable" backdrop="STATIC"
+						keyboard="true" closeVisible="true" animation="true" maxHeigth="600px">
+						<g:Label ui:field="modalClosableContent"></g:Label>
+						<b:ModalFooter>
+							<b:Button ui:field="okBtn" type="PRIMARY">OK</b:Button>
+
+						</b:ModalFooter>
+					</b:Modal>
+				</g:HTMLPanel>
+			</b:Column>
+		</b:FluidRow>
+		<b:FluidRow>
+			<b:Column size="6">
+				<g:HTMLPanel>
+					<b:Modal ui:field="modal" backdrop="STATIC" keyboard="true"
+						animation="true" closeVisible="false" maxHeigth="600px">
 						<g:Label ui:field="modalContent"></g:Label>
 						<b:ModalFooter>
 							<!-- <b:Button icon="FILE" type="PRIMARY" >Save</b:Button> -->

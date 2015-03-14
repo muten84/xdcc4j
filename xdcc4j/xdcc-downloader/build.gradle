@@ -1,8 +1,8 @@
 apply plugin:'application'
 mainClassName = "it.luigibifulco.xdcc4j.downloader.Main"
 dependencies{
-	compile('it.luigibifulco.xdcc4j:xdcc-ft:1.0')
-	testCompile('it.luigibifulco.xdcc4j:xdcc-test-util:1.0')
+	compile('it.luigibifulco.xdcc4j:xdcc-ft:'+projectVersion)
+	testCompile('it.luigibifulco.xdcc4j:xdcc-test-util:'+projectVersion)
 	testCompile('org.apache.httpcomponents:httpclient:4.3.6')
 	compile('com.google.inject.extensions:guice-servlet:4.0-beta5')
 	//8.1.14.v20131031

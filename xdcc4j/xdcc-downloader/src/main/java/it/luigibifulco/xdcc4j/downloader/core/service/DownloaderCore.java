@@ -72,7 +72,7 @@ public class DownloaderCore implements XdccDownloader {
 
 	@Override
 	public int refresh() {
-		logger.debug("refresh");
+		logger.info("refresh");
 		Collection<DownloadBean> downloads = cache.getDownloadsFromCache();
 		for (DownloadBean downloadBean : downloads) {
 			Download d = new Download(downloadBean.getId(),
@@ -82,34 +82,34 @@ public class DownloaderCore implements XdccDownloader {
 			d.setState(downloadBean.getState());
 			downloadMap.put(d.getId(), d);
 		}
-		logger.debug("refresh: " + downloadMap.size());
+		logger.info("refresh: " + downloadMap.size());
 		return downloadMap.size();
 	}
 
 	@Override
 	public boolean setServer(String server) {
-		logger.debug("setServer: " + server);
+		logger.info("setServer: " + server);
 		this.currentServer = server;
 		return true;
 	}
 
 	@Override
 	public Download getDownload(String id) {
-		logger.debug("getDownload: " + id);
+		logger.info("getDownload: " + id);
 		return downloadMap.get(id);
 	}
 
 	@Override
 	public Map<String, XdccRequest> search(String where, String... text) {
-		logger.debug("search: " + where + " - " + Arrays.asList(text));
+		logger.info("search: " + where + " - " + Arrays.asList(text));
 		Map<String, XdccRequest> searchResult = new HashMap<String, XdccRequest>();
-		// XdccSearch seeker = searchTypesMap.get(where);
-		// if (seeker == null) {
-		// throw new RuntimeException(where + " search engine not supported");
-		// }
-		List<XdccRequest> result = searchService.search(where, text);
-		// XdccQuery query = XdccQueryBuilder.create().to(where).params(text);
-		// Set<XdccRequest> result = seeker.search(query);
+		List<XdccRequest> result = null;
+		if (StringUtils.isEmpty(where)) {
+			result = searchService.searchAll(text[0]);
+		} else {
+			result = searchService.search(where, text);
+		}
+
 		for (XdccRequest xdccRequest : result) {
 			if (xdccRequest == null) {
 				continue;
@@ -125,7 +125,7 @@ public class DownloaderCore implements XdccDownloader {
 
 	@Override
 	public String startDownload(final String id) {
-		logger.debug("startDownload: " + id);
+		logger.info("startDownload: " + id);
 		DownloadBean download = null;
 		XdccRequest request = cache().get(id);
 		if (request == null) {
@@ -146,11 +146,11 @@ public class DownloaderCore implements XdccDownloader {
 			}
 
 		}
-		if (incomingDir == null || incomingDir.isEmpty()) {
+		if (StringUtils.isEmpty(incomingDir)) {
 			throw new RuntimeException("incoming dir is empty");
 		}
-		if (currentServer != null && !currentServer.isEmpty()) {
-			if (request != null) {
+		if (!StringUtils.isEmpty(currentServer)) {
+			if (request != null && StringUtils.isEmpty(request.getHost())) {
 				request.setHost(currentServer);
 			}
 		}
@@ -185,7 +185,7 @@ public class DownloaderCore implements XdccDownloader {
 
 		boolean downloadPersisted = cache.putDownloadInCache(ConvertUtil
 				.convert(d));
-		logger.debug(">>>download persisted: " + downloadPersisted);
+		logger.info(">>>download persisted: " + downloadPersisted);
 		workers.submit(new Callable<Boolean>() {
 			@Override
 			public Boolean call() throws Exception {
@@ -289,6 +289,19 @@ public class DownloaderCore implements XdccDownloader {
 						queueWorkers.submit(task);
 
 					}
+
+					@Override
+					public void onCancel() {
+						DownloadListener listener = listenerRegistry.get(id);
+
+						Callable<Boolean> task = () -> {
+							listener.onDownloadStausUpdate(id, "cancel",
+									d.getPercentage(), d.getRate());
+							return true;
+						};
+						queueWorkers.submit(task);
+
+					}
 				});
 			}
 		});
@@ -305,19 +318,24 @@ public class DownloaderCore implements XdccDownloader {
 
 	@Override
 	public String cancelDownload(String id) {
-		logger.debug("cancelDownload: " + id);
-		if (getDownload(id) == null) {
-			return null;
-		}
+		logger.info("cancelDownload: " + id);
 
-		if (downloadMap.get(id).getCurrentTransfer() != null) {
+		if (downloadMap.get(id) != null
+				&& downloadMap.get(id).getCurrentTransfer() != null) {
 			downloadMap.get(id).getCurrentTransfer().cancel();
 		}
+		downloadMap.get(id).setState(TransferState.ABORTED.name());
 		// downloadMap.get(id).getCurrentTransfer().set
 		// downloadMap.get(id).setCurrentTransfer(null);
 		cache.putDownloadInCache(ConvertUtil.convert(downloadMap.get(id)));
 		// should fix issue for download recover in session
+		DownloadListener listener = listenerRegistry.get(id);
 
+		Callable<Boolean> task = () -> {
+			listener.onDownloadStausUpdate(id, "start", 0, 0);
+			return true;
+		};
+		queueWorkers.submit(task);
 		return id;
 	}
 
@@ -337,7 +355,7 @@ public class DownloaderCore implements XdccDownloader {
 
 	@Override
 	public int cleanSearch() {
-		logger.debug("cleanSearch");
+		logger.info("cleanSearch");
 		int result = searchResult.size();
 		searchResult.clear();
 		return result;
@@ -345,26 +363,26 @@ public class DownloaderCore implements XdccDownloader {
 
 	@Override
 	public Map<String, XdccRequest> cache() {
-		logger.debug("cache");
+		logger.info("cache");
 		return new HashMap<String, XdccRequest>(this.searchResult);
 	}
 
 	@Override
 	public Collection<Download> getAllDownloads() {
-		logger.debug("getAllDownloads");
+		logger.info("getAllDownloads");
 		return downloadMap.values();
 	}
 
 	@Override
 	public boolean reindex(String channel, String user) {
-		logger.debug("reindex: " + channel + " - " + user);
+		logger.info("reindex: " + channel + " - " + user);
 		return searchService.reindex(this.currentServer, channel, user, false);
 	}
 
 	@Override
 	public void addDownloadStatusListener(String downloadId,
 			DownloadListener listener) {
-		logger.debug("addDownloadStatusListener: " + downloadId + " - "
+		logger.info("addDownloadStatusListener: " + downloadId + " - "
 				+ listener);
 
 		listenerRegistry.put(downloadId, listener);
@@ -373,14 +391,14 @@ public class DownloaderCore implements XdccDownloader {
 
 	@Override
 	public void removeDownloadStatusListener(String downloadId) {
-		logger.debug("addDownloadStatusListener: " + downloadId);
+		logger.info("addDownloadStatusListener: " + downloadId);
 		listenerRegistry.remove(downloadId);
 
 	}
 
 	@Override
 	public List<String> listChannels() {
-		logger.debug("listChannels");
+		logger.info("listChannels");
 		SearchBot bot = new SearchBot(false);
 		BotClientConfig config = new BotClientConfig();
 		config.setServer(this.currentServer);
@@ -397,7 +415,7 @@ public class DownloaderCore implements XdccDownloader {
 
 	@Override
 	public List<String> listUsers(String channel) {
-		logger.debug("listUsers in: " + channel);
+		logger.info("listUsers in: " + channel);
 
 		SearchBot bot = new SearchBot(false);
 		BotClientConfig config = new BotClientConfig();
@@ -415,13 +433,12 @@ public class DownloaderCore implements XdccDownloader {
 
 	@Override
 	public String isConnected() {
-		logger.debug("isConnected to " + currentServer);
-		return StringUtils.defaultString(currentServer, "");
+		return "irc.crocmax.net";
 	}
 
 	@Override
 	public boolean removeDownload(String id) {
-		logger.debug("removeDownload: " + id);
+		logger.info("removeDownload: " + id);
 		Download d = getDownload(id);
 		if (d == null) {
 			return false;
@@ -455,5 +472,22 @@ public class DownloaderCore implements XdccDownloader {
 			}
 		}
 		return removed;
+	}
+
+	@Override
+	public int resumeAllDownloads() {
+		Collection<Download> downloads = getAllDownloads();
+		for (Download downloadBean : downloads) {
+			if (!downloadBean.getState().equals(TransferState.RUNNABLE.name())
+					&& !downloadBean.getState().equals(
+							TransferState.WORKING.name())) {
+				startDownload(downloadBean.getId());
+			} else {
+				logger.info("no need to resume download "
+						+ downloadBean.getDescription());
+			}
+
+		}
+		return downloads.size();
 	}
 }
