@@ -14,7 +14,7 @@ This is a modular project :
 Distributions:
 Xdcc Downloader 1.0-pre-alpha was released. There are some known issues. It will be solved in the next beta release. However your downloads and your search operation will work nicely. If you find some bugs or mistakes you can contact me, and feel free to open issues on github.
 The pre-alpha release provide a nice "Web Distribution" with a stand-alone server working on Windows Platform.
-You can download binaries of pre-alpha release frome here: https://github.com/muten84/xdcc4j/releases/download/v1.0-pre-alpha/xdcc-downloader-1.0-pre-alpha.zip
+You can download binaries of pre-alpha release frome here: https://github.com/muten84/xdcc4j/releases/download/v.1.0-alpha/xdcc-downloader-1.0-alpha.zip
 
 Once started the tray icon is showed on your system. Double click on and the browser will start with the UI for searching and downloading. Follow the istruction messages and good luck with your downloads.
 
