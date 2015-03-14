@@ -26,7 +26,7 @@ public class XdccDownloadServletListener extends GuiceServletContextListener {
 				   new Authenticator() {
 				      public PasswordAuthentication getPasswordAuthentication() {
 				         return new PasswordAuthentication(
-				               "luibiful", "manga123eng".toCharArray());
+				               "", "".toCharArray());
 				      }
 				   }
 				);
