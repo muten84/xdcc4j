@@ -29,7 +29,7 @@ public class Main {
 
 	public static class DownloaderModule extends AbstractModule {
 		protected void configure() {
-			install(new DownloaderServiceModule("./"));
+			install(new DownloaderServiceModule());
 			install(new DownloaderServletModule());
 		};
 	}

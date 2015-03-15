@@ -122,7 +122,7 @@ public class XdccFileTransferImpl implements XdccFileTransfer {
 				LOGGER.info("Receiveing file: " + file.getAbsolutePath());
 
 				transfer.receive(file, true);
-				l.onStart();
+				l.onStart(file.getAbsolutePath());
 				Runnable task = () -> {
 
 					int perc = (int) transfer.getProgressPercentage();

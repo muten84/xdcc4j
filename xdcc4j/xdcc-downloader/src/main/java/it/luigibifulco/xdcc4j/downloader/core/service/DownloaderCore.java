@@ -5,6 +5,7 @@ import it.biffi.jirc.bot.BotException;
 import it.biffi.jirc.bot.SearchBot;
 import it.luigibifulco.xdcc4j.common.model.DownloadBean;
 import it.luigibifulco.xdcc4j.common.model.XdccRequest;
+import it.luigibifulco.xdcc4j.common.util.OsUtils;
 import it.luigibifulco.xdcc4j.downloader.core.XdccDownloader;
 import it.luigibifulco.xdcc4j.downloader.core.model.Download;
 import it.luigibifulco.xdcc4j.downloader.core.util.ConvertUtil;
@@ -15,6 +16,7 @@ import it.luigibifulco.xdcc4j.ft.impl.FileTransferFactory;
 import it.luigibifulco.xdcc4j.search.cache.XdccCache;
 import it.luigibifulco.xdcc4j.search.service.SearchService;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -28,9 +30,12 @@ import java.util.concurrent.ConcurrentHashMap.KeySetView;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import ch.qos.logback.core.util.FileUtil;
 
 import com.google.inject.Inject;
 
@@ -50,7 +55,9 @@ public class DownloaderCore implements XdccDownloader {
 
 	private ConcurrentHashMap<String, Download> downloadMap;
 
-	private String incomingDir;
+	private String tempIncomingDir;
+
+	private String definitiveIncomingDir;
 
 	private ExecutorService workers;
 
@@ -61,10 +68,11 @@ public class DownloaderCore implements XdccDownloader {
 	private static Logger logger = LoggerFactory
 			.getLogger(DownloaderCore.class);
 
-	public DownloaderCore(String incominDir) {
+	public DownloaderCore(String tempDir, String finishDir) {
 		searchResult = new HashMap<String, XdccRequest>();
 		downloadMap = new ConcurrentHashMap<String, Download>();
-		this.incomingDir = incominDir;
+		this.tempIncomingDir = tempDir;
+		this.definitiveIncomingDir = finishDir;
 		listenerRegistry = new ConcurrentHashMap<String, DownloadListener>();
 		workers = Executors.newCachedThreadPool();
 		queueWorkers = Executors.newFixedThreadPool(1);
@@ -115,7 +123,7 @@ public class DownloaderCore implements XdccDownloader {
 			if (xdccRequest == null) {
 				continue;
 			}
-			xdccRequest.setDestination(incomingDir);
+			xdccRequest.setDestination(tempIncomingDir);
 
 			searchResult.put(xdccRequest.getId(), xdccRequest);
 		}
@@ -143,11 +151,11 @@ public class DownloaderCore implements XdccDownloader {
 			}
 			if (request != null
 					&& StringUtils.isEmpty(request.getDestination())) {
-				request.setDestination(incomingDir);
+				request.setDestination(tempIncomingDir);
 			}
 
 		}
-		if (StringUtils.isEmpty(incomingDir)) {
+		if (StringUtils.isEmpty(tempIncomingDir)) {
 			throw new RuntimeException("incoming dir is empty");
 		}
 		if (!StringUtils.isEmpty(currentServer)) {
@@ -170,7 +178,7 @@ public class DownloaderCore implements XdccDownloader {
 			request.setPeer(download.getFrom());
 			request.setResource(download.getResource());
 			if (StringUtils.isEmpty(request.getDestination())) {
-				request.setDestination(incomingDir);
+				request.setDestination(tempIncomingDir);
 			}
 			// request.setTtl(ttl);
 		}
@@ -193,9 +201,11 @@ public class DownloaderCore implements XdccDownloader {
 				return xft.start(new FileTransferStatusListener() {
 
 					@Override
-					public void onStart() {
+					public void onStart(String absolutePath) {
 						d.setStatusListener(this);
 						Download d = downloadMap.get(id);
+						d.setAbsoluteDownloadPath(absolutePath);
+						downloadMap.put(id, d);
 						// d.getCurrentTransfer().getState().name();
 						DownloadListener listener = listenerRegistry.get(id);
 
@@ -243,6 +253,18 @@ public class DownloaderCore implements XdccDownloader {
 									100);
 							return true;
 						};
+						Callable<Boolean> moveTask = () -> {
+							Download d = downloadMap.get(id);
+							String path = d.getAbsoluteDownloadPath();
+							File f = new File(path);
+							if (StringUtils.isEmpty(definitiveIncomingDir)) {
+								definitiveIncomingDir = OsUtils.getDownloadDir();
+							}
+							File dest = new File(definitiveIncomingDir);
+							FileUtils.moveFileToDirectory(f, dest, true);
+							return true;
+						};
+						queueWorkers.submit(moveTask);
 						queueWorkers.submit(task);
 
 					}

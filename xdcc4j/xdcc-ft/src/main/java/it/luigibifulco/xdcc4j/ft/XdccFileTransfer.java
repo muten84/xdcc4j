@@ -11,7 +11,7 @@ public interface XdccFileTransfer {
 
 		public void onProgress(int perc, int rate);
 
-		public void onStart();
+		public void onStart(String destPath);
 
 		public void onFinish();
 

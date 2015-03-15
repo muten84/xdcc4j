@@ -1,5 +1,6 @@
 package it.luigibifulco.xdcc4j.search;
 
+import it.luigibifulco.xdcc4j.common.util.OsUtils;
 import it.luigibifulco.xdcc4j.search.cache.XdccCache;
 import it.luigibifulco.xdcc4j.search.engine.http.HttpXdccSearchEngine;
 import it.luigibifulco.xdcc4j.search.engine.local.LocalSearch;
@@ -32,7 +33,7 @@ public class SearchModule extends AbstractModule {
 		install(new ParserModule());
 		Map<String, String> props = new HashMap<String, String>();
 		// "/Users/Default/AppData/Local/Temp"
-		props.put("cache.dir", "/Users/" + System.getProperty("user.name")
+		props.put("cache.dir", OsUtils.getUserHomeDir()
 				+ "/.xdcc-cache");
 
 		// search engines types

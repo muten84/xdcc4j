@@ -44,6 +44,8 @@ public class SearchUtil {
 				Arrays.asList("puffolandia", "BLaCKCaVe"));
 		networkChannels.put("irc.openjoke.org",
 				Arrays.asList("enjoy", "A-R-E-S"));
+		networkChannels.put("irc.crocmax.net",
+				Arrays.asList("cm-plus"));
 
 	}
 

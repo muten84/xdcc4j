@@ -47,7 +47,7 @@ public class XdccFileTransferImplTest {
 			boolean started = xdccFt.start(new FileTransferStatusListener() {
 
 				@Override
-				public void onStart() {
+				public void onStart(String path) {
 					// TODO Auto-generated method stub
 
 				}
@@ -79,7 +79,7 @@ public class XdccFileTransferImplTest {
 				@Override
 				public void onCancel() {
 					// TODO Auto-generated method stub
-					
+
 				}
 			});
 			System.out.println(xdccFt.getState());
@@ -119,7 +119,7 @@ public class XdccFileTransferImplTest {
 			boolean started = xdccFt.start(new FileTransferStatusListener() {
 
 				@Override
-				public void onStart() {
+				public void onStart(String path) {
 					// TODO Auto-generated method stub
 
 				}
@@ -151,7 +151,7 @@ public class XdccFileTransferImplTest {
 				@Override
 				public void onCancel() {
 					// TODO Auto-generated method stub
-					
+
 				}
 			});
 			System.out.println(xdccFt.getState());

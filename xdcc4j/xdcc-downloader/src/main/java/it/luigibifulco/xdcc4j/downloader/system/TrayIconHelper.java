@@ -23,6 +23,9 @@ import javax.swing.JOptionPane;
 
 public class TrayIconHelper {
 
+	final static TrayIcon trayIcon = new TrayIcon(createImage("x-mark.png",
+			"xDCC Downloader"));
+
 	// Obtain the image URL
 	protected static Image createImage(String path, String description) {
 		URL imageURL = TrayIconHelper.class.getResource(path);
@@ -35,6 +38,11 @@ public class TrayIconHelper {
 		}
 	}
 
+	private static void removeTrayIcon() {
+		final SystemTray tray = SystemTray.getSystemTray();
+		tray.remove(trayIcon);
+	}
+
 	public static void createAndShowGUI() {
 		// Check the SystemTray support
 		if (!SystemTray.isSupported()) {
@@ -42,8 +50,7 @@ public class TrayIconHelper {
 			return;
 		}
 		final PopupMenu popup = new PopupMenu();
-		final TrayIcon trayIcon = new TrayIcon(createImage("x-mark.png",
-				"xDCC Downloader"));
+
 		final SystemTray tray = SystemTray.getSystemTray();
 
 		// Create a popup menu components
@@ -172,7 +179,14 @@ public class TrayIconHelper {
 
 		exitItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				tray.remove(trayIcon);
+				removeTrayIcon();
+				// tray.remove(trayIcon);
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				System.exit(0);
 			}
 		});

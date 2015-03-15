@@ -26,6 +26,8 @@ public class Download implements Serializable {
 
 	private String state;
 
+	private String absoluteDownloadPath;
+
 	public Download(String id, String d, XdccFileTransfer ft,
 			FileTransferStatusListener l) {
 		this.id = id;
@@ -96,6 +98,14 @@ public class Download implements Serializable {
 
 	public void setState(String state) {
 		this.state = state;
+	}
+
+	public String getAbsoluteDownloadPath() {
+		return absoluteDownloadPath;
+	}
+
+	public void setAbsoluteDownloadPath(String absoluteDownloadPath) {
+		this.absoluteDownloadPath = absoluteDownloadPath;
 	}
 
 }
