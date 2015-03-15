@@ -58,7 +58,8 @@ public class DownloaderCore implements XdccDownloader {
 
 	private ExecutorService queueWorkers;
 
-	private static Logger logger = LoggerFactory.getLogger("DownloaderCore");
+	private static Logger logger = LoggerFactory
+			.getLogger(DownloaderCore.class);
 
 	public DownloaderCore(String incominDir) {
 		searchResult = new HashMap<String, XdccRequest>();
@@ -325,9 +326,11 @@ public class DownloaderCore implements XdccDownloader {
 			downloadMap.get(id).getCurrentTransfer().cancel();
 		}
 		downloadMap.get(id).setState(TransferState.ABORTED.name());
-		// downloadMap.get(id).getCurrentTransfer().set
-		// downloadMap.get(id).setCurrentTransfer(null);
-		cache.putDownloadInCache(ConvertUtil.convert(downloadMap.get(id)));
+
+		/* commented should fix not removed downloads... */
+		// cache.putDownloadInCache(ConvertUtil.convert(downloadMap.get(id)));
+		/* end */
+
 		// should fix issue for download recover in session
 		DownloadListener listener = listenerRegistry.get(id);
 
@@ -370,6 +373,17 @@ public class DownloaderCore implements XdccDownloader {
 	@Override
 	public Collection<Download> getAllDownloads() {
 		logger.info("getAllDownloads");
+		Collection<DownloadBean> beans = cache.getDownloadsFromCache();
+		if (beans == null) {
+			beans = new ArrayList<DownloadBean>();
+		}
+		// if (beans.size() == downloadMap.values().size()) {
+		// return downloadMap.values();
+		// } else {
+		// throw new RuntimeException(
+		// "session and state are not synchornized: " + beans.size()
+		// + " - " + downloadMap.values().size());
+		// }
 		return downloadMap.values();
 	}
 
@@ -459,12 +473,13 @@ public class DownloaderCore implements XdccDownloader {
 			for (DownloadBean downloadBean : beans) {
 				if (downloadBean.getId().equals(id)) {
 					try {
-						cache.removeDownloadFromCache(downloadBean);
+						// cache.removeDownloadFromCache(downloadBean);
+						removed = cache.removeDownloadById(id);
 					} catch (Exception e) {
-
+						logger.error("error while removing: " + e.getMessage());
+						removed = false;
 					}
-					removed = true;
-					// break;
+
 				}
 			}
 			if (removed) {
@@ -480,7 +495,9 @@ public class DownloaderCore implements XdccDownloader {
 		for (Download downloadBean : downloads) {
 			if (!downloadBean.getState().equals(TransferState.RUNNABLE.name())
 					&& !downloadBean.getState().equals(
-							TransferState.WORKING.name())) {
+							TransferState.WORKING.name())
+					&& !downloadBean.getState().equals(
+							TransferState.FINISHED.name())) {
 				startDownload(downloadBean.getId());
 			} else {
 				logger.info("no need to resume download "

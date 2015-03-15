@@ -97,7 +97,10 @@ public class SearchServiceImpl implements SearchService {
 		Collections.sort(result, new Comparator<XdccRequest>() {
 			@Override
 			public int compare(XdccRequest o1, XdccRequest o2) {
-				return o1.getDescription().compareTo(o2.getDescription());
+				if (o1 != null && o2 != null) {
+					return o1.getDescription().compareTo(o2.getDescription());
+				} else
+					return -1;
 			}
 		});
 		return result;

@@ -4,8 +4,10 @@ import it.luigibifulco.xdcc4j.GuiceJUnitRunner;
 import it.luigibifulco.xdcc4j.GuiceJUnitRunner.GuiceModules;
 import it.luigibifulco.xdcc4j.common.model.XdccRequest;
 import it.luigibifulco.xdcc4j.downloader.core.XdccDownloader;
+import it.luigibifulco.xdcc4j.downloader.core.model.Download;
 import it.luigibifulco.xdcc4j.downloader.core.service.DownloaderServiceModule;
 import it.luigibifulco.xdcc4j.ft.XdccFileTransfer.TransferState;
+import it.luigibifulco.xdcc4j.search.cache.XdccCache;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -23,6 +25,9 @@ public class DownloaderServiceTest {
 
 	@Inject
 	private XdccDownloader downloader;
+
+	@Inject
+	private XdccCache cache;
 
 	@Test
 	public final void testSearch() {
@@ -60,6 +65,21 @@ public class DownloaderServiceTest {
 		Thread.sleep(15000);
 		Assert.assertTrue(downloader.getDownload(downloadId).getState()
 				.equals(TransferState.ABORTED.name()));
+
+	}
+
+	@Test
+	public void testRemoveDownload() {
+		int cacheSize = cache.getDownloadsFromCache().size();
+		System.out.println("cache size is = " + cacheSize);
+		int size = downloader.refresh();
+		Assert.assertTrue(size > 0);
+		Collection<Download> ds = downloader.getAllDownloads();
+		Assert.assertTrue(ds.size() > 0);
+		for (Download download : ds) {
+			Assert.assertTrue(downloader.removeDownload(download.getId()));
+		}
+		Assert.assertTrue(downloader.getAllDownloads().size() == 0);
 
 	}
 }

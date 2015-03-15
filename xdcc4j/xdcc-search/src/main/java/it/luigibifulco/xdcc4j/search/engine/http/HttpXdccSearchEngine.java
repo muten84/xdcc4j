@@ -54,6 +54,10 @@ public class HttpXdccSearchEngine implements XdccSearchEngine {
 			Set<XdccRequest> result = parser
 					.parseDocument(httpQuery(encodeQuery(query)));
 			for (XdccRequest xdccRequest : result) {
+				if (xdccRequest == null) {
+					continue;
+				}
+
 				if (StringUtils.isEmpty(xdccRequest.getHost())) {
 					xdccRequest.setHost(SearchUtil.getInstance()
 							.getHostFromChannel(xdccRequest.getChannel()));

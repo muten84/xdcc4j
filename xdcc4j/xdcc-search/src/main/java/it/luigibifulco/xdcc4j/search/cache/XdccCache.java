@@ -67,6 +67,22 @@ public class XdccCache {
 		return downloadsStore.insert(d) != null;
 	}
 
+	public boolean removeDownloadById(String id) {
+		Collection<DownloadBean> downloads = downloadsStore.getAll();
+		for (DownloadBean downloadBean : downloads) {
+			if (downloadBean.getId().equals(id)) {
+				try {
+					downloadsStore.remove(downloadBean);
+				} catch (Exception e) {
+
+				}
+			}
+
+		}
+
+		return true;
+	}
+
 	public DownloadBean removeDownloadFromCache(DownloadBean d) {
 		DownloadBean e = downloadsStore.get(d.getId());
 		downloadsStore.remove(e);
