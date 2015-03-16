@@ -27,13 +27,15 @@
 					<b:NavLink ui:field="xdccfinder">xdccfinder</b:NavLink> </b:Dropdown> -->
 				<b:NavSearch ui:field="searchText" size="3" placeholder="Cerca..."
 					alignment="LEFT" />
-				<b:Button block="false" enabled="true" ui:field="searchBt">Cerca</b:Button>
+				<b:Button block="false" enabled="true" ui:field="searchBt"
+					type="PRIMARY">Cerca</b:Button>
 
 			</b:Nav>
 			<b:Nav>
 
-				<b:Button block="false" enabled="false" ui:field="clearSearchBt">Pulisci</b:Button>
-				<b:Button block="false" enabled="true" ui:field="showDownloadsBt">Downloads</b:Button>
+				<!-- <b:Button block="false" enabled="false" ui:field="clearSearchBt">Pulisci</b:Button> -->
+				<b:Button block="false" enabled="true" ui:field="showDownloadsBt"
+					type="INVERSE">Downloads</b:Button>
 
 			</b:Nav>
 			<!-- <b:Nav> <b:Dropdown ui:field="toolsDropdown" text="Strumenti"> <b:NavLink>Downloads</b:NavLink> 

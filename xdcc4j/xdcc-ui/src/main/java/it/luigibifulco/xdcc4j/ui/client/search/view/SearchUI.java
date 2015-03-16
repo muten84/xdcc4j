@@ -3,12 +3,14 @@ package it.luigibifulco.xdcc4j.ui.client.search.view;
 import it.luigibifulco.xdcc4j.common.model.DownloadBean;
 import it.luigibifulco.xdcc4j.ui.client.Registry;
 import it.luigibifulco.xdcc4j.ui.client.search.event.DownloadRequestHandler;
+import it.luigibifulco.xdcc4j.ui.client.search.view.HeaderUi.ShowDownloadsEvent;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import com.github.gwtbootstrap.client.ui.AccordionGroup;
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.ProgressBar;
@@ -16,15 +18,20 @@ import com.github.gwtbootstrap.client.ui.Row;
 import com.github.gwtbootstrap.client.ui.base.ProgressBarBase.Color;
 import com.github.gwtbootstrap.client.ui.base.ProgressBarBase.Style;
 import com.github.gwtbootstrap.client.ui.constants.LabelType;
+import com.github.gwtbootstrap.client.ui.event.HiddenEvent;
+import com.github.gwtbootstrap.client.ui.event.ShownEvent;
 import com.github.gwtbootstrap.client.ui.incubator.Table;
 import com.github.gwtbootstrap.client.ui.incubator.TableHeader;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.GwtEvent.Type;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
@@ -85,11 +92,29 @@ public class SearchUI extends Composite {
 		labels = new HashMap<String, Label>();
 		initWidget(uiBinder.createAndBindUi(this));
 		listHeader
-				.setText("Inserisci una parola chiave per avviare la ricerca e non dimenticare di collegarti ad un server se non l'hai ancora fatto...");
+				.setText("Inserisci una o più parole chiave per avviare la ricerca..");
+		Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+
+			@Override
+			public void execute() {
+				fireEvent(new ShowDownloadsEvent());
+
+			}
+		});
+
 	}
 
 	@UiField
+	AccordionGroup accordionDownloads;
+
+	@UiField
+	AccordionGroup accordionSearch;
+
+	@UiField
 	Table list;
+
+	@UiField
+	Table listDownloads;
 
 	private Map<String, ProgressBar> progressBars;
 
@@ -98,11 +123,14 @@ public class SearchUI extends Composite {
 	@UiField
 	TableHeader listHeader;
 
+	@UiField
+	TableHeader listDownloadsHeader;
+
 	private Map<Integer, DownloadBean> currentResult;
 
-	public void clearResult() {
+	public void clearSearchResult() {
 		listHeader
-				.setText("Inserisci una parola chiave per avviare la ricerca e non dimenticare di collegarti ad un server se non l'hai ancora fatto...");
+				.setText("Inserisci una parola chiave per avviare la ricerca...");
 		int count = list.getWidgetCount();
 
 		for (int i = 0; i < count; i++) {
@@ -116,7 +144,28 @@ public class SearchUI extends Composite {
 		list.clear();
 	}
 
-	public void setSearchResult() {
+	public void clearDownloadsResult() {
+		listDownloadsHeader
+				.setText("Inserisci una parola chiave per avviare la ricerca...");
+		int count = list.getWidgetCount();
+
+		for (int i = 0; i < count; i++) {
+			try {
+				list.remove(i);
+			} catch (Exception e) {
+				continue;
+			}
+
+		}
+		listDownloads.clear();
+	}
+	
+	public void showSearchResult(){
+		accordionSearch.show();
+	}
+
+	private void setSearchResult() {
+		accordionDownloads.hide();
 		listHeader.setText("Risultato della ricerca:");
 		currentResult.clear();
 		Map<String, DownloadBean> map = Registry.get("searchresult");
@@ -164,6 +213,7 @@ public class SearchUI extends Composite {
 			r.add(lID);
 			list.add(r);
 		}
+		
 	}
 
 	public void removeDownloadRow() {
@@ -195,9 +245,10 @@ public class SearchUI extends Composite {
 	}
 
 	public void showDownloads() {
+		accordionSearch.hide();
 		progressBars.clear();
 		Map<String, DownloadBean> downloads = Registry.get("downloads");
-		listHeader.setText("I tuoi downloads: ");
+		listDownloadsHeader.setText("I tuoi downloads: ");
 		Collection<DownloadBean> beans = downloads.values();
 		for (final DownloadBean downloadBean : beans) {
 			String msg = downloadBean.getStatusMessage() == null ? ""
@@ -294,8 +345,30 @@ public class SearchUI extends Composite {
 
 			progressBars.put(downloadBean.getId(), pb);
 
-			list.add(r);
+			listDownloads.add(r);
+			accordionDownloads.show();
 		}
 
 	}
+
+	@UiHandler("accordionSearch")
+	public void onShownSearch(ShownEvent event) {
+		setSearchResult();
+	}
+
+	@UiHandler("accordionSearch")
+	public void onHideSearch(HiddenEvent event) {
+		clearSearchResult();
+	}
+
+	@UiHandler("accordionDownloads")
+	public void onShownDownloads(ShownEvent event) {
+		try {
+			clearDownloadsResult();
+		} catch (Exception e) {
+
+		}
+		fireEvent(new ShowDownloadsEvent());
+	}
+
 }

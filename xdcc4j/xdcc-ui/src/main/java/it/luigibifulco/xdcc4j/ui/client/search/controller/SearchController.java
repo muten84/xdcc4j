@@ -64,7 +64,7 @@ public class SearchController implements SearchHandler {
 				String jsonString = response.getText();
 				Map<String, DownloadBean> downloads = getDownloads(jsonString);
 				Registry.register("downloads", downloads);
-				view.clearResult();
+				//view.clearSearchResult();
 				view.showDownloads();
 
 			}
@@ -75,7 +75,11 @@ public class SearchController implements SearchHandler {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		websocket.start();
+		try {
+			websocket.start();
+		} catch (Exception e) {
+
+		}
 	}
 
 	public void onDowloadUpdate(DownloadBean d) {
@@ -95,20 +99,21 @@ public class SearchController implements SearchHandler {
 				@Override
 				public void onResponseReceived(Request request,
 						Response response) {
-					view.clearResult();
+					Registry.register("searchresult", new HashMap<String, DownloadBean>());
+					view.clearSearchResult();
 					header.closeWait();
 					logger.info("" + response.getStatusCode());
 					String jsonString = response.getText();
 					Map<String, DownloadBean> searchResult = getData(jsonString);
 					Registry.register("searchresult", searchResult);
 
-					view.setSearchResult();
+					view.showSearchResult();
 				}
 
 				@Override
 				public void onError(Request request, Throwable exception) {
 					logger.info("error " + exception.getCause());
-					view.clearResult();
+					view.clearSearchResult();
 				}
 			});
 			builder.send();
@@ -127,7 +132,7 @@ public class SearchController implements SearchHandler {
 
 	@Override
 	public void onClear() {
-		view.clearResult();
+		view.clearSearchResult();
 
 	}
 

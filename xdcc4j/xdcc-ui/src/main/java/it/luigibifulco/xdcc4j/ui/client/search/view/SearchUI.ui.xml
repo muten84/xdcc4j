@@ -8,27 +8,57 @@
 		margin: 10px;
 	}
 	</ui:style>
-	<g:HTMLPanel>
-		<b:FluidRow>
-			<b:Column size="12">
-				<bi:TableHeader ui:field="listHeader" addStyleNames="text-center">
+	<b:FluidRow>
+		<b:Accordion>
+			<b:AccordionGroup ui:field="accordionSearch"
+	heading="Ricerche">
 
-				</bi:TableHeader>
-				<bi:Table ui:field="list" striped="true" hover="true"
-					bordered="true" addStyleNames="pull-left" condensed="true">
 
-				</bi:Table>
-			</b:Column>
-			<!-- <b:Column size="4"> <bi:TableHeader ui:field="listButtonsHeader" 
-				addStyleNames="text-center"> Opzioni </bi:TableHeader> <bi:Table ui:field="listButtons" 
-				striped="true" hover="true" bordered="true" addStyleNames="pull-right" condensed="true"> 
-				</bi:Table> </b:Column> -->
-		</b:FluidRow>
+				<g:HTMLPanel>
+
+					<b:Column size="12">
+						<bi:TableHeader ui:field="listHeader"
+							addStyleNames="text-center">
+
+						</bi:TableHeader>
+						<bi:Table ui:field="list" striped="true" hover="true"
+							bordered="true" addStyleNames="pull-left" condensed="true">
+
+						</bi:Table>
+					</b:Column>
+					<!-- <b:Column size="4"> <bi:TableHeader ui:field="listButtonsHeader" 
+						addStyleNames="text-center"> Opzioni </bi:TableHeader> <bi:Table ui:field="listButtons" 
+						striped="true" hover="true" bordered="true" addStyleNames="pull-right" condensed="true"> 
+						</bi:Table> </b:Column> -->
+
+				</g:HTMLPanel>
+			</b:AccordionGroup>
+			<b:AccordionGroup ui:field="accordionDownloads" heading="Downloads" defaultOpen="true">
+			<g:HTMLPanel>
+
+					<b:Column size="12">
+						<bi:TableHeader ui:field="listDownloadsHeader"
+							addStyleNames="text-center">
+
+						</bi:TableHeader>
+						<bi:Table ui:field="listDownloads" striped="true" hover="true"
+							bordered="true" addStyleNames="pull-left" condensed="true">
+
+						</bi:Table>
+					</b:Column>
+					<!-- <b:Column size="4"> <bi:TableHeader ui:field="listButtonsHeader" 
+						addStyleNames="text-center"> Opzioni </bi:TableHeader> <bi:Table ui:field="listButtons" 
+						striped="true" hover="true" bordered="true" addStyleNames="pull-right" condensed="true"> 
+						</bi:Table> </b:Column> -->
+
+				</g:HTMLPanel>
+			</b:AccordionGroup>
+		</b:Accordion>
 		<b:FluidRow>
 			<b:Column size="6">
 				<g:HTMLPanel>
-					<b:Modal ui:field="modal" backdrop="STATIC"
-						keyboard="true" animation="true" maxHeigth="600px">
+					<b:Modal ui:field="modal" backdrop="STATIC" keyboard="true"
+						animation="true" maxHeigth="600px">
 						<g:Label ui:field="modalContent"></g:Label>
 						<b:ModalFooter>
 							<!-- <b:Button icon="FILE" type="PRIMARY" >Save</b:Button> -->
@@ -37,5 +67,7 @@
 				</g:HTMLPanel>
 			</b:Column>
 		</b:FluidRow>
-	</g:HTMLPanel>
+	</b:FluidRow>
+
+
 </ui:UiBinder> 

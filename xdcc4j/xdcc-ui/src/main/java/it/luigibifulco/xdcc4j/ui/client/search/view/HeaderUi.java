@@ -58,8 +58,8 @@ public class HeaderUi extends Composite {
 	@UiField
 	Label modalClosableContent;
 
-	@UiField
-	Button clearSearchBt;
+	// @UiField
+	// Button clearSearchBt;
 
 	@UiField
 	Button showDownloadsBt;
@@ -216,22 +216,22 @@ public class HeaderUi extends Composite {
 		search();
 	}
 
-	@UiHandler("clearSearchBt")
-	void onClickClear(ClickEvent e) {
-
-		fireEvent(new ClearSearchEvent());
-	}
+	// @UiHandler("clearSearchBt")
+	// void onClickClear(ClickEvent e) {
+	//
+	// fireEvent(new ClearSearchEvent());
+	// }
 
 	private void search() {
 		String text = searchText.getTextBox().getText();
 		if (text == null || text.isEmpty()) {
-			clearSearchBt.setEnabled(false);
+			// clearSearchBt.setEnabled(false);
 			info("Prova ad inserire una o piu' parole chiave per avviare la ricerca...");
 			return;
 		}
 
 		fireEvent(new SearchEvent(text));
-		clearSearchBt.setEnabled(true);
+		// clearSearchBt.setEnabled(true);
 	}
 
 	@UiHandler("searchText")
