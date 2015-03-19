@@ -1,0 +1,8 @@
+machine:
+  java:
+    version: openjdk7
+	
+checkout:
+  post:
+    - git xdcc4j sync
+    - git xdcc4j update --init
