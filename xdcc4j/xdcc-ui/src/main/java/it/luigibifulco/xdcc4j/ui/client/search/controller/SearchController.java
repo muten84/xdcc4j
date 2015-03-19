@@ -64,7 +64,7 @@ public class SearchController implements SearchHandler {
 				String jsonString = response.getText();
 				Map<String, DownloadBean> downloads = getDownloads(jsonString);
 				Registry.register("downloads", downloads);
-				//view.clearSearchResult();
+				// view.clearSearchResult();
 				view.showDownloads();
 
 			}
@@ -99,15 +99,17 @@ public class SearchController implements SearchHandler {
 				@Override
 				public void onResponseReceived(Request request,
 						Response response) {
-					Registry.register("searchresult", new HashMap<String, DownloadBean>());
+					Registry.register("searchresult",
+							new HashMap<String, DownloadBean>());
 					view.clearSearchResult();
 					header.closeWait();
 					logger.info("" + response.getStatusCode());
 					String jsonString = response.getText();
 					Map<String, DownloadBean> searchResult = getData(jsonString);
 					Registry.register("searchresult", searchResult);
-
+					view.setSearchResult();
 					view.showSearchResult();
+
 				}
 
 				@Override

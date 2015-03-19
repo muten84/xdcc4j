@@ -145,8 +145,7 @@ public class SearchUI extends Composite {
 	}
 
 	public void clearDownloadsResult() {
-		listDownloadsHeader
-				.setText("Inserisci una parola chiave per avviare la ricerca...");
+		listDownloadsHeader.setText("");
 		int count = list.getWidgetCount();
 
 		for (int i = 0; i < count; i++) {
@@ -159,12 +158,12 @@ public class SearchUI extends Composite {
 		}
 		listDownloads.clear();
 	}
-	
-	public void showSearchResult(){
+
+	public void showSearchResult() {
 		accordionSearch.show();
 	}
 
-	private void setSearchResult() {
+	public void setSearchResult() {
 		accordionDownloads.hide();
 		listHeader.setText("Risultato della ricerca:");
 		currentResult.clear();
@@ -213,7 +212,7 @@ public class SearchUI extends Composite {
 			r.add(lID);
 			list.add(r);
 		}
-		
+
 	}
 
 	public void removeDownloadRow() {
@@ -353,12 +352,17 @@ public class SearchUI extends Composite {
 
 	@UiHandler("accordionSearch")
 	public void onShownSearch(ShownEvent event) {
+		try {
+			clearDownloadsResult();
+		} catch (Exception e) {
+
+		}
 		setSearchResult();
 	}
 
 	@UiHandler("accordionSearch")
 	public void onHideSearch(HiddenEvent event) {
-		clearSearchResult();
+		// clearSearchResult();
 	}
 
 	@UiHandler("accordionDownloads")
