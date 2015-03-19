@@ -2,13 +2,10 @@ package it.luigibifulco.xdcc4j.search.engine;
 
 public enum SearchEngineType {
 
-	xdcc_it("xdcc.it"), xdccfinder("xdccfinder.it"), cmplus_on_crocmax(
-			"5.39.80.142/lista.php");
-	/* cm-plus */
-	// http://pumpit.chickenkiller.com/
-	// http://5.39.80.142/lista.php?func=1&q=
-	/* sunshine */
-	// http://www.sunshinelist.eu/lista_aggiornata/SuNvcxv9u0342.php
+	xdcc_it("xdcc.it"), //
+	xdccfinder("xdccfinder.it"), //
+	cmplus_on_crocmax("5.39.80.142/lista.php"), //
+	puffolandia("puffolandia.oltreirc.net");
 
 	private String domain;
 

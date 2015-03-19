@@ -52,27 +52,9 @@ public class SearchServiceImpl implements SearchService {
 		engines = new HashMap<String, XdccSearchEngine>();
 		SearchEngineType[] values = SearchEngineType.values();
 		for (SearchEngineType type : values) {
-			XdccSearchEngine engine = null;
-			switch (type) {
-			case xdcc_it:
-				engine = engineFactory.http(type,
-						Arrays.asList(new String[] { "q" }), "+",
-						new XdccItParser());
-				engines.put(type.name(), engine);
-				continue;
-			case xdccfinder:
-				engine = engineFactory.http(type,
-						Arrays.asList(new String[] { "search" }), " ",
-						new XdccFinderParser());
-				engines.put(type.name(), engine);
-				continue;
-			case cmplus_on_crocmax:
-				engine = engineFactory.http(type,
-						Arrays.asList(new String[] { "func", "q" }), "+",
-						new CmPlusParser());
-				engines.put(type.name(), engine);
-				continue;
-			}
+			engines.put(type.name(),
+					SearchServiceHelper.getEngineByType(type, engineFactory));
+
 		}
 	}
 

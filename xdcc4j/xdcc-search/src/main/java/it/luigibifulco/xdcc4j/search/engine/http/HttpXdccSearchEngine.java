@@ -8,6 +8,7 @@ import it.luigibifulco.xdcc4j.search.parser.XdccHtmlParser;
 import it.luigibifulco.xdcc4j.search.query.XdccQuery;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,6 +51,7 @@ public class HttpXdccSearchEngine implements XdccSearchEngine {
 	@Override
 	public Set<XdccRequest> search(XdccQuery query) throws RuntimeException {
 		LOGGER.info("search: " + query.getQueryAsMap());
+		Set<XdccRequest> toReturn = new HashSet<XdccRequest>();
 		try {
 			Set<XdccRequest> result = parser
 					.parseDocument(httpQuery(encodeQuery(query)));
@@ -62,8 +64,11 @@ public class HttpXdccSearchEngine implements XdccSearchEngine {
 					xdccRequest.setHost(SearchUtil.getInstance()
 							.getHostFromChannel(xdccRequest.getChannel()));
 				}
+				if (!StringUtils.isEmpty(xdccRequest.getHost())) {
+					toReturn.add(xdccRequest);
+				}
 			}
-			return result;
+			return toReturn;
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

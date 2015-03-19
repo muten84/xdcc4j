@@ -4,6 +4,7 @@ import it.luigibifulco.xdcc4j.GuiceJUnitRunner;
 import it.luigibifulco.xdcc4j.GuiceJUnitRunner.GuiceModules;
 import it.luigibifulco.xdcc4j.common.model.XdccRequest;
 import it.luigibifulco.xdcc4j.search.parser.annotations.CmPlus;
+import it.luigibifulco.xdcc4j.search.parser.annotations.Puffolandia;
 import it.luigibifulco.xdcc4j.search.parser.annotations.XdccFinder;
 import it.luigibifulco.xdcc4j.search.parser.annotations.XdccIt;
 
@@ -35,8 +36,27 @@ public class XdccParserTest {
 	@CmPlus
 	private XdccHtmlParser cmplus;
 
+	@Inject
+	@Puffolandia
+	private XdccHtmlParser puffolandia;
+
 	@Before
 	public final void init() {
+
+	}
+
+	@Test
+	public final void testPuffolandiaParser() throws IOException {
+		Connection conn = Jsoup
+				.connect("http://puffolandia.oltreirc.net?q=gotham");
+		conn.timeout(10000);
+		Set<XdccRequest> result = puffolandia.parseDocument(conn.get());
+		if (result.size() > 0) {
+			Assert.assertTrue(result.size() > 2);
+			for (XdccRequest string : result) {
+				System.out.println(string);
+			}
+		}
 
 	}
 
