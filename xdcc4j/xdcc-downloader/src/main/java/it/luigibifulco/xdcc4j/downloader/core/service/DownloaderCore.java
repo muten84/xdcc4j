@@ -244,6 +244,15 @@ public class DownloaderCore implements XdccDownloader {
 						}
 						downloadMap.get(id).setState(
 								TransferState.FINISHED.name());
+						try {
+							cache.removeDownloadById(id);
+							DownloadBean bean = ConvertUtil.convert(downloadMap
+									.get(id));
+							bean.setState(TransferState.FINISHED.name());
+							cache.putDownloadInCache(bean);
+						} catch (Exception e) {
+
+						}
 						// cache.removeDownloadFromCache(ConvertUtil.convert(d));
 						// downloadMap.remove(id);
 						DownloadListener listener = listenerRegistry.get(id);
@@ -258,7 +267,8 @@ public class DownloaderCore implements XdccDownloader {
 							String path = d.getAbsoluteDownloadPath();
 							File f = new File(path);
 							if (StringUtils.isEmpty(definitiveIncomingDir)) {
-								definitiveIncomingDir = OsUtils.getDownloadDir();
+								definitiveIncomingDir = OsUtils
+										.getDownloadDir();
 							}
 							File dest = new File(definitiveIncomingDir);
 							FileUtils.moveFileToDirectory(f, dest, true);
@@ -266,7 +276,12 @@ public class DownloaderCore implements XdccDownloader {
 						};
 						queueWorkers.submit(moveTask);
 						queueWorkers.submit(task);
+						try {
+							cache.removeDownloadById(id);
+							downloadMap.remove(id);
+						} catch (Exception e) {
 
+						}
 					}
 
 					@Override
@@ -276,6 +291,13 @@ public class DownloaderCore implements XdccDownloader {
 						}
 						downloadMap.get(id).setState(
 								TransferState.ABORTED.name());
+						try {
+							cache.removeDownloadById(id);
+							cache.putDownloadInCache(ConvertUtil
+									.convert(downloadMap.get(id)));
+						} catch (Exception e1) {
+
+						}
 						if (downloadMap.get(id).getCurrentTransfer() != null) {
 							try {
 								downloadMap.get(id).getCurrentTransfer()
@@ -287,8 +309,7 @@ public class DownloaderCore implements XdccDownloader {
 							downloadMap.get(id).setState(
 									TransferState.ABORTED.name());
 						}
-						// cache.removeDownloadFromCache(ConvertUtil.convert(d));
-						// Download d = downloadMap.remove(id);
+
 						DownloadListener listener = listenerRegistry.get(id);
 
 						Callable<Boolean> task = () -> {
@@ -342,12 +363,17 @@ public class DownloaderCore implements XdccDownloader {
 	@Override
 	public String cancelDownload(String id) {
 		logger.info("cancelDownload: " + id);
+		downloadMap.get(id).setState(TransferState.ABORTED.name());
+		try {
+			cache.removeDownloadById(id);
+			cache.putDownloadInCache(ConvertUtil.convert(downloadMap.get(id)));
+		} catch (Exception e1) {
 
+		}
 		if (downloadMap.get(id) != null
 				&& downloadMap.get(id).getCurrentTransfer() != null) {
 			downloadMap.get(id).getCurrentTransfer().cancel();
 		}
-		downloadMap.get(id).setState(TransferState.ABORTED.name());
 
 		/* commented should fix not removed downloads... */
 		// cache.putDownloadInCache(ConvertUtil.convert(downloadMap.get(id)));
@@ -357,7 +383,7 @@ public class DownloaderCore implements XdccDownloader {
 		DownloadListener listener = listenerRegistry.get(id);
 
 		Callable<Boolean> task = () -> {
-			listener.onDownloadStausUpdate(id, "start", 0, 0);
+			listener.onDownloadStausUpdate(id, "cancelled", 0, 0);
 			return true;
 		};
 		queueWorkers.submit(task);
